@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Kai Hotel Bar | Botanical Serenity</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&amp;family=Hanken+Grotesk:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .botanical-mask {
+            mask-image: radial-gradient(circle, black 50%, transparent 100%);
+        }
+        body {
+            background-color: #fbf9f9;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-surface-variant": "#434842",
+                      "background": "#fbf9f9",
+                      "inverse-primary": "#b7cdb2",
+                      "outline-variant": "#c3c8bf",
+                      "secondary": "#5f5e5b",
+                      "secondary-container": "#e5e2dd",
+                      "surface-container-lowest": "#ffffff",
+                      "on-secondary-fixed": "#1c1c19",
+                      "on-tertiary-fixed-variant": "#5e4028",
+                      "surface-container-high": "#e9e8e7",
+                      "tertiary-container": "#5f4229",
+                      "surface-variant": "#e3e2e2",
+                      "primary": "#243624",
+                      "on-error": "#ffffff",
+                      "on-secondary-container": "#656461",
+                      "on-secondary-fixed-variant": "#474743",
+                      "surface-container-low": "#f5f3f3",
+                      "inverse-surface": "#303031",
+                      "surface-container": "#efeded",
+                      "error": "#ba1a1a",
+                      "on-surface": "#1b1c1c",
+                      "surface": "#fbf9f9",
+                      "surface-tint": "#50634e",
+                      "outline": "#747871",
+                      "surface-dim": "#dbdad9",
+                      "on-secondary": "#ffffff",
+                      "tertiary": "#462c15",
+                      "inverse-on-surface": "#f2f0f0",
+                      "on-primary-fixed-variant": "#394b38",
+                      "on-error-container": "#93000a",
+                      "primary-fixed": "#d2e9ce",
+                      "on-primary-fixed": "#0e1f0f",
+                      "secondary-fixed": "#e5e2dd",
+                      "surface-container-highest": "#e3e2e2",
+                      "tertiary-fixed-dim": "#e9be9e",
+                      "on-background": "#1b1c1c",
+                      "on-primary": "#ffffff",
+                      "on-tertiary-container": "#d8af90",
+                      "secondary-fixed-dim": "#c8c6c2",
+                      "tertiary-fixed": "#ffdcc2",
+                      "on-tertiary-fixed": "#2c1603",
+                      "on-tertiary": "#ffffff",
+                      "surface-bright": "#fbf9f9",
+                      "primary-fixed-dim": "#b7cdb2",
+                      "primary-container": "#3a4d39",
+                      "error-container": "#ffdad6",
+                      "on-primary-container": "#a7bda4"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "unit": "4px",
+                      "gutter": "24px",
+                      "section-gap": "120px",
+                      "max-width": "1280px",
+                      "margin-safe": "32px"
+              },
+              "fontFamily": {
+                      "label-md": ["Hanken Grotesk"],
+                      "body-md": ["Hanken Grotesk"],
+                      "headline-lg": ["EB Garamond"],
+                      "display-lg": ["EB Garamond"],
+                      "headline-lg-mobile": ["EB Garamond"],
+                      "headline-sm": ["EB Garamond"],
+                      "body-lg": ["Hanken Grotesk"],
+                      "display-lg-mobile": ["EB Garamond"],
+                      "headline-md": ["EB Garamond"]
+              },
+              "fontSize": {
+                      "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                      "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "headline-lg": ["48px", {"lineHeight": "1.2", "fontWeight": "400"}],
+                      "display-lg": ["64px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "400"}],
+                      "headline-lg-mobile": ["36px", {"lineHeight": "1.2", "fontWeight": "400"}],
+                      "headline-sm": ["24px", {"lineHeight": "1.4", "fontWeight": "500"}],
+                      "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "display-lg-mobile": ["44px", {"lineHeight": "1.1", "fontWeight": "400"}],
+                      "headline-md": ["32px", {"lineHeight": "1.3", "fontWeight": "400"}]
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 border-b border-outline-variant/30 backdrop-blur-md bg-background/80">
+<nav class="flex justify-between items-center px-margin-safe py-6 max-w-max-width mx-auto">
+<div class="font-headline-md text-headline-md text-primary">Kai Hotel Bar</div>
+<div class="hidden md:flex items-center gap-10">
+<a class="font-label-md text-label-md uppercase tracking-widest text-primary border-b border-primary pb-1" href="#">Stay</a>
+<a class="font-label-md text-label-md uppercase tracking-widest text-secondary hover:text-primary transition-colors duration-300" href="#">Dine</a>
+<a class="font-label-md text-label-md uppercase tracking-widest text-secondary hover:text-primary transition-colors duration-300" href="#">Gallery</a>
+<a class="font-label-md text-label-md uppercase tracking-widest text-secondary hover:text-primary transition-colors duration-300" href="#">Contact</a>
+<a class="font-label-md text-label-md uppercase tracking-widest text-secondary hover:text-primary transition-colors duration-300" href="#">Admin</a>
+</div>
+<button class="bg-primary text-on-primary px-8 py-3 font-label-md text-label-md uppercase tracking-widest hover:opacity-90 transition-opacity">
+                Book Now
+            </button>
+</nav>
+</header>
+<main>
+<!-- Hero Section -->
+<section class="relative h-screen flex items-center justify-center overflow-hidden">
+<div class="absolute inset-0 z-0">
+<img class="w-full h-full object-cover" data-alt="A serene, high-end botanical hotel lobby featuring floor-to-ceiling windows overlooking a lush garden at dusk. Soft golden light filters through exotic palm leaves and hanging ferns, creating rhythmic shadows on cream-colored marble floors. The aesthetic is sophisticated and minimalist, using a palette of deep moss greens and warm floral off-whites to evoke a sense of quiet luxury and tranquility." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBY9QA6hdujx9v5PKnWGRYe9QZHD82dOu2rzlpL-yfp13_NTFUA1Cx8HAQ4MgmKdFyEayOJGAXT6YJUgB54roBl7EW3A67I-BsGG8t4dQioJ7D16Uv9cH3c8PeWlWIuk_dbc_eMHCBTSVnmcEgIqokO9O6bJdpAI562Msej8LrzMfutunkGo96mY5yNdQ0hMkapfrKBP9lYQ8mxosI3S9HzTwFL0BTxxn4evm6ql1yhJvOMRQ7bf59EdU35ZppXeWsIn8rzQS1x-A"/>
+<div class="absolute inset-0 bg-primary/20 backdrop-brightness-90"></div>
+</div>
+<div class="relative z-10 text-center px-margin-safe max-w-4xl">
+<span class="font-label-md text-label-md uppercase tracking-[0.3em] text-white/90 block mb-6">Welcome to Kai</span>
+<h1 class="font-display-lg text-display-lg-mobile md:text-display-lg text-white mb-8">The Art of Stillness</h1>
+<p class="font-body-lg text-body-lg text-white/80 max-w-2xl mx-auto mb-12">
+                    A sanctuary where the whispers of nature meet the heights of modern elegance. Experience luxury reimagined through a botanical lens.
+                </p>
+<div class="inline-block h-24 w-px bg-white/40 animate-bounce"></div>
+</div>
+</section>
+<!-- Integrated Booking Bar -->
+<section class="relative z-20 -mt-16 px-margin-safe max-w-max-width mx-auto">
+<div class="bg-surface-container-lowest border border-outline-variant/30 p-8 md:p-12 shadow-sm grid grid-cols-1 md:grid-cols-4 gap-8 items-end">
+<div class="space-y-3">
+<label class="font-label-md text-label-md uppercase tracking-widest text-on-surface-variant block">Check-in</label>
+<div class="flex items-center gap-3 border-b border-outline py-2">
+<span class="material-symbols-outlined text-primary">calendar_today</span>
+<input class="bg-transparent border-none p-0 focus:ring-0 w-full font-body-md text-body-md" placeholder="Select Date" type="text"/>
+</div>
+</div>
+<div class="space-y-3">
+<label class="font-label-md text-label-md uppercase tracking-widest text-on-surface-variant block">Check-out</label>
+<div class="flex items-center gap-3 border-b border-outline py-2">
+<span class="material-symbols-outlined text-primary">calendar_month</span>
+<input class="bg-transparent border-none p-0 focus:ring-0 w-full font-body-md text-body-md" placeholder="Select Date" type="text"/>
+</div>
+</div>
+<div class="space-y-3">
+<label class="font-label-md text-label-md uppercase tracking-widest text-on-surface-variant block">Guests</label>
+<div class="flex items-center gap-3 border-b border-outline py-2">
+<span class="material-symbols-outlined text-primary">person</span>
+<select class="bg-transparent border-none p-0 focus:ring-0 w-full font-body-md text-body-md appearance-none">
+<option>2 Adults, 0 Children</option>
+<option>1 Adult</option>
+<option>2 Adults, 1 Child</option>
+<option>2 Adults, 2 Children</option>
+</select>
+</div>
+</div>
+<button class="bg-primary text-on-primary py-4 px-6 font-label-md text-label-md uppercase tracking-widest hover:opacity-90 transition-all">
+                    Check Availability
+                </button>
+</div>
+</section>
+<!-- Sanctuary Section -->
+<section class="py-section-gap px-margin-safe max-w-max-width mx-auto grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
+<div class="relative">
+<div class="aspect-[4/5] overflow-hidden border border-outline-variant/20 p-4 bg-surface-container-low">
+<img class="w-full h-full object-cover" data-alt="A close-up, editorial-style photograph of a luxury hotel suite's reading nook. A soft cream linen armchair sits beside a tall, vibrant Monstera plant in a terracotta pot. Natural afternoon light creates soft, high-contrast patterns on the wall, highlighting the delicate textures of the fabric and the waxy green leaves. The mood is exceptionally calm and grounding, embodying the essence of organic minimalism." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBAA2d2ZfDG8Dd5e6HAagMgOsAKcdMOoIcca4i3XcVsBkGtjFAqGMyZzyixaOWpkI1gkIRXFeGPKk3-cWyQcjSpeXpxsMq-7_Z757rsjvI4kbg-SWN1eKBtJBx8G4aNR9xxt41C7ums9ukZS2gwbNM4VTnEMLVGI3LjhaXzBkiYeyfAdcmh2MlQHen131s0KwC6bPNvEecbq6ZXBDmIq0twdIcJiB90jXlN82IhUviSG4YoZdGiTHAR1dWibOktPV2fBAqst71ZKA"/>
+</div>
+<div class="absolute -bottom-12 -right-12 w-64 h-64 border border-primary/10 rounded-full flex items-center justify-center p-8 bg-surface/80 backdrop-blur-sm hidden md:flex">
+<p class="font-headline-sm text-headline-sm text-primary text-center italic">Rooted in Nature</p>
+</div>
+</div>
+<div class="space-y-10">
+<span class="font-label-md text-label-md uppercase tracking-[0.4em] text-primary">The Kai Ethos</span>
+<h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary">A Sanctuary of Quiet Luxury</h2>
+<p class="font-body-lg text-body-lg text-secondary leading-relaxed">
+                    Kai Hotel Bar is more than a destination; it is a breathing ecosystem designed to realign your senses. Every corner is curated with botanical precision, from the herbal infusions in our bar to the living walls that frame our corridors.
+                </p>
+<div class="grid grid-cols-2 gap-8 pt-6">
+<div class="space-y-4">
+<span class="material-symbols-outlined text-primary text-4xl">eco</span>
+<h4 class="font-label-md text-label-md uppercase text-primary">Organic Spirits</h4>
+<p class="font-body-md text-body-md text-secondary">Crafted cocktails using house-grown botanicals and rare floral essences.</p>
+</div>
+<div class="space-y-4">
+<span class="material-symbols-outlined text-primary text-4xl">spa</span>
+<h4 class="font-label-md text-label-md uppercase text-primary">Biophilic Design</h4>
+<p class="font-body-md text-body-md text-secondary">Architecture that flows with nature, prioritizing light and air quality.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- The Suite Collection -->
+<section class="py-section-gap bg-surface-container-low">
+<div class="px-margin-safe max-w-max-width mx-auto">
+<div class="text-center mb-20">
+<span class="font-label-md text-label-md uppercase tracking-[0.4em] text-primary block mb-4">Restoration</span>
+<h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary">The Suite Collection</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+<!-- Deluxe Suite -->
+<div class="group cursor-pointer">
+<div class="aspect-[3/4] overflow-hidden mb-8 relative">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="An elegant deluxe suite at Kai Hotel featuring a palette of soft sage and cream. A king-sized bed with crisp white linens is framed by an arched headboard of light wood. To the side, a large window reveals a private terrace with lush greenery. The lighting is bright and airy, capturing a mid-morning glow that feels fresh and revitalizing. High-end editorial aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCNaQ2CxjWnz-SqNgtseplFra2Yklt2cRdneNh2Zcqdn7QTDTiRrIvURULn-c6VRACpvXxfGIZ6RC874Iqn5LyHDRBjb2sQxPbtXcuhwtEJgawbyUhL5rjh03Lv643X4-vnKWmCO13_NUz23A0aRZ3Gm5J5L76njpViRN6W25QoNjsGEVZ8W7mz1wfyoQndVnz7Lb0EAg3LHVts5IFQdz3VY6Uteu0ATIboZvb4WFmgP5Ksdn8RO6czc4RihFArthaaThRjX1mx6w"/>
+<div class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-primary/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="font-label-md text-white text-label-md uppercase tracking-widest">Explore Details</span>
+</div>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-primary mb-2">Deluxe Suite</h3>
+<p class="font-body-md text-body-md text-secondary mb-6">Views of the internal atrium garden with soft morning light.</p>
+<div class="flex justify-between items-center border-t border-outline-variant/30 pt-4">
+<span class="font-label-md text-label-md text-primary">From $450 / Night</span>
+<span class="material-symbols-outlined text-primary">arrow_forward</span>
+</div>
+</div>
+<!-- Garden Room -->
+<div class="group cursor-pointer">
+<div class="aspect-[3/4] overflow-hidden mb-8 relative">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A garden-facing hotel room with direct access to a botanical courtyard. The room interior uses earthy tones, moss-green cushions, and warm ochre accents. A glass sliding door is open, letting in the scent of jasmine and lavender from the garden outside. The mood is intimate and peaceful, with soft, diffused evening light. Clean lines and natural textures dominate." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCdYLOCkbl4imubXOzryG3zZTarGntdjsdo_zIJBMXRQyL_1veF5CnAeOO2xqMsB6h2HIJmOEFAGIkviXG77q5DFO7tw5P4Fi8DynZeTLIUOm8M6Nwaq-safFuZ2gHra-Q45432Kye9ZiawpZV1MEOtxtaV-WKrzzV14Q9rWGICfLKR4ZWvD1YpNhuc8W7WqzLMt5Xc_t9GGc8b0x573ugqlhg-KYLlWxYUXoydOOTAUpugGpE6vlAsr0RLWpIqeC43WEgs5wKKoQ"/>
+<div class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-primary/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="font-label-md text-white text-label-md uppercase tracking-widest">Explore Details</span>
+</div>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-primary mb-2">Garden Room</h3>
+<p class="font-body-md text-body-md text-secondary mb-6">Step directly into the botanical gardens from your private terrace.</p>
+<div class="flex justify-between items-center border-t border-outline-variant/30 pt-4">
+<span class="font-label-md text-label-md text-primary">From $380 / Night</span>
+<span class="material-symbols-outlined text-primary">arrow_forward</span>
+</div>
+</div>
+<!-- The Penthouse -->
+<div class="group cursor-pointer">
+<div class="aspect-[3/4] overflow-hidden mb-8 relative">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A grand penthouse suite with 360-degree views of the coastline and forest. The interior is expansive, featuring mid-century modern furniture, a marble fireplace, and a private plunge pool on the balcony. The color scheme is a sophisticated blend of deep forest green and ivory. The lighting is dramatic, capturing the blue hour just after sunset. Pure luxury and architectural elegance." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXBHloncPNvIKTxdi_NpTFbcW72yA7Kmr4lPP32yovsRnqCmu2XmPehBmHkunI0E5sM4azooCY3hjOTzUOOFZ5M_XSHXfDrSjkyeCQhr53KxQJskol41bUtnFCPShUQ8lzoGLwXehhdj8jHmpPzbrrUPH5nCQJwmjkY6YORD3SLvYziYkjc3MjtG-KxJ439SN9BhDzknY5Ltk-8Dv36MdgjPMdzBPzE3KmQYLn8WfMMrqFr5UJIsz1Bu2N8go_an_uyh43llMMLQ"/>
+<div class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-primary/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="font-label-md text-white text-label-md uppercase tracking-widest">Explore Details</span>
+</div>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-primary mb-2">The Penthouse</h3>
+<p class="font-body-md text-body-md text-secondary mb-6">The ultimate retreat with a private botanical conservatory.</p>
+<div class="flex justify-between items-center border-t border-outline-variant/30 pt-4">
+<span class="font-label-md text-label-md text-primary">From $1,200 / Night</span>
+<span class="material-symbols-outlined text-primary">arrow_forward</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Gallery Section -->
+<section class="py-section-gap overflow-hidden">
+<div class="px-margin-safe max-w-max-width mx-auto mb-16 flex flex-col md:flex-row md:items-end justify-between gap-8">
+<div class="max-w-2xl">
+<span class="font-label-md text-label-md uppercase tracking-[0.4em] text-primary block mb-4">Perspective</span>
+<h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary">Visual Poetry from the Shore</h2>
+</div>
+<button class="border border-outline text-primary px-8 py-3 font-label-md text-label-md uppercase tracking-widest hover:bg-primary hover:text-white transition-all">
+                    View Full Gallery
+                </button>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 px-4 h-[600px]">
+<div class="h-full">
+<img class="w-full h-full object-cover" data-alt="A close-up shot of a meticulously prepared botanical cocktail at the Kai Bar. A crystal glass contains a clear liquid with a single, delicate pink flower petal floating on top. Behind it, the bar is dimly lit with warm, amber tones and rows of artisanal glass bottles. The atmosphere is sophisticated and moody, emphasizing the sensory detail of the drink. Deep moss green and earthy ochre highlights." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAz8Bhtu4ra6R2aYKcVUSE8MqOqBX7gJ14ihQGtscSrJnbCYYA6V4Aef4Ho6-smBWkD9QO-MN5BjWyCWbugSNYcdP_W9M-6PB6lT8cAhhhFu8yDobWWxTBJNy6HBsn96xZh7O3AkLKUrFwmsuC7VHLn-9pP4j80WFxsZ1HOCLyD8PbMm3qqzZITqu07gXtVbTHNzkQhllTWe6Dz6ExnBneyfzy3Qj3VEPlcW_rMgf5r8K6mYXHOLI8wOBrAJdpeBq19L5FgkkKXrg"/>
+</div>
+<div class="grid grid-rows-2 gap-4 h-full">
+<img class="w-full h-full object-cover" data-alt="A serene view of the hotel's infinity pool reflecting the morning sky. The pool is surrounded by lush ferns and tropical plants, blending seamlessly into the natural landscape. The water is a tranquil turquoise, contrasting with the soft cream stonework of the deck. The lighting is soft and even, suggesting a quiet, early morning before guests arrive. Minimalist luxury." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDqG7x2mzYA0kVVM6pOxKwaONl3S1donLNQGTZWYMRFi_CHOudZgpkZwtcIfOmcIyzZLvHHTakv5MYCG2ZoI6aE-qkpnwdpD2cdgz567SW6mEogsB2GtQKzlKJXfMNRz7cD_FNiVIWgC75f1_FTGUm3LTx1kmvj2TA0hmPkp1cCayNx_fGhfIWufvnlVRk-IIUyAgqV4UnM2_tVnrzghOZULiB4q0CyIKuMM2KVFQA2zCFS0ImStwDrcJeyQv8OM78a1I7UuHuf_Q"/>
+<img class="w-full h-full object-cover" data-alt="A detail shot of the hotel's exterior architecture featuring white stucco walls and dark wood accents. Trailing vines and vibrant flowers spill over a balcony railing. The composition is geometric and clean, highlighted by bright sunlight and deep shadows. The color palette is dominated by off-whites and vibrant botanical greens. Editorial fashion photography style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZSOPLDJr4PvQxqQGy6FL2JTOMELhffHKoiOreRMhkag9QwcjjnQSIPal3GIo6WyB6uzsrRSUuMRdc_cYp29_FCjY_t0eSX8Y4ae1i2m50YWumCfwf8OQgO5k_7NMZAhMCnXREnvDN1LHJ3ldbnbDsjVtv9Wp-PdbfUjHxTXFkYjv4gWvdV9UTjf0eapNyDZlSyx1ol2nsG2N1dxh0ZoyJ6tIJoFlzTVgpClhebz8OR9sClL2cEMA709098Q1LZh1wS9O9DzNEsw"/>
+</div>
+<div class="h-full">
+<img class="w-full h-full object-cover" data-alt="A wide landscape shot of the coastline where Kai Hotel is situated. The rugged cliffs are covered in native greenery, meeting the soft white sands of a secluded beach. The ocean is a deep, rich navy under a clear sky. The image captures the majestic and untamed beauty of the shore that inspires the hotel's aesthetic. High-resolution nature photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAnDfcr8nrtI5WpGUgBk5-08vv-qJdP7tXPphJ7K1HcnMdhJpAIM21Hyy3fzpfWaBlPSZ-slyE5YwuEPZKIEqqHwTI5vjHJn5iOxqSe8TFA1zlRM5tjBEiT6l0ujim-dQS19QzXTWVk9fxx5fhcoAH1wCPnmAwIl0xdaMk9W9RrZTbwH90ymEW8lhQUlnogYFhTbIix8kZ06Ieal15zTOIM1oyQBac5FgaJTvdd7eUiClXtwb--YcU5cHT9LXr29eer4_FPsDDwwg"/>
+</div>
+<div class="grid grid-rows-2 gap-4 h-full">
+<img class="w-full h-full object-cover" data-alt="An interior shot of the Kai Hotel dining room. Circular wooden tables are set with simple, elegant stoneware and linen napkins. Large windows frame views of the botanical gardens. The space is filled with soft natural light and the warmth of light-colored woods. The design is airy and uncluttered, promoting a slow and mindful dining experience. Soft creams and natural greens." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBbEFdd1t5xWL4nQ5c0IBQ8-AWu4ob11nO7V2N3V9QoEOaSJG2cGEnzAXZzr61KhkpXvi81FEgO1yQO5K3cahlyGztY3sg9jEPHyK6M1mQbGWgs2xh80AIcTBEKCYWTJg2cqwTKbtFZGnu4ZSkKDIywJ_bjGAgqdJLAQpcXNnwPEH6cSioL6SeALV29f3fEBFkKVIY5CssgIq8LlVpfQpnddlaAzgzRMv-Z3PpQsMUNlUyIX34MuF_9uXwwV1dq4N9KbOg90MJUBg"/>
+<img class="w-full h-full object-cover" data-alt="A macro photograph of a rare botanical specimen found in the hotel's gardens. The intricate patterns of the leaf's veins are highlighted by soft, directional light. The colors are deep emerald and vibrant lime. This image represents the hotel's obsession with natural detail and its role as a botanical curator. Moody, high-contrast, and deeply textured." src="https://lh3.googleusercontent.com/aida-public/AB6AXuABgVywaGP5P1KvCNVhlBSrFozsUMCnsLD16wE9BsKWlFTYmQ7wfpifdJMFR7oHKZheO9nWljPpyqYtLdJva95vVRKnBZkw_IY-LnDFjkn_n3zmukacg1sfrTiDg3tLXDiOqI3sVHzYDNF8jeLUxHWLxebFIweKHTgMXPRVIvHHuAxP2m9JFWfx3rMpb8qkC22rAufuGui7IP0UhI5lsRJDfbB6LYkO5ESRxL4ck2qdmPi2z2ZL5rQ6UShbOEmbeY_mWE7M4m2vNw"/>
+</div>
+</div>
+</section>
+<!-- Inquiry Form Section -->
+<section class="py-section-gap bg-surface-container-low/50">
+<div class="px-margin-safe max-w-4xl mx-auto text-center">
+<span class="font-label-md text-label-md uppercase tracking-[0.4em] text-primary block mb-4">Inquiry</span>
+<h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary mb-16">Connect with the Concierge</h2>
+<form class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-12 text-left">
+<div class="relative">
+<label class="font-label-md text-label-md uppercase tracking-widest text-on-surface-variant block mb-2">Name</label>
+<input class="w-full bg-transparent border-t-0 border-x-0 border-b border-outline-variant focus:border-primary focus:ring-0 px-0 py-3 font-body-md text-body-md placeholder:text-outline" placeholder="Your full name" type="text"/>
+</div>
+<div class="relative">
+<label class="font-label-md text-label-md uppercase tracking-widest text-on-surface-variant block mb-2">Email</label>
+<input class="w-full bg-transparent border-t-0 border-x-0 border-b border-outline-variant focus:border-primary focus:ring-0 px-0 py-3 font-body-md text-body-md placeholder:text-outline" placeholder="your@email.com" type="email"/>
+</div>
+<div class="relative md:col-span-2">
+<label class="font-label-md text-label-md uppercase tracking-widest text-on-surface-variant block mb-2">Nature of Inquiry</label>
+<select class="w-full bg-transparent border-t-0 border-x-0 border-b border-outline-variant focus:border-primary focus:ring-0 px-0 py-3 font-body-md text-body-md appearance-none">
+<option>Room Availability &amp; Special Requests</option>
+<option>Event &amp; Wedding Hosting</option>
+<option>Botanical Bar Reservations</option>
+<option>Press &amp; Media</option>
+</select>
+</div>
+<div class="relative md:col-span-2">
+<label class="font-label-md text-label-md uppercase tracking-widest text-on-surface-variant block mb-2">Message</label>
+<textarea class="w-full bg-transparent border-t-0 border-x-0 border-b border-outline-variant focus:border-primary focus:ring-0 px-0 py-3 font-body-md text-body-md placeholder:text-outline resize-none" placeholder="How can we assist in your decompression?" rows="4"></textarea>
+</div>
+<div class="md:col-span-2 text-center pt-8">
+<button class="bg-primary text-on-primary px-12 py-4 font-label-md text-label-md uppercase tracking-[0.2em] hover:opacity-90 transition-opacity" type="submit">
+                            Send Inquiry
+                        </button>
+</div>
+</form>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-section-gap border-t border-outline-variant/20 bg-surface-container-lowest text-center">
+<div class="flex flex-col items-center gap-12 px-margin-safe max-w-max-width mx-auto">
+<div class="font-headline-sm text-headline-sm text-primary">Kai Hotel Bar</div>
+<div class="flex flex-wrap justify-center gap-10">
+<a class="font-body-md text-body-md text-secondary hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="font-body-md text-body-md text-secondary hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="font-body-md text-body-md text-secondary hover:text-primary transition-colors" href="#">Sustainability</a>
+<a class="font-body-md text-body-md text-secondary hover:text-primary transition-colors" href="#">Careers</a>
+</div>
+<div class="flex gap-6">
+<a class="text-secondary hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">public</span>
+</a>
+<a class="text-secondary hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">camera</span>
+</a>
+<a class="text-secondary hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">mail</span>
+</a>
+</div>
+<p class="font-body-md text-body-md text-secondary/60 max-w-lg">
+                © 2024 Kai Hotel Bar. All rights reserved. Designed for botanical serenity.
+            </p>
+</div>
+</footer>
+</body></html>
