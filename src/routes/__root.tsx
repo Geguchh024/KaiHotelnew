@@ -6,8 +6,12 @@ import {
   HeadContent,
   Scripts,
 } from '@tanstack/react-router'
+import { ConvexProvider, ConvexReactClient } from 'convex/react'
 import { I18nProvider } from '@/lib/i18n'
+import { AdminAuthProvider } from '@/contexts/AdminAuthContext'
 import '@/styles/globals.css'
+
+const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string)
 
 export const Route = createRootRoute({
   head: () => ({
@@ -53,9 +57,13 @@ export const Route = createRootRoute({
 function RootComponent() {
   return (
     <RootDocument>
-      <I18nProvider>
-        <Outlet />
-      </I18nProvider>
+      <ConvexProvider client={convex}>
+        <I18nProvider>
+          <AdminAuthProvider>
+            <Outlet />
+          </AdminAuthProvider>
+        </I18nProvider>
+      </ConvexProvider>
     </RootDocument>
   )
 }

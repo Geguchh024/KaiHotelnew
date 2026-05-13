@@ -1,15 +1,19 @@
 import { useState } from 'react'
 import { createFileRoute, Link } from '@tanstack/react-router'
+import { useQuery } from 'convex/react'
+import { api } from '../../convex/_generated/api'
 import { useI18n } from '@/lib/i18n'
 import { DatePicker } from '@/components/ui/date-picker'
 import { CustomSelect } from '@/components/ui/custom-select'
+import { BlurhashImage } from '@/components/BlurhashImage'
+import { Navbar } from '@/components/Navbar'
+import { Footer } from '@/components/Footer'
 import { addDays } from 'date-fns'
 
 export const Route = createFileRoute('/')({
   component: Home,
 })
 
-// Example cancelled/unavailable dates (these would come from your backend)
 const unavailableDates = [
   addDays(new Date(), 3),
   addDays(new Date(), 4),
@@ -22,79 +26,48 @@ const unavailableDates = [
 ]
 
 function Home() {
-  const { t, locale, setLocale } = useI18n()
+  const { t, locale } = useI18n()
   const [checkIn, setCheckIn] = useState<Date | null>(null)
   const [checkOut, setCheckOut] = useState<Date | null>(null)
   const [guests, setGuests] = useState('2')
   const [roomType, setRoomType] = useState('standard')
 
+  const rooms = useQuery(api.rooms.list) ?? []
+  const galleryImages = useQuery(api.gallery.list) ?? []
+
   return (
     <>
-      {/* TopNavBar */}
-      <header className="fixed top-0 w-full z-50 border-b border-outline-variant/30 backdrop-blur-md bg-background/80">
-        <nav className="flex justify-between items-center px-6 py-4 max-w-[1280px] mx-auto">
-          <div className="font-[EB_Garamond] text-[24px] leading-[1.3] text-primary font-medium">
-            Kai Hotel Bar
-          </div>
-          <div className="hidden md:flex items-center gap-8">
-            <a className="font-[Hanken_Grotesk] text-[12px] font-semibold uppercase tracking-[0.05em] text-primary border-b border-primary pb-0.5" href="#rooms">
-              {t('nav.rooms')}
-            </a>
-            <a className="font-[Hanken_Grotesk] text-[12px] font-semibold uppercase tracking-[0.05em] text-secondary hover:text-primary transition-colors duration-300" href="#amenities">
-              {t('nav.amenities')}
-            </a>
-            <a className="font-[Hanken_Grotesk] text-[12px] font-semibold uppercase tracking-[0.05em] text-secondary hover:text-primary transition-colors duration-300" href="#reviews">
-              {t('nav.reviews')}
-            </a>
-            <a className="font-[Hanken_Grotesk] text-[12px] font-semibold uppercase tracking-[0.05em] text-secondary hover:text-primary transition-colors duration-300" href="#contact">
-              {t('nav.contact')}
-            </a>
-          </div>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setLocale(locale === 'ka' ? 'en' : 'ka')}
-              className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.05em] text-secondary hover:text-primary transition-colors border border-outline-variant px-2.5 py-1.5 rounded-sm"
-            >
-              {locale === 'ka' ? 'EN' : 'ქარ'}
-            </button>
-            <Link
-              to="/reservations"
-              className="bg-primary text-on-primary px-5 py-2 font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.05em] hover:opacity-90 transition-opacity"
-            >
-              {t('nav.bookNow')}
-            </Link>
-          </div>
-        </nav>
-      </header>
+      <Navbar />
 
       <main>
         {/* Hero Section */}
         <section className="relative h-[85vh] flex items-center justify-center overflow-hidden">
           <div className="absolute inset-0 z-0">
-            <img
-              className="w-full h-full object-cover"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBY9QA6hdujx9v5PKnWGRYe9QZHD82dOu2rzlpL-yfp13_NTFUA1Cx8HAQ4MgmKdFyEayOJGAXT6YJUgB54roBl7EW3A67I-BsGG8t4dQioJ7D16Uv9cH3c8PeWlWIuk_dbc_eMHCBTSVnmcEgIqokO9O6bJdpAI562Msej8LrzMfutunkGo96mY5yNdQ0hMkapfrKBP9lYQ8mxosI3S9HzTwFL0BTxxn4evm6ql1yhJvOMRQ7bf59EdU35ZppXeWsIn8rzQS1x-A"
+            <BlurhashImage
+              src="https://images.unsplash.com/photo-1565008576549-57569a49371d?q=80&w=1258&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
               alt="Kai Hotel"
+              blurhash="LkH^woxCI=sn}ls,R.sm^LoIR-n%"
+              className="w-full h-full"
             />
-            <div className="absolute inset-0 bg-primary/30 backdrop-brightness-75"></div>
+            <div className="absolute inset-0 bg-black/65"></div>
           </div>
           <div className="relative z-10 text-center px-6 max-w-3xl">
             <span className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.3em] text-white/90 block mb-4">
               {t('hero.welcome')}
             </span>
-            <h1 className="font-[EB_Garamond] text-[32px] md:text-[48px] leading-[1.15] tracking-[-0.01em] text-white mb-4 font-georgian">
+            <h1 className="font-[EB_Garamond] text-[32px] md:text-[48px] leading-[1.15] tracking-[-0.01em] text-white mb-4">
               {t('hero.title')}
             </h1>
-            <p className="font-[Hanken_Grotesk] text-[15px] leading-[1.5] text-white/80 max-w-xl mx-auto mb-8 font-georgian">
+            <p className="font-[Hanken_Grotesk] text-[15px] leading-[1.5] text-white/80 max-w-xl mx-auto mb-8">
               {t('hero.subtitle')}
             </p>
             <div className="flex justify-center gap-3 flex-wrap">
-              <a href="#rooms" className="bg-white/10 backdrop-blur-sm border border-white/30 text-white px-6 py-2.5 font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.05em] hover:bg-white/20 transition-all font-georgian">
+              <Link to="/rooms" className="bg-white/10 backdrop-blur-sm border border-white/30 text-white px-6 py-2.5 font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.05em] hover:bg-white/20 transition-all">
                 {t('hero.exploreRooms')}
-              </a>
-              <a href="#amenities" className="bg-white text-primary px-6 py-2.5 font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.05em] hover:opacity-90 transition-all font-georgian">
-                {t('hero.viewAmenities')}
-              </a>
+              </Link>
+              <Link to="/contact" className="bg-white text-primary px-6 py-2.5 font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.05em] hover:opacity-90 transition-all">
+                {t('nav.contact')}
+              </Link>
             </div>
           </div>
         </section>
@@ -102,7 +75,7 @@ function Home() {
         {/* Booking Bar */}
         <section className="relative z-20 -mt-12 px-6 max-w-[1080px] mx-auto">
           <div className="bg-surface-container-lowest border border-outline-variant/30 p-6 md:p-8 shadow-sm">
-            <h3 className="font-[EB_Garamond] text-[18px] font-medium text-primary mb-5 font-georgian">
+            <h3 className="font-[EB_Garamond] text-[18px] font-medium text-primary mb-5">
               {t('booking.title')}
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-5 gap-5 items-end">
@@ -166,109 +139,92 @@ function Home() {
                   href="https://www.booking.com/Share-WUttkr"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 bg-primary text-on-primary py-2.5 px-4 font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.05em] hover:opacity-90 transition-all text-center font-georgian w-full"
+                  className="flex items-center justify-center gap-2 bg-primary text-on-primary py-2.5 px-4 font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.05em] hover:opacity-90 transition-all text-center w-full"
                 >
                   <span className="material-symbols-outlined text-[14px]">open_in_new</span>
                   {t('booking.bookOnBooking')}
                 </a>
               </div>
             </div>
-            <p className="font-[Hanken_Grotesk] text-[12px] text-secondary mt-4 font-georgian">
+            <p className="font-[Hanken_Grotesk] text-[12px] text-secondary mt-4">
               {t('booking.untilAvailable')}
             </p>
           </div>
         </section>
 
-        {/* Rooms Section */}
-        <section id="rooms" className="py-20 px-6 max-w-[1280px] mx-auto">
+        {/* Rooms Preview */}
+        <section className="py-20 px-6 max-w-[1280px] mx-auto">
           <div className="text-center mb-12">
-            <span className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.4em] text-primary block mb-2 font-georgian">
+            <span className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.4em] text-primary block mb-2">
               {t('rooms.label')}
             </span>
-            <h2 className="font-[EB_Garamond] text-[28px] md:text-[36px] leading-[1.2] text-primary font-georgian">
+            <h2 className="font-[EB_Garamond] text-[28px] md:text-[36px] leading-[1.2] text-primary">
               {t('rooms.title')}
             </h2>
-            <p className="font-[Hanken_Grotesk] text-[14px] leading-[1.5] text-secondary mt-3 max-w-lg mx-auto font-georgian">
+            <p className="font-[Hanken_Grotesk] text-[14px] leading-[1.5] text-secondary mt-3 max-w-lg mx-auto">
               {t('rooms.description')}
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="group cursor-pointer">
-              <div className="aspect-[4/3] overflow-hidden mb-4 relative">
-                <img
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuCNaQ2CxjWnz-SqNgtseplFra2Yklt2cRdneNh2Zcqdn7QTDTiRrIvURULn-c6VRACpvXxfGIZ6RC874Iqn5LyHDRBjb2sQxPbtXcuhwtEJgawbyUhL5rjh03Lv643X4-vnKWmCO13_NUz23A0aRZ3Gm5J5L76njpViRN6W25QoNjsGEVZ8W7mz1wfyoQndVnz7Lb0EAg3LHVts5IFQdz3VY6Uteu0ATIboZvb4WFmgP5Ksdn8RO6czc4RihFArthaaThRjX1mx6w"
-                  alt="Standard Room"
-                />
-                <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-primary/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                  <span className="font-[Hanken_Grotesk] text-white text-[11px] font-semibold uppercase tracking-[0.05em]">
-                    {t('rooms.viewAll')}
-                  </span>
-                </div>
-              </div>
-              <h3 className="font-[EB_Garamond] text-[18px] leading-[1.3] font-medium text-primary mb-1">
-                Standard Room
-              </h3>
-              <p className="font-[Hanken_Grotesk] text-[13px] leading-[1.5] text-secondary">
-                კომფორტული ნომერი ყველა საჭირო კეთილმოწყობით
-              </p>
-            </div>
 
-            <div className="group cursor-pointer">
-              <div className="aspect-[4/3] overflow-hidden mb-4 relative">
-                <img
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuCdYLOCkbl4imubXOzryG3zZTarGntdjsdo_zIJBMXRQyL_1veF5CnAeOO2xqMsB6h2HIJmOEFAGIkviXG77q5DFO7tw5P4Fi8DynZeTLIUOm8M6Nwaq-safFuZ2gHra-Q45432Kye9ZiawpZV1MEOtxtaV-WKrzzV14Q9rWGICfLKR4ZWvD1YpNhuc8W7WqzLMt5Xc_t9GGc8b0x573ugqlhg-KYLlWxYUXoydOOTAUpugGpE6vlAsr0RLWpIqeC43WEgs5wKKoQ"
-                  alt="Deluxe Room"
-                />
-                <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-primary/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                  <span className="font-[Hanken_Grotesk] text-white text-[11px] font-semibold uppercase tracking-[0.05em]">
-                    {t('rooms.viewAll')}
-                  </span>
-                </div>
+          {rooms.length > 0 ? (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {rooms.slice(0, 3).map((room) => (
+                  <div key={room._id} className="group cursor-pointer">
+                    <div className="aspect-[4/3] overflow-hidden mb-4 relative">
+                      <BlurhashImage
+                        className="w-full h-full"
+                        src={room.imageUrl}
+                        alt={locale === 'ka' ? room.nameKa : room.nameEn}
+                        blurhash={room.blurhash}
+                      />
+                    </div>
+                    <h3 className="font-[EB_Garamond] text-[18px] leading-[1.3] font-medium text-primary mb-1">
+                      {locale === 'ka' ? room.nameKa : room.nameEn}
+                    </h3>
+                    <p className="font-[Hanken_Grotesk] text-[13px] leading-[1.5] text-secondary">
+                      {locale === 'ka' ? room.descriptionKa : room.descriptionEn}
+                    </p>
+                    <p className="font-[Hanken_Grotesk] text-[12px] font-semibold text-primary mt-2">
+                      ${room.pricePerNight} / {locale === 'ka' ? 'ღამე' : 'night'} · {room.capacity} {locale === 'ka' ? 'სტუმარი' : 'guests'}
+                    </p>
+                  </div>
+                ))}
               </div>
-              <h3 className="font-[EB_Garamond] text-[18px] leading-[1.3] font-medium text-primary mb-1">
-                Deluxe Room
-              </h3>
-              <p className="font-[Hanken_Grotesk] text-[13px] leading-[1.5] text-secondary">
-                გაფართოებული ნომერი ტერასით და ბაღის ხედით
+              {rooms.length > 3 && (
+                <div className="text-center mt-8">
+                  <Link
+                    to="/rooms"
+                    className="font-[Hanken_Grotesk] text-[12px] font-semibold uppercase tracking-[0.05em] text-primary border border-primary px-6 py-2.5 hover:bg-primary/5 transition-colors"
+                  >
+                    {t('rooms.viewAll')}
+                  </Link>
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="text-center py-12">
+              <span className="material-symbols-outlined text-[48px] text-secondary/40 block mb-4">
+                bed
+              </span>
+              <p className="font-[Hanken_Grotesk] text-[15px] text-secondary">
+                {locale === 'ka' ? 'ნომრები მალე დაემატება' : 'Rooms coming soon'}
               </p>
             </div>
-
-            <div className="group cursor-pointer">
-              <div className="aspect-[4/3] overflow-hidden mb-4 relative">
-                <img
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXBHloncPNvIKTxdi_NpTFbcW72yA7Kmr4lPP32yovsRnqCmu2XmPehBmHkunI0E5sM4azooCY3hjOTzUOOFZ5M_XSHXfDrSjkyeCQhr53KxQJskol41bUtnFCPShUQ8lzoGLwXehhdj8jHmpPzbrrUPH5nCQJwmjkY6YORD3SLvYziYkjc3MjtG-KxJ439SN9BhDzknY5Ltk-8Dv36MdgjPMdzBPzE3KmQYLn8WfMMrqFr5UJIsz1Bu2N8go_an_uyh43llMMLQ"
-                  alt="Family Suite"
-                />
-                <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-primary/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                  <span className="font-[Hanken_Grotesk] text-white text-[11px] font-semibold uppercase tracking-[0.05em]">
-                    {t('rooms.viewAll')}
-                  </span>
-                </div>
-              </div>
-              <h3 className="font-[EB_Garamond] text-[18px] leading-[1.3] font-medium text-primary mb-1">
-                Family Suite
-              </h3>
-              <p className="font-[Hanken_Grotesk] text-[13px] leading-[1.5] text-secondary">
-                ფართო საოჯახო ნომერი ყველა კომფორტით
-              </p>
-            </div>
-          </div>
+          )}
         </section>
 
         {/* Amenities Section */}
-        <section id="amenities" className="py-20 bg-surface-container-low">
+        <section className="py-20 bg-surface-container-low">
           <div className="px-6 max-w-[1280px] mx-auto">
             <div className="text-center mb-12">
-              <span className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.4em] text-primary block mb-2 font-georgian">
+              <span className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.4em] text-primary block mb-2">
                 {t('amenities.label')}
               </span>
-              <h2 className="font-[EB_Garamond] text-[28px] md:text-[36px] leading-[1.2] text-primary font-georgian">
+              <h2 className="font-[EB_Garamond] text-[28px] md:text-[36px] leading-[1.2] text-primary">
                 {t('amenities.title')}
               </h2>
-              <p className="font-[Hanken_Grotesk] text-[14px] leading-[1.5] text-secondary mt-3 max-w-lg mx-auto font-georgian">
+              <p className="font-[Hanken_Grotesk] text-[14px] leading-[1.5] text-secondary mt-3 max-w-lg mx-auto">
                 {t('amenities.description')}
               </p>
             </div>
@@ -290,7 +246,7 @@ function Home() {
                   <span className="material-symbols-outlined text-primary text-[28px]">
                     {amenity.icon}
                   </span>
-                  <span className="font-[Hanken_Grotesk] text-[12px] font-semibold text-primary text-center font-georgian">
+                  <span className="font-[Hanken_Grotesk] text-[12px] font-semibold text-primary text-center">
                     {amenity.label}
                   </span>
                 </div>
@@ -300,15 +256,15 @@ function Home() {
         </section>
 
         {/* Reviews Section */}
-        <section id="reviews" className="py-20 px-6 max-w-[1280px] mx-auto">
+        <section className="py-20 px-6 max-w-[1280px] mx-auto">
           <div className="text-center mb-12">
-            <span className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.4em] text-primary block mb-2 font-georgian">
+            <span className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.4em] text-primary block mb-2">
               {t('reviews.label')}
             </span>
-            <h2 className="font-[EB_Garamond] text-[28px] md:text-[36px] leading-[1.2] text-primary font-georgian">
+            <h2 className="font-[EB_Garamond] text-[28px] md:text-[36px] leading-[1.2] text-primary">
               {t('reviews.title')}
             </h2>
-            <p className="font-[Hanken_Grotesk] text-[14px] leading-[1.5] text-secondary mt-3 max-w-lg mx-auto font-georgian">
+            <p className="font-[Hanken_Grotesk] text-[14px] leading-[1.5] text-secondary mt-3 max-w-lg mx-auto">
               {t('reviews.description')}
             </p>
           </div>
@@ -330,12 +286,12 @@ function Home() {
                     <h4 className="font-[Hanken_Grotesk] text-[13px] font-semibold text-primary">
                       {t(review.nameKey)}
                     </h4>
-                    <span className="font-[Hanken_Grotesk] text-[11px] text-secondary font-georgian">
+                    <span className="font-[Hanken_Grotesk] text-[11px] text-secondary">
                       {t(review.countryKey)}
                     </span>
                   </div>
                 </div>
-                <p className="font-[Hanken_Grotesk] text-[13px] leading-[1.6] text-secondary font-georgian">
+                <p className="font-[Hanken_Grotesk] text-[13px] leading-[1.6] text-secondary">
                   "{t(review.textKey)}"
                 </p>
                 <div className="flex gap-0.5 mt-3">
@@ -350,119 +306,83 @@ function Home() {
           </div>
         </section>
 
-        {/* Gallery Section */}
+        {/* Gallery Preview */}
         <section className="py-20 bg-surface-container-low overflow-hidden">
-          <div className="px-6 max-w-[1280px] mx-auto mb-10">
-            <div className="text-center">
+          <div className="px-6 max-w-[1280px] mx-auto mb-8 flex items-end justify-between">
+            <div>
               <span className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.4em] text-primary block mb-2">
-                გალერეა
+                {locale === 'ka' ? 'გალერეა' : 'Gallery'}
               </span>
               <h2 className="font-[EB_Garamond] text-[28px] md:text-[36px] leading-[1.2] text-primary">
                 Kai Hotel
               </h2>
             </div>
+            {galleryImages.length > 0 && (
+              <Link
+                to="/gallery"
+                className="font-[Hanken_Grotesk] text-[12px] font-semibold uppercase tracking-[0.05em] text-primary border border-primary px-5 py-2 hover:bg-primary/5 transition-colors shrink-0"
+              >
+                {locale === 'ka' ? 'სრული გალერეა' : 'View All'}
+              </Link>
+            )}
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 px-2 h-[400px]">
-            <div className="h-full">
-              <img
-                className="w-full h-full object-cover"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAz8Bhtu4ra6R2aYKcVUSE8MqOqBX7gJ14ihQGtscSrJnbCYYA6V4Aef4Ho6-smBWkD9QO-MN5BjWyCWbugSNYcdP_W9M-6PB6lT8cAhhhFu8yDobWWxTBJNy6HBsn96xZh7O3AkLKUrFwmsuC7VHLn-9pP4j80WFxsZ1HOCLyD8PbMm3qqzZITqu07gXtVbTHNzkQhllTWe6Dz6ExnBneyfzy3Qj3VEPlcW_rMgf5r8K6mYXHOLI8wOBrAJdpeBq19L5FgkkKXrg"
-                alt="Kai Hotel interior"
-              />
-            </div>
-            <div className="grid grid-rows-2 gap-2 h-full">
-              <img
-                className="w-full h-full object-cover"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDqG7x2mzYA0kVVM6pOxKwaONl3S1donLNQGTZWYMRFi_CHOudZgpkZwtcIfOmcIyzZLvHHTakv5MYCG2ZoI6aE-qkpnwdpD2cdgz567SW6mEogsB2GtQKzlKJXfMNRz7cD_FNiVIWgC75f1_FTGUm3LTx1kmvj2TA0hmPkp1cCayNx_fGhfIWufvnlVRk-IIUyAgqV4UnM2_tVnrzghOZULiB4q0CyIKuMM2KVFQA2zCFS0ImStwDrcJeyQv8OM78a1I7UuHuf_Q"
-                alt="Hotel view"
-              />
-              <img
-                className="w-full h-full object-cover"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZSOPLDJr4PvQxqQGy6FL2JTOMELhffHKoiOreRMhkag9QwcjjnQSIPal3GIo6WyB6uzsrRSUuMRdc_cYp29_FCjY_t0eSX8Y4ae1i2m50YWumCfwf8OQgO5k_7NMZAhMCnXREnvDN1LHJ3ldbnbDsjVtv9Wp-PdbfUjHxTXFkYjv4gWvdV9UTjf0eapNyDZlSyx1ol2nsG2N1dxh0ZoyJ6tIJoFlzTVgpClhebz8OR9sClL2cEMA709098Q1LZh1wS9O9DzNEsw"
-                alt="Hotel exterior"
-              />
-            </div>
-            <div className="h-full">
-              <img
-                className="w-full h-full object-cover"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAnDfcr8nrtI5WpGUgBk5-08vv-qJdP7tXPphJ7K1HcnMdhJpAIM21Hyy3fzpfWaBlPSZ-slyE5YwuEPZKIEqqHwTI5vjHJn5iOxqSe8TFA1zlRM5tjBEiT6l0ujim-dQS19QzXTWVk9fxx5fhcoAH1wCPnmAwIl0xdaMk9W9RrZTbwH90ymEW8lhQUlnogYFhTbIix8kZ06Ieal15zTOIM1oyQBac5FgaJTvdd7eUiClXtwb--YcU5cHT9LXr29eer4_FPsDDwwg"
-                alt="Surroundings"
-              />
-            </div>
-            <div className="grid grid-rows-2 gap-2 h-full">
-              <img
-                className="w-full h-full object-cover"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBbEFdd1t5xWL4nQ5c0IBQ8-AWu4ob11nO7V2N3V9QoEOaSJG2cGEnzAXZzr61KhkpXvi81FEgO1yQO5K3cahlyGztY3sg9jEPHyK6M1mQbGWgs2xh80AIcTBEKCYWTJg2cqwTKbtFZGnu4ZSkKDIywJ_bjGAgqdJLAQpcXNnwPEH6cSioL6SeALV29f3fEBFkKVIY5CssgIq8LlVpfQpnddlaAzgzRMv-Z3PpQsMUNlUyIX34MuF_9uXwwV1dq4N9KbOg90MJUBg"
-                alt="Restaurant"
-              />
-              <img
-                className="w-full h-full object-cover"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuABgVywaGP5P1KvCNVhlBSrFozsUMCnsLD16wE9BsKWlFTYmQ7wfpifdJMFR7oHKZheO9nWljPpyqYtLdJva95vVRKnBZkw_IY-LnDFjkn_n3zmukacg1sfrTiDg3tLXDiOqI3sVHzYDNF8jeLUxHWLxebFIweKHTgMXPRVIvHHuAxP2m9JFWfx3rMpb8qkC22rAufuGui7IP0UhI5lsRJDfbB6LYkO5ESRxL4ck2qdmPi2z2ZL5rQ6UShbOEmbeY_mWE7M4m2vNw"
-                alt="Garden"
-              />
-            </div>
-          </div>
-        </section>
 
-        {/* Partners Section */}
-        <section className="py-14 px-6 max-w-[1280px] mx-auto">
-          <div className="text-center mb-8">
-            <h3 className="font-[EB_Garamond] text-[20px] text-primary font-georgian">
-              {t('footer.partners')}
-            </h3>
-          </div>
-          <div className="flex justify-center items-center gap-10 flex-wrap">
-            <a
-              href="https://www.facebook.com/people/Chalet-Kazbegi/100057144592308/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-[Hanken_Grotesk] text-[13px] text-secondary hover:text-primary transition-colors border border-outline-variant px-4 py-2"
-            >
-              Chalet Kazbegi
-            </a>
-            <a
-              href="https://www.facebook.com/BabaneurisMarani/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-[Hanken_Grotesk] text-[13px] text-secondary hover:text-primary transition-colors border border-outline-variant px-4 py-2"
-            >
-              ბაბანეურის მარანი
-            </a>
-          </div>
+          {galleryImages.length > 0 ? (
+            <div className="px-6 max-w-[1280px] mx-auto">
+              {/* Mobile: 2-col uniform grid */}
+              <div className="grid grid-cols-2 gap-2 md:hidden">
+                {galleryImages.slice(0, 4).map((img) => (
+                  <div key={img._id} className="aspect-square overflow-hidden">
+                    <BlurhashImage className="w-full h-full" src={img.imageUrl} alt={img.altText} blurhash={img.blurhash} />
+                  </div>
+                ))}
+              </div>
+
+              {/* Desktop: editorial collage */}
+              <div
+                className="hidden md:grid gap-2"
+                style={{ gridTemplateColumns: '2fr 1fr 1fr', gridTemplateRows: '220px 220px' }}
+              >
+                {/* Left — tall, spans 2 rows */}
+                <div className="row-span-2 overflow-hidden">
+                  {galleryImages[0] && (
+                    <BlurhashImage className="w-full h-full" src={galleryImages[0].imageUrl} alt={galleryImages[0].altText} blurhash={galleryImages[0].blurhash} />
+                  )}
+                </div>
+                {/* Top middle */}
+                <div className="overflow-hidden">
+                  {galleryImages[1] && (
+                    <BlurhashImage className="w-full h-full" src={galleryImages[1].imageUrl} alt={galleryImages[1].altText} blurhash={galleryImages[1].blurhash} />
+                  )}
+                </div>
+                {/* Top right */}
+                <div className="overflow-hidden">
+                  {galleryImages[2] && (
+                    <BlurhashImage className="w-full h-full" src={galleryImages[2].imageUrl} alt={galleryImages[2].altText} blurhash={galleryImages[2].blurhash} />
+                  )}
+                </div>
+                {/* Bottom — spans 2 cols */}
+                <div className="col-span-2 overflow-hidden">
+                  {galleryImages[3] && (
+                    <BlurhashImage className="w-full h-full" src={galleryImages[3].imageUrl} alt={galleryImages[3].altText} blurhash={galleryImages[3].blurhash} />
+                  )}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="px-6 max-w-[1280px] mx-auto text-center py-12">
+              <span className="material-symbols-outlined text-[48px] text-secondary/40 block mb-4">
+                photo_library
+              </span>
+              <p className="font-[Hanken_Grotesk] text-[15px] text-secondary">
+                {locale === 'ka' ? 'გალერეა მალე დაემატება' : 'Gallery coming soon'}
+              </p>
+            </div>
+          )}
         </section>
       </main>
 
-      {/* Footer */}
-      <footer id="contact" className="w-full py-12 border-t border-outline-variant/20 bg-surface-container-lowest">
-        <div className="flex flex-col items-center gap-6 px-6 max-w-[1280px] mx-auto">
-          <div className="font-[EB_Garamond] text-[20px] font-medium text-primary">
-            Kai Hotel Bar
-          </div>
-          <div className="flex items-center gap-2 text-secondary">
-            <span className="material-symbols-outlined text-[16px]">call</span>
-            <a
-              href="tel:+995511222028"
-              className="font-[Hanken_Grotesk] text-[13px] hover:text-primary transition-colors"
-            >
-              {t('footer.phone')}
-            </a>
-          </div>
-          <div className="flex gap-4">
-            <a className="text-secondary hover:text-primary transition-colors" href="https://www.facebook.com" target="_blank" rel="noopener noreferrer">
-              <span className="material-symbols-outlined text-[20px]">public</span>
-            </a>
-            <a className="text-secondary hover:text-primary transition-colors" href="mailto:info@kai.com.ge">
-              <span className="material-symbols-outlined text-[20px]">mail</span>
-            </a>
-            <a className="text-secondary hover:text-primary transition-colors" href="tel:+995511222028">
-              <span className="material-symbols-outlined text-[20px]">call</span>
-            </a>
-          </div>
-          <p className="font-[Hanken_Grotesk] text-[12px] text-secondary/60 font-georgian">
-            {t('footer.copyright')}
-          </p>
-        </div>
-      </footer>
+      <Footer />
     </>
   )
 }

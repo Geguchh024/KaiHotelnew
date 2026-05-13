@@ -11,7 +11,9 @@ interface I18nContextType {
 const translations: Record<Locale, Record<string, string>> = {
   ka: {
     // Nav
+    'nav.home': 'მთავარი',
     'nav.rooms': 'ნომრები',
+    'nav.gallery': 'გალერეა',
     'nav.amenities': 'სერვისები',
     'nav.reviews': 'შეფასებები',
     'nav.contact': 'კონტაქტი',
@@ -111,10 +113,127 @@ const translations: Record<Locale, Record<string, string>> = {
     'footer.phone': '+995 511 222 028',
     'footer.copyright': '© 2025 Kai Hotel. ყველა უფლება დაცულია.',
     'footer.partners': 'ჩვენი პარტნიორები',
+
+    // Admin Panel
+
+    // Admin — Sidebar
+    'admin.sidebar.title': 'Kai ადმინი',
+    'admin.sidebar.subtitle': 'Botanical Suite',
+    'admin.sidebar.analytics': 'ანალიტიკა',
+    'admin.sidebar.rooms': 'ნომრები',
+    'admin.sidebar.gallery': 'გალერეა',
+    'admin.sidebar.sponsors': 'სპონსორები',
+    'admin.sidebar.messages': 'შეტყობინებები',
+    'admin.sidebar.settings': 'პარამეტრები',
+    'admin.sidebar.logout': 'გასვლა',
+    'admin.sidebar.toggleLanguage': 'ენის შეცვლა',
+
+    // Admin — Login
+    'admin.login.title': 'Kai Hotel Bar',
+    'admin.login.subtitle': 'Admin Panel',
+    'admin.login.username': 'მომხმარებელი',
+    'admin.login.password': 'პაროლი',
+    'admin.login.submit': 'შესვლა',
+    'admin.login.submitting': 'შესვლა...',
+    'admin.login.error': 'არასწორი მონაცემები',
+
+    // Admin — Header
+    'admin.header.welcome': 'გამარჯობა, ადმინისტრატორ',
+
+    // Admin — Analytics
+    'admin.analytics.rooms': 'ნომრები',
+    'admin.analytics.roomsSupporting': 'სულ ნომრები',
+    'admin.analytics.gallery': 'გალერეა',
+    'admin.analytics.gallerySupporting': 'სულ სურათები',
+    'admin.analytics.sponsors': 'სპონსორები',
+    'admin.analytics.sponsorsSupporting': 'სულ სპონსორები',
+    'admin.analytics.unreadMessages': 'წაუკითხავი შეტყობინებები',
+    'admin.analytics.unreadMessagesSupporting': 'ახალი შეტყობინებები',
+
+    // Admin — Rooms
+    'admin.rooms.title': 'ნომრები',
+    'admin.rooms.addRoom': 'ნომრის დამატება',
+    'admin.rooms.editRoom': 'ნომრის რედაქტირება',
+    'admin.rooms.noRooms': 'ნომრები არ არის',
+    'admin.rooms.deleteTitle': 'ნომრის წაშლა',
+    'admin.rooms.nameKa': 'სახელი (ქართული)',
+    'admin.rooms.nameEn': 'სახელი (ინგლისური)',
+    'admin.rooms.descriptionKa': 'აღწერა (ქართული)',
+    'admin.rooms.descriptionEn': 'აღწერა (ინგლისური)',
+    'admin.rooms.pricePerNight': 'ფასი ღამეში ($)',
+    'admin.rooms.capacity': 'ტევადობა (სტუმრები)',
+    'admin.rooms.amenities': 'სერვისები (მძიმით გამოყოფილი)',
+    'admin.rooms.image': 'სურათი',
+
+    // Admin — Gallery
+    'admin.gallery.title': 'გალერეა',
+    'admin.gallery.uploadImage': 'სურათის ატვირთვა',
+    'admin.gallery.noImages': 'სურათები არ არის',
+    'admin.gallery.altText': 'Alt ტექსტი',
+    'admin.gallery.displayOrder': 'ჩვენების თანმიმდევრობა',
+    'admin.gallery.deleteTitle': 'სურათის წაშლა',
+
+    // Admin — Sponsors
+    'admin.sponsors.title': 'სპონსორები',
+    'admin.sponsors.addSponsor': 'სპონსორის დამატება',
+    'admin.sponsors.editSponsor': 'სპონსორის რედაქტირება',
+    'admin.sponsors.noSponsors': 'სპონსორები არ არის',
+    'admin.sponsors.name': 'სახელი',
+    'admin.sponsors.websiteUrl': 'ვებსაიტი',
+    'admin.sponsors.displayOrder': 'ჩვენების რიგი',
+    'admin.sponsors.logo': 'ლოგო',
+    'admin.sponsors.deleteTitle': 'სპონსორის წაშლა',
+
+    // Admin — Messages
+    'admin.messages.title': 'შეტყობინებები',
+    'admin.messages.noMessages': 'შეტყობინებები არ არის',
+    'admin.messages.sender': 'გამგზავნი',
+    'admin.messages.email': 'ელ-ფოსტა',
+    'admin.messages.inquiryType': 'მოთხოვნის ტიპი',
+    'admin.messages.submittedAt': 'გაგზავნის თარიღი',
+    'admin.messages.message': 'შეტყობინება',
+    'admin.messages.details': 'შეტყობინების დეტალები',
+
+    // Admin — Settings
+    'admin.settings.title': 'საიტის პარამეტრები',
+    'admin.settings.subtitle': 'განაახლეთ სასტუმროს საკონტაქტო ინფორმაცია და სოციალური ქსელები',
+    'admin.settings.contactInfo': 'საკონტაქტო ინფორმაცია',
+    'admin.settings.phone': 'ტელეფონი *',
+    'admin.settings.email': 'ელ-ფოსტა *',
+    'admin.settings.addressKa': 'მისამართი (ქართული)',
+    'admin.settings.addressEn': 'მისამართი (ინგლისური)',
+    'admin.settings.socialMedia': 'სოციალური ქსელები',
+    'admin.settings.instagramUrl': 'Instagram URL',
+    'admin.settings.facebookUrl': 'Facebook URL',
+    'admin.settings.about': 'სასტუმროს შესახებ',
+    'admin.settings.aboutKa': 'შესახებ (ქართული)',
+    'admin.settings.aboutEn': 'შესახებ (ინგლისური)',
+    'admin.settings.save': 'შენახვა',
+    'admin.settings.saving': 'შენახვა...',
+    'admin.settings.saveSuccess': 'პარამეტრები წარმატებით შეინახა',
+    'admin.settings.saveError': 'შეცდომა. გთხოვთ სცადოთ თავიდან.',
+
+    // Admin — Common
+    'admin.common.edit': 'რედაქტირება',
+    'admin.common.delete': 'წაშლა',
+    'admin.common.cancel': 'გაუქმება',
+    'admin.common.save': 'შენახვა',
+    'admin.common.add': 'დამატება',
+    'admin.common.update': 'განახლება',
+    'admin.common.close': 'დახურვა',
+    'admin.common.uploading': 'იტვირთება...',
+    'admin.common.saving': 'შენახვა...',
+    'admin.common.required': 'ეს ველი სავალდებულოა',
+    'admin.common.deleteConfirmDescription': 'ეს მოქმედება შეუქცევადია.',
+    'admin.common.uploadImage': 'სურათის ატვირთვა',
+    'admin.common.imageValidation': 'ფაილი უნდა იყოს JPEG, PNG ან WebP და 10 MB-ზე ნაკლები',
+    'admin.common.uploadError': 'სურათის ატვირთვა ვერ მოხერხდა. სცადეთ თავიდან.',
   },
   en: {
     // Nav
+    'nav.home': 'Home',
     'nav.rooms': 'Rooms',
+    'nav.gallery': 'Gallery',
     'nav.amenities': 'Amenities',
     'nav.reviews': 'Reviews',
     'nav.contact': 'Contact',
@@ -214,6 +333,121 @@ const translations: Record<Locale, Record<string, string>> = {
     'footer.phone': '+995 511 222 028',
     'footer.copyright': '© 2025 Kai Hotel. All rights reserved.',
     'footer.partners': 'Our Partners',
+
+    // Admin Panel
+
+    // Admin — Sidebar
+    'admin.sidebar.title': 'Kai Admin',
+    'admin.sidebar.subtitle': 'Botanical Suite',
+    'admin.sidebar.analytics': 'Analytics',
+    'admin.sidebar.rooms': 'Rooms',
+    'admin.sidebar.gallery': 'Gallery',
+    'admin.sidebar.sponsors': 'Sponsors',
+    'admin.sidebar.messages': 'Messages',
+    'admin.sidebar.settings': 'Settings',
+    'admin.sidebar.logout': 'Logout',
+    'admin.sidebar.toggleLanguage': 'Toggle language',
+
+    // Admin — Login
+    'admin.login.title': 'Kai Hotel Bar',
+    'admin.login.subtitle': 'Admin Panel',
+    'admin.login.username': 'Username',
+    'admin.login.password': 'Password',
+    'admin.login.submit': 'Sign In',
+    'admin.login.submitting': 'Signing in...',
+    'admin.login.error': 'Invalid credentials',
+
+    // Admin — Header
+    'admin.header.welcome': 'Welcome back, Administrator',
+
+    // Admin — Analytics
+    'admin.analytics.rooms': 'Rooms',
+    'admin.analytics.roomsSupporting': 'Total rooms',
+    'admin.analytics.gallery': 'Gallery',
+    'admin.analytics.gallerySupporting': 'Total images',
+    'admin.analytics.sponsors': 'Sponsors',
+    'admin.analytics.sponsorsSupporting': 'Total sponsors',
+    'admin.analytics.unreadMessages': 'Unread Messages',
+    'admin.analytics.unreadMessagesSupporting': 'New messages',
+
+    // Admin — Rooms
+    'admin.rooms.title': 'Rooms',
+    'admin.rooms.addRoom': 'Add Room',
+    'admin.rooms.editRoom': 'Edit Room',
+    'admin.rooms.noRooms': 'No rooms yet',
+    'admin.rooms.deleteTitle': 'Delete Room',
+    'admin.rooms.nameKa': 'Name (Georgian)',
+    'admin.rooms.nameEn': 'Name (English)',
+    'admin.rooms.descriptionKa': 'Description (Georgian)',
+    'admin.rooms.descriptionEn': 'Description (English)',
+    'admin.rooms.pricePerNight': 'Price per Night ($)',
+    'admin.rooms.capacity': 'Capacity (Guests)',
+    'admin.rooms.amenities': 'Amenities (comma-separated)',
+    'admin.rooms.image': 'Image',
+
+    // Admin — Gallery
+    'admin.gallery.title': 'Gallery',
+    'admin.gallery.uploadImage': 'Upload Image',
+    'admin.gallery.noImages': 'No images yet',
+    'admin.gallery.altText': 'Alt Text',
+    'admin.gallery.displayOrder': 'Display Order',
+    'admin.gallery.deleteTitle': 'Delete Image',
+
+    // Admin — Sponsors
+    'admin.sponsors.title': 'Sponsors',
+    'admin.sponsors.addSponsor': 'Add Sponsor',
+    'admin.sponsors.editSponsor': 'Edit Sponsor',
+    'admin.sponsors.noSponsors': 'No sponsors yet',
+    'admin.sponsors.name': 'Name',
+    'admin.sponsors.websiteUrl': 'Website URL',
+    'admin.sponsors.displayOrder': 'Display Order',
+    'admin.sponsors.logo': 'Logo',
+    'admin.sponsors.deleteTitle': 'Delete Sponsor',
+
+    // Admin — Messages
+    'admin.messages.title': 'Messages',
+    'admin.messages.noMessages': 'No messages yet',
+    'admin.messages.sender': 'Sender',
+    'admin.messages.email': 'Email',
+    'admin.messages.inquiryType': 'Inquiry Type',
+    'admin.messages.submittedAt': 'Submitted At',
+    'admin.messages.message': 'Message',
+    'admin.messages.details': 'Message Details',
+
+    // Admin — Settings
+    'admin.settings.title': 'Site Settings',
+    'admin.settings.subtitle': 'Update hotel contact information and social media links',
+    'admin.settings.contactInfo': 'Contact Information',
+    'admin.settings.phone': 'Phone *',
+    'admin.settings.email': 'Email *',
+    'admin.settings.addressKa': 'Address (Georgian)',
+    'admin.settings.addressEn': 'Address (English)',
+    'admin.settings.socialMedia': 'Social Media',
+    'admin.settings.instagramUrl': 'Instagram URL',
+    'admin.settings.facebookUrl': 'Facebook URL',
+    'admin.settings.about': 'About the Hotel',
+    'admin.settings.aboutKa': 'About (Georgian)',
+    'admin.settings.aboutEn': 'About (English)',
+    'admin.settings.save': 'Save Settings',
+    'admin.settings.saving': 'Saving...',
+    'admin.settings.saveSuccess': 'Settings saved successfully',
+    'admin.settings.saveError': 'Something went wrong. Please try again.',
+
+    // Admin — Common
+    'admin.common.edit': 'Edit',
+    'admin.common.delete': 'Delete',
+    'admin.common.cancel': 'Cancel',
+    'admin.common.save': 'Save',
+    'admin.common.add': 'Add',
+    'admin.common.update': 'Update',
+    'admin.common.close': 'Close',
+    'admin.common.uploading': 'Uploading...',
+    'admin.common.saving': 'Saving...',
+    'admin.common.required': 'This field is required',
+    'admin.common.deleteConfirmDescription': 'This action cannot be undone.',
+    'admin.common.uploadImage': 'Upload image',
+    'admin.common.imageValidation': 'File must be JPEG, PNG, or WebP and under 10 MB',
+    'admin.common.uploadError': 'Image upload failed. Please try again.',
   },
 }
 
