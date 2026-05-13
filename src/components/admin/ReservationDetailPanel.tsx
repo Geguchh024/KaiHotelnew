@@ -1,0 +1,266 @@
+import { useState } from 'react'
+import { useI18n } from '@/lib/i18n'
+import { useAdminAuth } from '@/contexts/AdminAuthContext'
+import { useMutation } from 'convex/react'
+import { api } from '../../../convex/_generated/api'
+import { StatusBadge } from './StatusBadge'
+import { ConfirmationDialog } from './ConfirmationDialog'
+import { format } from 'date-fns'
+import { ka, enUS } from 'date-fns/locale'
+import { allowedTransitions, nightCount } from '../../../convex/availability'
+import type { Status, Transition } from '../../../convex/availability'
+import type { Reservation } from './ReservationRow'
+
+interface ReservationDetailPanelProps {
+  reservation: Reservation
+  roomName: string
+  onClose: () => void
+}
+
+const TRANSITION_ICONS: Record<Transition, string> = {
+  confirm: 'check_circle',
+  cancel: 'cancel',
+  checkIn: 'login',
+  checkOut: 'logout',
+  markNoShow: 'person_off',
+}
+
+export function ReservationDetailPanel({
+  reservation,
+  roomName,
+  onClose,
+}: ReservationDetailPanelProps) {
+  const { locale, t } = useI18n()
+  const { sessionToken } = useAdminAuth()
+  const transitionMutation = useMutation(api.reservations.transitionStatus)
+  const dateLocale = locale === 'ka' ? ka : enUS
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false)
+
+  const nights = nightCount(reservation.checkInDate, reservation.checkOutDate)
+  const transitions = allowedTransitions(reservation.status as Status)
+
+  const handleTransition = async (transition: Transition) => {
+    if (!sessionToken) return
+    if (transition === 'cancel') {
+      setCancelDialogOpen(true)
+      return
+    }
+    await transitionMutation({
+      sessionToken,
+      id: reservation._id,
+      transition,
+    })
+  }
+
+  const handleConfirmCancel = async () => {
+    if (!sessionToken) return
+    await transitionMutation({
+      sessionToken,
+      id: reservation._id,
+      transition: 'cancel',
+    })
+    setCancelDialogOpen(false)
+  }
+
+  function formatTimestamp(ts: number | undefined): string {
+    if (!ts) return '—'
+    return format(new Date(ts), 'd MMM yyyy, HH:mm', { locale: dateLocale })
+  }
+
+  return (
+    <div className="border border-outline-variant/40 bg-surface-container-lowest rounded-sm mt-1 overflow-hidden">
+      {/* Panel header */}
+      <div className="flex items-center justify-between px-6 py-4 border-b border-outline-variant/30 bg-surface-container-low">
+        <div className="flex items-center gap-3">
+          <h4 className="font-[EB_Garamond] text-[20px] text-primary">
+            {reservation.referenceCode}
+          </h4>
+          <StatusBadge status={reservation.status as Status} />
+        </div>
+        <button
+          onClick={onClose}
+          aria-label={t('admin.common.close')}
+          className="text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded-full p-1.5 transition-colors"
+        >
+          <span className="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </div>
+
+      {/* Panel body */}
+      <div className="px-6 py-5 space-y-5">
+        {/* Guest info */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div>
+            <span className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.1em] text-on-surface-variant block mb-1">
+              {t('admin.reservations.guest')}
+            </span>
+            <span className="font-[Hanken_Grotesk] text-[15px] text-on-surface font-medium">
+              {reservation.guestFullName}
+            </span>
+          </div>
+          <div>
+            <span className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.1em] text-on-surface-variant block mb-1">
+              {t('admin.messages.email')}
+            </span>
+            <a
+              href={`mailto:${reservation.guestEmail}`}
+              className="font-[Hanken_Grotesk] text-[15px] text-secondary hover:underline"
+            >
+              {reservation.guestEmail}
+            </a>
+          </div>
+          <div>
+            <span className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.1em] text-on-surface-variant block mb-1">
+              {t('res.phone')}
+            </span>
+            <span className="font-[Hanken_Grotesk] text-[15px] text-on-surface">
+              {reservation.guestPhone}
+            </span>
+          </div>
+        </div>
+
+        {/* Room & dates */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div>
+            <span className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.1em] text-on-surface-variant block mb-1">
+              {t('admin.reservations.room')}
+            </span>
+            <span className="font-[Hanken_Grotesk] text-[15px] text-on-surface font-medium">
+              {roomName}
+            </span>
+          </div>
+          <div>
+            <span className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.1em] text-on-surface-variant block mb-1">
+              {t('admin.reservations.dates')}
+            </span>
+            <span className="font-[Hanken_Grotesk] text-[14px] text-on-surface">
+              {format(new Date(reservation.checkInDate), 'd MMM yyyy', { locale: dateLocale })}
+              {' – '}
+              {format(new Date(reservation.checkOutDate), 'd MMM yyyy', { locale: dateLocale })}
+            </span>
+          </div>
+          <div>
+            <span className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.1em] text-on-surface-variant block mb-1">
+              {t('admin.reservations.nights')}
+            </span>
+            <span className="font-[Hanken_Grotesk] text-[15px] text-on-surface">
+              {nights}
+            </span>
+          </div>
+        </div>
+
+        {/* Price & guest count */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div>
+            <span className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.1em] text-on-surface-variant block mb-1">
+              {t('admin.reservations.total')}
+            </span>
+            <span className="font-[Hanken_Grotesk] text-[15px] text-on-surface font-semibold">
+              ${Math.round(reservation.totalPrice)}
+            </span>
+          </div>
+          <div>
+            <span className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.1em] text-on-surface-variant block mb-1">
+              {t('admin.reservations.guestCount')}
+            </span>
+            <span className="font-[Hanken_Grotesk] text-[15px] text-on-surface">
+              {reservation.guestCount}
+            </span>
+          </div>
+          <div>
+            <span className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.1em] text-on-surface-variant block mb-1">
+              {t('admin.reservations.referenceCode')}
+            </span>
+            <span className="font-[Hanken_Grotesk] text-[15px] text-on-surface font-mono">
+              {reservation.referenceCode}
+            </span>
+          </div>
+        </div>
+
+        {/* Timestamps */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <span className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.1em] text-on-surface-variant block mb-1">
+              {t('admin.reservations.createdAt')}
+            </span>
+            <span className="font-[Hanken_Grotesk] text-[14px] text-on-surface">
+              {formatTimestamp(reservation.createdAt)}
+            </span>
+          </div>
+          <div>
+            <span className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.1em] text-on-surface-variant block mb-1">
+              {t('admin.reservations.checkedInAt')}
+            </span>
+            <span className="font-[Hanken_Grotesk] text-[14px] text-on-surface">
+              {formatTimestamp(reservation.checkedInAt)}
+            </span>
+          </div>
+          <div>
+            <span className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.1em] text-on-surface-variant block mb-1">
+              {t('admin.reservations.checkedOutAt')}
+            </span>
+            <span className="font-[Hanken_Grotesk] text-[14px] text-on-surface">
+              {formatTimestamp(reservation.checkedOutAt)}
+            </span>
+          </div>
+          <div>
+            <span className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.1em] text-on-surface-variant block mb-1">
+              {t('admin.reservations.cancelledAt')}
+            </span>
+            <span className="font-[Hanken_Grotesk] text-[14px] text-on-surface">
+              {formatTimestamp(reservation.cancelledAt)}
+            </span>
+          </div>
+        </div>
+
+        {/* Special requests */}
+        {reservation.specialRequests && (
+          <div>
+            <span className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.1em] text-on-surface-variant block mb-2">
+              {t('admin.reservations.specialRequests')}
+            </span>
+            <div className="bg-surface-container-high rounded-sm p-4 border border-outline-variant/20">
+              <p className="font-[Hanken_Grotesk] text-[14px] text-on-surface leading-relaxed whitespace-pre-wrap">
+                {reservation.specialRequests}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Action buttons */}
+        {transitions.length > 0 && (
+          <div className="flex items-center gap-3 pt-3 border-t border-outline-variant/30">
+            {transitions.map((tr) => (
+              <button
+                key={tr}
+                onClick={() => void handleTransition(tr)}
+                className={[
+                  'flex items-center gap-2 px-4 py-2.5 rounded-full font-[Hanken_Grotesk] text-[13px] font-semibold transition-all duration-200',
+                  tr === 'cancel'
+                    ? 'border border-error text-error hover:bg-error/10'
+                    : 'bg-primary text-on-primary hover:opacity-90',
+                ].join(' ')}
+              >
+                <span className="material-symbols-outlined text-[18px]">
+                  {TRANSITION_ICONS[tr]}
+                </span>
+                {t(`admin.reservations.action.${tr}`)}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Cancel confirmation dialog */}
+      <ConfirmationDialog
+        isOpen={cancelDialogOpen}
+        title={t('admin.reservations.confirmCancelTitle')}
+        description={t('admin.reservations.confirmCancelDescription')}
+        onConfirm={() => void handleConfirmCancel()}
+        onCancel={() => setCancelDialogOpen(false)}
+        confirmLabel={t('admin.reservations.action.cancel')}
+        cancelLabel={t('admin.common.cancel')}
+      />
+    </div>
+  )
+}

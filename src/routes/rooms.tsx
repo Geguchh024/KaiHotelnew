@@ -55,7 +55,7 @@ function RoomModal({ room, onClose, locale }: { room: Room; onClose: () => void;
             </h2>
             <div className="text-right shrink-0">
               <p className="font-[Hanken_Grotesk] text-[15px] font-semibold text-primary">
-                ${room.pricePerNight}
+                ${Math.round(room.pricePerNight)}
               </p>
               <p className="font-[Hanken_Grotesk] text-[11px] text-secondary">
                 {locale === 'ka' ? '/ ღამე' : '/ night'}
@@ -106,15 +106,6 @@ function RoomModal({ room, onClose, locale }: { room: Room; onClose: () => void;
             >
               {locale === 'ka' ? 'დაჯავშნე' : 'Book Now'}
             </Link>
-            <a
-              href="https://www.booking.com/Share-WUttkr"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="border border-primary text-primary px-8 py-2.5 font-[Hanken_Grotesk] text-[12px] font-semibold uppercase tracking-[0.05em] hover:bg-primary/5 transition-colors flex items-center gap-2"
-            >
-              <span className="material-symbols-outlined text-[14px]">open_in_new</span>
-              Booking.com
-            </a>
           </div>
         </div>
       </div>
@@ -185,7 +176,7 @@ function RoomsPage() {
 
                   <div className="flex justify-between items-center border-t border-outline-variant/30 pt-3">
                     <span className="font-[Hanken_Grotesk] text-[13px] font-semibold text-primary">
-                      ${room.pricePerNight}
+                      ${Math.round(room.pricePerNight)}
                       <span className="font-normal text-secondary ml-1">
                         / {locale === 'ka' ? 'ღამე' : 'night'}
                       </span>
@@ -258,8 +249,8 @@ function RoomsPage() {
           </h2>
           <p className="font-[Hanken_Grotesk] text-[14px] text-secondary max-w-md mx-auto mb-8">
             {locale === 'ka'
-              ? 'დაჯავშნეთ ნომერი პირდაპირ ჩვენს საიტზე ან Booking.com-ზე.'
-              : 'Book directly with us or through Booking.com for the best available rates.'}
+              ? 'დაჯავშნეთ ნომერი პირდაპირ ჩვენს საიტზე საუკეთესო ფასად.'
+              : 'Book directly with us for the best rate.'}
           </p>
           <div className="flex justify-center gap-4 flex-wrap">
             <Link
@@ -268,15 +259,6 @@ function RoomsPage() {
             >
               {t('nav.bookNow')}
             </Link>
-            <a
-              href="https://www.booking.com/Share-WUttkr"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="border border-primary text-primary px-10 py-3 font-[Hanken_Grotesk] text-[12px] font-semibold uppercase tracking-[0.05em] hover:bg-primary/5 transition-colors flex items-center gap-2"
-            >
-              <span className="material-symbols-outlined text-[14px]">open_in_new</span>
-              Booking.com
-            </a>
           </div>
         </section>
       </main>

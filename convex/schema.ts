@@ -69,4 +69,33 @@ export default defineSchema({
     aboutEn: v.string(),
     updatedAt: v.number(),
   }),
+
+  reservations: defineTable({
+    roomId: v.id("rooms"),
+    referenceCode: v.string(),
+    guestFullName: v.string(),
+    guestEmail: v.string(),
+    guestPhone: v.string(),
+    guestCount: v.number(),
+    checkInDate: v.number(), // UTC midnight ms
+    checkOutDate: v.number(), // UTC midnight ms
+    status: v.union(
+      v.literal("pending"),
+      v.literal("confirmed"),
+      v.literal("checkedIn"),
+      v.literal("checkedOut"),
+      v.literal("cancelled"),
+      v.literal("noShow"),
+    ),
+    totalPrice: v.number(),
+    createdAt: v.number(),
+    checkedInAt: v.optional(v.number()),
+    checkedOutAt: v.optional(v.number()),
+    cancelledAt: v.optional(v.number()),
+    specialRequests: v.optional(v.string()),
+  })
+    .index("by_reference_code", ["referenceCode"])
+    .index("by_room_and_checkInDate", ["roomId", "checkInDate"])
+    .index("by_status", ["status"])
+    .index("by_created_at", ["createdAt"]),
 });

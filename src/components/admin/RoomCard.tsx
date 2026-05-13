@@ -57,7 +57,7 @@ export function RoomCard({ room, onEdit }: RoomCardProps) {
           <div className="flex items-center gap-4 mb-4">
             <span className="font-[Hanken_Grotesk] text-[13px] text-on-surface-variant flex items-center gap-1">
               <span className="material-symbols-outlined text-[16px]">payments</span>
-              ${room.pricePerNight}/{locale === 'ka' ? 'ღამე' : 'night'}
+              ${Math.round(room.pricePerNight)}/{locale === 'ka' ? 'ღამე' : 'night'}
             </span>
             <span className="font-[Hanken_Grotesk] text-[13px] text-on-surface-variant flex items-center gap-1">
               <span className="material-symbols-outlined text-[16px]">group</span>

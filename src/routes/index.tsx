@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useQuery } from 'convex/react'
 import { api } from '../../convex/_generated/api'
 import { useI18n } from '@/lib/i18n'
@@ -8,29 +8,18 @@ import { CustomSelect } from '@/components/ui/custom-select'
 import { BlurhashImage } from '@/components/BlurhashImage'
 import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/components/Footer'
-import { addDays } from 'date-fns'
+import { addDays, format } from 'date-fns'
 
 export const Route = createFileRoute('/')({
   component: Home,
 })
 
-const unavailableDates = [
-  addDays(new Date(), 3),
-  addDays(new Date(), 4),
-  addDays(new Date(), 10),
-  addDays(new Date(), 11),
-  addDays(new Date(), 12),
-  addDays(new Date(), 18),
-  addDays(new Date(), 25),
-  addDays(new Date(), 26),
-]
-
 function Home() {
   const { t, locale } = useI18n()
+  const navigate = useNavigate()
   const [checkIn, setCheckIn] = useState<Date | null>(null)
   const [checkOut, setCheckOut] = useState<Date | null>(null)
   const [guests, setGuests] = useState('2')
-  const [roomType, setRoomType] = useState('standard')
 
   const rooms = useQuery(api.rooms.list) ?? []
   const galleryImages = useQuery(api.gallery.list) ?? []
@@ -78,7 +67,7 @@ function Home() {
             <h3 className="font-[EB_Garamond] text-[18px] font-medium text-primary mb-5">
               {t('booking.title')}
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-5 items-end">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-5 items-end">
               <DatePicker
                 value={checkIn}
                 onChange={(date) => {
@@ -90,8 +79,8 @@ function Home() {
                 placeholder={t('booking.selectDate')}
                 locale={locale}
                 icon="calendar_today"
-                disabledDates={unavailableDates}
                 label={t('booking.checkin')}
+                minDate={new Date()}
                 rangeStart={checkIn}
                 rangeEnd={checkOut}
               />
@@ -101,7 +90,6 @@ function Home() {
                 placeholder={t('booking.selectDate')}
                 locale={locale}
                 icon="calendar_month"
-                disabledDates={unavailableDates}
                 minDate={checkIn ? addDays(checkIn, 1) : new Date()}
                 label={t('booking.checkout')}
                 rangeStart={checkIn}
@@ -120,35 +108,24 @@ function Home() {
                   { value: '5', label: locale === 'ka' ? '5+ სტუმარი' : '5+ Guests' },
                 ]}
               />
-              <CustomSelect
-                value={roomType}
-                onChange={setRoomType}
-                icon="bed"
-                label={t('booking.roomType')}
-                options={[
-                  { value: 'standard', label: 'Standard' },
-                  { value: 'deluxe', label: 'Deluxe' },
-                  { value: 'family', label: locale === 'ka' ? 'საოჯახო' : 'Family Suite' },
-                ]}
-              />
               <div className="space-y-1.5">
                 <label className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.05em] text-on-surface-variant block opacity-0">
                   &nbsp;
                 </label>
-                <a
-                  href="https://www.booking.com/Share-WUttkr"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <button
+                  onClick={() => {
+                    const search: Record<string, string> = {}
+                    if (checkIn) search.checkIn = format(checkIn, 'yyyy-MM-dd')
+                    if (checkOut) search.checkOut = format(checkOut, 'yyyy-MM-dd')
+                    if (guests !== '2') search.guests = guests
+                    void navigate({ to: '/reservations', search })
+                  }}
                   className="flex items-center justify-center gap-2 bg-primary text-on-primary py-2.5 px-4 font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.05em] hover:opacity-90 transition-all text-center w-full"
                 >
-                  <span className="material-symbols-outlined text-[14px]">open_in_new</span>
-                  {t('booking.bookOnBooking')}
-                </a>
+                  {t('nav.bookNow')}
+                </button>
               </div>
             </div>
-            <p className="font-[Hanken_Grotesk] text-[12px] text-secondary mt-4">
-              {t('booking.untilAvailable')}
-            </p>
           </div>
         </section>
 
@@ -186,7 +163,7 @@ function Home() {
                       {locale === 'ka' ? room.descriptionKa : room.descriptionEn}
                     </p>
                     <p className="font-[Hanken_Grotesk] text-[12px] font-semibold text-primary mt-2">
-                      ${room.pricePerNight} / {locale === 'ka' ? 'ღამე' : 'night'} · {room.capacity} {locale === 'ka' ? 'სტუმარი' : 'guests'}
+                      ${Math.round(room.pricePerNight)} / {locale === 'ka' ? 'ღამე' : 'night'} · {room.capacity} {locale === 'ka' ? 'სტუმარი' : 'guests'}
                     </p>
                   </div>
                 ))}

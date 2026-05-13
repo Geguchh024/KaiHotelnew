@@ -9,10 +9,11 @@ import { GalleryTab } from '@/components/admin/tabs/GalleryTab'
 import { SponsorsTab } from '@/components/admin/tabs/SponsorsTab'
 import { MessagesTab } from '@/components/admin/tabs/MessagesTab'
 import { SettingsTab } from '@/components/admin/tabs/SettingsTab'
+import { ReservationsTab } from '@/components/admin/tabs/ReservationsTab'
 
 const adminSearchSchema = z.object({
   tab: z
-    .enum(['analytics', 'rooms', 'gallery', 'sponsors', 'messages', 'settings'])
+    .enum(['analytics', 'rooms', 'reservations', 'gallery', 'sponsors', 'messages', 'settings'])
     .default('analytics'),
 })
 
@@ -67,6 +68,7 @@ class AdminErrorBoundary extends Component<
 const TAB_COMPONENTS: Record<AdminTab, () => React.JSX.Element> = {
   analytics: AnalyticsTab,
   rooms: RoomsTab,
+  reservations: ReservationsTab,
   gallery: GalleryTab,
   sponsors: SponsorsTab,
   messages: MessagesTab,

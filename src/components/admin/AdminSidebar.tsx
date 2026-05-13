@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils'
 import { useQuery, useMutation } from 'convex/react'
 import { api } from '../../../convex/_generated/api'
 
-type AdminTab = 'analytics' | 'rooms' | 'gallery' | 'sponsors' | 'messages' | 'settings'
+type AdminTab = 'analytics' | 'rooms' | 'reservations' | 'gallery' | 'sponsors' | 'messages' | 'settings'
 
 interface AdminSidebarProps {
   activeTab: AdminTab
@@ -14,6 +14,7 @@ interface AdminSidebarProps {
 const navItems: { icon: string; tab: AdminTab; labelKey: string }[] = [
   { icon: 'analytics', tab: 'analytics', labelKey: 'admin.sidebar.analytics' },
   { icon: 'bed', tab: 'rooms', labelKey: 'admin.sidebar.rooms' },
+  { icon: 'event_available', tab: 'reservations', labelKey: 'admin.sidebar.reservations' },
   { icon: 'photo_library', tab: 'gallery', labelKey: 'admin.sidebar.gallery' },
   { icon: 'handshake', tab: 'sponsors', labelKey: 'admin.sidebar.sponsors' },
   { icon: 'mail', tab: 'messages', labelKey: 'admin.sidebar.messages' },
@@ -27,6 +28,10 @@ export function AdminSidebar({ activeTab }: AdminSidebarProps) {
   const logoutMutation = useMutation(api.auth.logout)
 
   const unreadCount = useQuery(api.messages.unreadCount) ?? 0
+  const pendingReservations = useQuery(
+    api.reservations.pendingCount,
+    sessionToken ? { sessionToken } : "skip"
+  ) ?? 0
 
   const handleTabClick = (tab: AdminTab) => {
     void navigate({ to: '/admin', search: (prev) => ({ ...prev, tab }) })
@@ -83,6 +88,12 @@ export function AdminSidebar({ activeTab }: AdminSidebarProps) {
             {item.tab === 'messages' && unreadCount > 0 && (
               <span className="bg-error text-on-error text-[10px] font-bold rounded-full px-1.5 py-0.5 min-w-[18px] text-center">
                 {unreadCount}
+              </span>
+            )}
+            {/* Pending badge for reservations */}
+            {item.tab === 'reservations' && pendingReservations > 0 && (
+              <span className="bg-error text-on-error text-[10px] font-bold rounded-full px-1.5 py-0.5 min-w-[18px] text-center">
+                {pendingReservations}
               </span>
             )}
           </button>

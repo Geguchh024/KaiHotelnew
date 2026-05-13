@@ -16,6 +16,7 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as AdminLayoutRouteImport } from './routes/admin/_layout'
+import { Route as ReservationsConfirmationReferenceCodeRouteImport } from './routes/reservations.confirmation.$referenceCode'
 
 const RoomsRoute = RoomsRouteImport.update({
   id: '/rooms',
@@ -52,34 +53,43 @@ const AdminLayoutRoute = AdminLayoutRouteImport.update({
   path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ReservationsConfirmationReferenceCodeRoute =
+  ReservationsConfirmationReferenceCodeRouteImport.update({
+    id: '/confirmation/$referenceCode',
+    path: '/confirmation/$referenceCode',
+    getParentRoute: () => ReservationsRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
-  '/reservations': typeof ReservationsRoute
+  '/reservations': typeof ReservationsRouteWithChildren
   '/rooms': typeof RoomsRoute
   '/admin': typeof AdminLayoutRoute
   '/admin/login': typeof AdminLoginRoute
+  '/reservations/confirmation/$referenceCode': typeof ReservationsConfirmationReferenceCodeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
-  '/reservations': typeof ReservationsRoute
+  '/reservations': typeof ReservationsRouteWithChildren
   '/rooms': typeof RoomsRoute
   '/admin': typeof AdminLayoutRoute
   '/admin/login': typeof AdminLoginRoute
+  '/reservations/confirmation/$referenceCode': typeof ReservationsConfirmationReferenceCodeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
-  '/reservations': typeof ReservationsRoute
+  '/reservations': typeof ReservationsRouteWithChildren
   '/rooms': typeof RoomsRoute
   '/admin/_layout': typeof AdminLayoutRoute
   '/admin/login': typeof AdminLoginRoute
+  '/reservations/confirmation/$referenceCode': typeof ReservationsConfirmationReferenceCodeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -91,6 +101,7 @@ export interface FileRouteTypes {
     | '/rooms'
     | '/admin'
     | '/admin/login'
+    | '/reservations/confirmation/$referenceCode'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -100,6 +111,7 @@ export interface FileRouteTypes {
     | '/rooms'
     | '/admin'
     | '/admin/login'
+    | '/reservations/confirmation/$referenceCode'
   id:
     | '__root__'
     | '/'
@@ -109,13 +121,14 @@ export interface FileRouteTypes {
     | '/rooms'
     | '/admin/_layout'
     | '/admin/login'
+    | '/reservations/confirmation/$referenceCode'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ContactRoute: typeof ContactRoute
   GalleryRoute: typeof GalleryRoute
-  ReservationsRoute: typeof ReservationsRoute
+  ReservationsRoute: typeof ReservationsRouteWithChildren
   RoomsRoute: typeof RoomsRoute
   AdminLayoutRoute: typeof AdminLayoutRoute
   AdminLoginRoute: typeof AdminLoginRoute
@@ -172,14 +185,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLayoutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reservations/confirmation/$referenceCode': {
+      id: '/reservations/confirmation/$referenceCode'
+      path: '/confirmation/$referenceCode'
+      fullPath: '/reservations/confirmation/$referenceCode'
+      preLoaderRoute: typeof ReservationsConfirmationReferenceCodeRouteImport
+      parentRoute: typeof ReservationsRoute
+    }
   }
 }
+
+interface ReservationsRouteChildren {
+  ReservationsConfirmationReferenceCodeRoute: typeof ReservationsConfirmationReferenceCodeRoute
+}
+
+const ReservationsRouteChildren: ReservationsRouteChildren = {
+  ReservationsConfirmationReferenceCodeRoute:
+    ReservationsConfirmationReferenceCodeRoute,
+}
+
+const ReservationsRouteWithChildren = ReservationsRoute._addFileChildren(
+  ReservationsRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ContactRoute: ContactRoute,
   GalleryRoute: GalleryRoute,
-  ReservationsRoute: ReservationsRoute,
+  ReservationsRoute: ReservationsRouteWithChildren,
   RoomsRoute: RoomsRoute,
   AdminLayoutRoute: AdminLayoutRoute,
   AdminLoginRoute: AdminLoginRoute,

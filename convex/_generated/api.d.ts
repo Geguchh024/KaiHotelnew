@@ -10,9 +10,11 @@
 
 import type * as auth from "../auth.js";
 import type * as authNode from "../authNode.js";
+import type * as availability from "../availability.js";
 import type * as b2 from "../b2.js";
 import type * as gallery from "../gallery.js";
 import type * as messages from "../messages.js";
+import type * as reservations from "../reservations.js";
 import type * as rooms from "../rooms.js";
 import type * as siteSettings from "../siteSettings.js";
 import type * as sponsors from "../sponsors.js";
@@ -27,9 +29,11 @@ import type {
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   authNode: typeof authNode;
+  availability: typeof availability;
   b2: typeof b2;
   gallery: typeof gallery;
   messages: typeof messages;
+  reservations: typeof reservations;
   rooms: typeof rooms;
   siteSettings: typeof siteSettings;
   sponsors: typeof sponsors;
