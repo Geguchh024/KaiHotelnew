@@ -1,0 +1,13 @@
+# Kai Hotel Bar — robots.txt
+User-agent: *
+Allow: /
+
+# Block admin panel from indexing
+Disallow: /admin/
+Disallow: /admin
+
+# Block API/internal routes
+Disallow: /api/
+
+# Sitemap location
+Sitemap: https://hotel.kai.com.ge/sitemap.xml
