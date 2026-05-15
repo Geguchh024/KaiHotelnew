@@ -21,6 +21,21 @@ const reservationSearchSchema = z.object({
 
 export const Route = createFileRoute('/reservations')({
   validateSearch: reservationSearchSchema,
+  head: () => ({
+    meta: [
+      {
+        title: 'დაჯავშნე — Book | Kai Hotel Bar Tbilisi | Free Cancellation',
+      },
+      {
+        name: 'description',
+        content: 'Book Kai Hotel Bar Tbilisi from ₾33/night. Free cancellation, no credit card, pay at property. Economy, Twin, Deluxe, Triple & Dorm rooms. Best rate guaranteed.',
+      },
+      {
+        name: 'keywords',
+        content: 'book hotel Tbilisi, Kai Hotel reservation, დაჯავშნე თბილისი, free cancellation hotel Tbilisi, no prepayment hotel Georgia, hotel booking Tbilisi',
+      },
+    ],
+  }),
   component: ReservationsLayout,
 })
 
@@ -140,18 +155,18 @@ function Reservations() {
   return (
     <>
       <header className="fixed top-0 w-full z-50 border-b border-outline-variant/30 backdrop-blur-md bg-background/80">
-        <nav className="flex justify-between items-center px-6 py-4 max-w-[1280px] mx-auto">
-          <Link to="/" className="font-[EB_Garamond] text-[24px] leading-[1.3] text-primary font-medium hover:opacity-80 transition-opacity">
+        <nav className="flex justify-between items-center px-4 sm:px-6 py-4 max-w-[1280px] mx-auto">
+          <Link to="/" className="font-[EB_Garamond] text-[20px] sm:text-[24px] leading-[1.3] text-primary font-medium hover:opacity-80 transition-opacity">
             Kai Hotel Bar
           </Link>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <button
               onClick={() => setLocale(locale === 'ka' ? 'en' : 'ka')}
-              className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.05em] text-secondary hover:text-primary transition-colors border border-outline-variant px-2.5 py-1.5 rounded-sm"
+              className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.05em] text-secondary hover:text-primary transition-colors border border-outline-variant px-2 sm:px-2.5 py-1.5 rounded-sm"
             >
               {locale === 'ka' ? 'EN' : 'ქარ'}
             </button>
-            <Link to="/" className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.05em] text-secondary hover:text-primary transition-colors">
+            <Link to="/" className="font-[Hanken_Grotesk] text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.05em] text-secondary hover:text-primary transition-colors">
               {t('res.backToHome')}
             </Link>
           </div>
@@ -159,9 +174,9 @@ function Reservations() {
       </header>
 
       <main className="pt-[72px] min-h-screen bg-background">
-        <div className="bg-primary py-10 px-6">
+        <div className="bg-primary py-8 sm:py-10 px-4 sm:px-6">
           <div className="max-w-[1080px] mx-auto text-center">
-            <h1 className="font-[EB_Garamond] text-[26px] md:text-[34px] leading-[1.2] text-on-primary mb-2 font-georgian">
+            <h1 className="font-[EB_Garamond] text-[22px] sm:text-[26px] md:text-[34px] leading-[1.2] text-on-primary mb-2 font-georgian">
               {t('res.title')}
             </h1>
             <p className="font-[Hanken_Grotesk] text-[12px] leading-[1.5] text-on-primary/70 max-w-lg mx-auto font-georgian">
@@ -171,7 +186,7 @@ function Reservations() {
         </div>
 
         <div className="border-b border-outline-variant/30 bg-surface-container-lowest">
-          <div className="max-w-[1080px] mx-auto px-6 py-3">
+          <div className="max-w-[1080px] mx-auto px-4 sm:px-6 py-3">
             <div className="flex items-center justify-center gap-2 md:gap-6">
               {[
                 { num: 1, label: t('res.step1') },
@@ -200,7 +215,7 @@ function Reservations() {
           </div>
         </div>
 
-        <div className="max-w-[1080px] mx-auto px-6 py-8">
+        <div className="max-w-[1080px] mx-auto px-4 sm:px-6 py-6 sm:py-8">
 
           {step === 1 && (
             <Step1
@@ -378,7 +393,7 @@ function Reservations() {
       </main>
 
       <footer className="w-full py-6 border-t border-outline-variant/20 bg-surface-container-lowest">
-        <div className="flex flex-col items-center gap-3 px-6 max-w-[1280px] mx-auto">
+        <div className="flex flex-col items-center gap-3 px-4 sm:px-6 max-w-[1280px] mx-auto">
           <div className="font-[EB_Garamond] text-[16px] font-medium text-primary">Kai Hotel Bar</div>
           <div className="flex items-center gap-2 text-secondary">
             <span className="material-symbols-outlined text-[13px]">call</span>

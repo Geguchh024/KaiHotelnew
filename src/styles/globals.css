@@ -42,6 +42,10 @@
 body {
   background-color: #fbf9f9;
   font-family: var(--font-family-body);
+  /* Smooth scrolling for anchor links */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -58,6 +62,24 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
+/* GPU-accelerated image transitions */
+img {
+  will-change: opacity;
+  contain: layout style;
+}
+
+/* Content-visibility for off-screen sections — skip rendering until scrolled into view */
+section {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 500px;
+}
+
+/* Sponsor logos — prevent layout shift */
+footer img {
+  aspect-ratio: auto;
+  contain: layout style paint;
+}
+
 /* Animations for dropdowns */
 @keyframes fadeIn {
   from { opacity: 0; }
@@ -71,5 +93,15 @@ h1, h2, h3, h4, h5, h6 {
 
 .animate-in {
   animation: fadeIn 0.15s ease-out, slideInFromTop 0.15s ease-out;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 

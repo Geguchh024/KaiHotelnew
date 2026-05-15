@@ -22,18 +22,18 @@ export function AdminHeader() {
   })
 
   return (
-    <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+    <header className="mt-4 sm:mt-6 lg:mt-0 mb-8 lg:mb-12 flex flex-col md:flex-row md:items-end justify-between gap-4 md:gap-6">
       <div>
-        <h2 className="font-[EB_Garamond] text-[36px] md:text-[48px] leading-[1.2] text-primary mb-2">
+        <h2 className="font-[EB_Garamond] text-[28px] sm:text-[36px] md:text-[48px] leading-[1.2] text-primary mb-1 sm:mb-2">
           {locale === 'ka' ? 'გამარჯობა, ადმინისტრატორ' : 'Welcome back, Administrator'}
         </h2>
-        <div className="flex items-center gap-4 text-secondary/80">
-          <span className="font-[Hanken_Grotesk] text-[13px] font-semibold flex items-center gap-1">
-            <span className="material-symbols-outlined text-[18px]" aria-hidden="true">schedule</span>
+        <div className="flex items-center gap-3 sm:gap-4 text-secondary/80 flex-wrap">
+          <span className="font-[Hanken_Grotesk] text-[12px] sm:text-[13px] font-semibold flex items-center gap-1">
+            <span className="material-symbols-outlined text-[16px] sm:text-[18px]" aria-hidden="true">schedule</span>
             <time>{timeStr}</time>
           </span>
-          <span className="w-1 h-1 bg-outline-variant rounded-full" aria-hidden="true" />
-          <span className="font-[Hanken_Grotesk] text-[13px] font-semibold uppercase tracking-[0.1em]">
+          <span className="w-1 h-1 bg-outline-variant rounded-full hidden sm:block" aria-hidden="true" />
+          <span className="font-[Hanken_Grotesk] text-[11px] sm:text-[13px] font-semibold uppercase tracking-[0.1em]">
             <time dateTime={now.toISOString()}>{dateStr}</time>
           </span>
         </div>
@@ -41,4 +41,3 @@ export function AdminHeader() {
     </header>
   )
 }
-

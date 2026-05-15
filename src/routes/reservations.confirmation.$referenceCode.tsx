@@ -32,8 +32,8 @@ function ConfirmationPage() {
     return (
       <>
         <header className="fixed top-0 w-full z-50 border-b border-outline-variant/30 backdrop-blur-md bg-background/80">
-          <nav className="flex justify-between items-center px-6 py-4 max-w-[1280px] mx-auto">
-            <Link to="/" className="font-[EB_Garamond] text-[24px] leading-[1.3] text-primary font-medium hover:opacity-80 transition-opacity">
+          <nav className="flex justify-between items-center px-4 sm:px-6 py-4 max-w-[1280px] mx-auto">
+            <Link to="/" className="font-[EB_Garamond] text-[20px] sm:text-[24px] leading-[1.3] text-primary font-medium hover:opacity-80 transition-opacity">
               Kai Hotel Bar
             </Link>
           </nav>
@@ -76,23 +76,23 @@ function ConfirmationPage() {
   return (
     <>
       <header className="fixed top-0 w-full z-50 border-b border-outline-variant/30 backdrop-blur-md bg-background/80">
-        <nav className="flex justify-between items-center px-6 py-4 max-w-[1280px] mx-auto">
-          <Link to="/" className="font-[EB_Garamond] text-[24px] leading-[1.3] text-primary font-medium hover:opacity-80 transition-opacity">
+        <nav className="flex justify-between items-center px-4 sm:px-6 py-4 max-w-[1280px] mx-auto">
+          <Link to="/" className="font-[EB_Garamond] text-[20px] sm:text-[24px] leading-[1.3] text-primary font-medium hover:opacity-80 transition-opacity">
             Kai Hotel Bar
           </Link>
-          <Link to="/" className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.05em] text-secondary hover:text-primary transition-colors">
+          <Link to="/" className="font-[Hanken_Grotesk] text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.05em] text-secondary hover:text-primary transition-colors">
             {t('res.backToHome')}
           </Link>
         </nav>
       </header>
 
       <main className="pt-[72px] min-h-screen bg-background">
-        <div className="bg-primary py-10 px-6">
+        <div className="bg-primary py-8 sm:py-10 px-4 sm:px-6">
           <div className="max-w-[1080px] mx-auto text-center">
-            <div className="w-14 h-14 bg-on-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="material-symbols-outlined text-on-primary text-[28px]" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+            <div className="w-12 sm:w-14 h-12 sm:h-14 bg-on-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="material-symbols-outlined text-on-primary text-[24px] sm:text-[28px]" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
             </div>
-            <h1 className="font-[EB_Garamond] text-[26px] md:text-[34px] leading-[1.2] text-on-primary mb-2 font-georgian">
+            <h1 className="font-[EB_Garamond] text-[22px] sm:text-[26px] md:text-[34px] leading-[1.2] text-on-primary mb-2 font-georgian">
               {t('res.success')}
             </h1>
             <p className="font-[Hanken_Grotesk] text-[12px] leading-[1.5] text-on-primary/70 max-w-lg mx-auto font-georgian">
@@ -101,20 +101,20 @@ function ConfirmationPage() {
           </div>
         </div>
 
-        <div className="max-w-[720px] mx-auto px-6 py-8 space-y-6">
+        <div className="max-w-[720px] mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-5 sm:space-y-6">
           {/* Reference Code */}
-          <div className="bg-surface-container-lowest border border-outline-variant/20 p-5 text-center">
+          <div className="bg-surface-container-lowest border border-outline-variant/20 p-4 sm:p-5 text-center">
             <p className="font-[Hanken_Grotesk] text-[10px] font-semibold uppercase tracking-[0.05em] text-on-surface-variant mb-1 font-georgian">
               {locale === 'ka' ? 'საცნობარო კოდი' : 'Reference Code'}
             </p>
-            <p className="font-[Hanken_Grotesk] text-[28px] font-bold text-primary tracking-[0.1em]">
+            <p className="font-[Hanken_Grotesk] text-[22px] sm:text-[28px] font-bold text-primary tracking-[0.1em]">
               {reservation.referenceCode}
             </p>
           </div>
 
           {/* Reservation Details */}
-          <div className="bg-surface-container-lowest border border-outline-variant/20 p-5">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-surface-container-lowest border border-outline-variant/20 p-4 sm:p-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               {/* Room & Dates */}
               <div>
                 <h4 className="font-[Hanken_Grotesk] text-[10px] font-semibold uppercase tracking-[0.05em] text-on-surface-variant mb-3 font-georgian">
@@ -205,7 +205,7 @@ function ConfirmationPage() {
       </main>
 
       <footer className="w-full py-6 border-t border-outline-variant/20 bg-surface-container-lowest">
-        <div className="flex flex-col items-center gap-3 px-6 max-w-[1280px] mx-auto">
+        <div className="flex flex-col items-center gap-3 px-4 sm:px-6 max-w-[1280px] mx-auto">
           <div className="font-[EB_Garamond] text-[16px] font-medium text-primary">Kai Hotel Bar</div>
           <div className="flex items-center gap-2 text-secondary">
             <span className="material-symbols-outlined text-[13px]">call</span>

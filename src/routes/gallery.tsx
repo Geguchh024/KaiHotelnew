@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { useQuery } from 'convex/react'
 import { api } from '../../convex/_generated/api'
@@ -8,6 +8,21 @@ import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/components/Footer'
 
 export const Route = createFileRoute('/gallery')({
+  head: () => ({
+    meta: [
+      {
+        title: 'გალერეა — Gallery | Kai Hotel Bar',
+      },
+      {
+        name: 'description',
+        content: 'View photos of Kai Hotel Bar Tbilisi — rooms, terrace, balcony, garden, and hotel facilities. Economy, Twin, Deluxe, Triple & Dorm rooms. See what awaits you.',
+      },
+      {
+        name: 'keywords',
+        content: 'Kai Hotel photos, hotel gallery, სასტუმრო ფოტოები, hotel images Georgia',
+      },
+    ],
+  }),
   component: GalleryPage,
 })
 
@@ -37,14 +52,55 @@ function GalleryPage() {
   const galleryImages = useQuery(api.gallery.list) ?? []
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
 
-  const prev = () =>
+  const prev = useCallback(() =>
     setLightboxIndex((i) =>
       i !== null ? (i - 1 + galleryImages.length) % galleryImages.length : null,
-    )
-  const next = () =>
+    ), [galleryImages.length])
+  const next = useCallback(() =>
     setLightboxIndex((i) =>
       i !== null ? (i + 1) % galleryImages.length : null,
-    )
+    ), [galleryImages.length])
+
+  // Keyboard navigation for lightbox
+  useEffect(() => {
+    if (lightboxIndex === null) return
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setLightboxIndex(null)
+      else if (e.key === 'ArrowLeft') prev()
+      else if (e.key === 'ArrowRight') next()
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [lightboxIndex, prev, next])
+
+  // Preload adjacent lightbox images for instant navigation
+  const preloadRef = useRef<HTMLLinkElement[]>([])
+  useEffect(() => {
+    // Clean up previous preloads
+    preloadRef.current.forEach((link) => link.remove())
+    preloadRef.current = []
+
+    if (lightboxIndex === null || galleryImages.length <= 1) return
+
+    const adjacentIndices = [
+      (lightboxIndex + 1) % galleryImages.length,
+      (lightboxIndex - 1 + galleryImages.length) % galleryImages.length,
+    ]
+
+    adjacentIndices.forEach((idx) => {
+      const link = document.createElement('link')
+      link.rel = 'prefetch'
+      link.as = 'image'
+      link.href = galleryImages[idx].imageUrl
+      document.head.appendChild(link)
+      preloadRef.current.push(link)
+    })
+
+    return () => {
+      preloadRef.current.forEach((link) => link.remove())
+      preloadRef.current = []
+    }
+  }, [lightboxIndex, galleryImages])
 
   return (
     <>
@@ -52,16 +108,16 @@ function GalleryPage() {
 
       <main>
         {/* Page Header */}
-        <section className="pt-32 pb-10 px-8 max-w-[1280px] mx-auto border-b border-outline-variant/20">
+        <section className="pt-24 sm:pt-32 pb-8 sm:pb-10 px-4 sm:px-8 max-w-[1280px] mx-auto border-b border-outline-variant/20">
           <span className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.4em] text-primary block mb-3">
             {locale === 'ka' ? 'პერსპექტივა' : 'Perspective'}
           </span>
-          <div className="flex items-end justify-between gap-4">
-            <h1 className="font-[EB_Garamond] text-[40px] md:text-[52px] leading-[1.1] text-primary">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 sm:gap-4">
+            <h1 className="font-[EB_Garamond] text-[32px] sm:text-[40px] md:text-[52px] leading-[1.1] text-primary">
               {locale === 'ka' ? 'ვიზუალური პოეზია' : 'Visual Poetry'}
             </h1>
             {galleryImages.length > 0 && (
-              <span className="font-[Hanken_Grotesk] text-[12px] text-secondary pb-2 shrink-0">
+              <span className="font-[Hanken_Grotesk] text-[12px] text-secondary sm:pb-2 shrink-0">
                 {galleryImages.length} {locale === 'ka' ? 'სურათი' : 'images'}
               </span>
             )}
@@ -69,7 +125,7 @@ function GalleryPage() {
         </section>
 
         {/* Gallery */}
-        <section className="py-10 px-4 md:px-8 max-w-[1280px] mx-auto">
+        <section className="py-8 sm:py-10 px-3 sm:px-4 md:px-8 max-w-[1280px] mx-auto">
           {galleryImages.length > 0 ? (
             <>
               {/* Mobile: simple 2-col uniform grid */}

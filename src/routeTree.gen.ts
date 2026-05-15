@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SeoDevRouteImport } from './routes/seo-dev'
 import { Route as RoomsRouteImport } from './routes/rooms'
 import { Route as ReservationsRouteImport } from './routes/reservations'
 import { Route as GalleryRouteImport } from './routes/gallery'
@@ -18,6 +19,11 @@ import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as AdminLayoutRouteImport } from './routes/admin/_layout'
 import { Route as ReservationsConfirmationReferenceCodeRouteImport } from './routes/reservations.confirmation.$referenceCode'
 
+const SeoDevRoute = SeoDevRouteImport.update({
+  id: '/seo-dev',
+  path: '/seo-dev',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RoomsRoute = RoomsRouteImport.update({
   id: '/rooms',
   path: '/rooms',
@@ -66,6 +72,7 @@ export interface FileRoutesByFullPath {
   '/gallery': typeof GalleryRoute
   '/reservations': typeof ReservationsRouteWithChildren
   '/rooms': typeof RoomsRoute
+  '/seo-dev': typeof SeoDevRoute
   '/admin': typeof AdminLayoutRoute
   '/admin/login': typeof AdminLoginRoute
   '/reservations/confirmation/$referenceCode': typeof ReservationsConfirmationReferenceCodeRoute
@@ -76,6 +83,7 @@ export interface FileRoutesByTo {
   '/gallery': typeof GalleryRoute
   '/reservations': typeof ReservationsRouteWithChildren
   '/rooms': typeof RoomsRoute
+  '/seo-dev': typeof SeoDevRoute
   '/admin': typeof AdminLayoutRoute
   '/admin/login': typeof AdminLoginRoute
   '/reservations/confirmation/$referenceCode': typeof ReservationsConfirmationReferenceCodeRoute
@@ -87,6 +95,7 @@ export interface FileRoutesById {
   '/gallery': typeof GalleryRoute
   '/reservations': typeof ReservationsRouteWithChildren
   '/rooms': typeof RoomsRoute
+  '/seo-dev': typeof SeoDevRoute
   '/admin/_layout': typeof AdminLayoutRoute
   '/admin/login': typeof AdminLoginRoute
   '/reservations/confirmation/$referenceCode': typeof ReservationsConfirmationReferenceCodeRoute
@@ -99,6 +108,7 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/reservations'
     | '/rooms'
+    | '/seo-dev'
     | '/admin'
     | '/admin/login'
     | '/reservations/confirmation/$referenceCode'
@@ -109,6 +119,7 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/reservations'
     | '/rooms'
+    | '/seo-dev'
     | '/admin'
     | '/admin/login'
     | '/reservations/confirmation/$referenceCode'
@@ -119,6 +130,7 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/reservations'
     | '/rooms'
+    | '/seo-dev'
     | '/admin/_layout'
     | '/admin/login'
     | '/reservations/confirmation/$referenceCode'
@@ -130,12 +142,20 @@ export interface RootRouteChildren {
   GalleryRoute: typeof GalleryRoute
   ReservationsRoute: typeof ReservationsRouteWithChildren
   RoomsRoute: typeof RoomsRoute
+  SeoDevRoute: typeof SeoDevRoute
   AdminLayoutRoute: typeof AdminLayoutRoute
   AdminLoginRoute: typeof AdminLoginRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/seo-dev': {
+      id: '/seo-dev'
+      path: '/seo-dev'
+      fullPath: '/seo-dev'
+      preLoaderRoute: typeof SeoDevRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/rooms': {
       id: '/rooms'
       path: '/rooms'
@@ -214,6 +234,7 @@ const rootRouteChildren: RootRouteChildren = {
   GalleryRoute: GalleryRoute,
   ReservationsRoute: ReservationsRouteWithChildren,
   RoomsRoute: RoomsRoute,
+  SeoDevRoute: SeoDevRoute,
   AdminLayoutRoute: AdminLayoutRoute,
   AdminLoginRoute: AdminLoginRoute,
 }

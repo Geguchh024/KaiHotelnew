@@ -151,9 +151,9 @@ export function ImageUploadDialog({ isOpen, onClose }: ImageUploadDialogProps) {
       />
 
       {/* Dialog */}
-      <div className="relative bg-surface-container-lowest border border-outline-variant/30 w-full max-w-2xl max-h-[90vh] flex flex-col shadow-xl">
+      <div className="relative bg-surface-container-lowest border border-outline-variant/30 w-full max-w-2xl max-h-[90vh] flex flex-col shadow-xl mx-2 sm:mx-0">
         {/* Header */}
-        <div className="flex items-center justify-between px-8 py-6 border-b border-outline-variant/20 shrink-0">
+        <div className="flex items-center justify-between px-4 sm:px-8 py-4 sm:py-6 border-b border-outline-variant/20 shrink-0">
           <div>
             <h2 className="font-[EB_Garamond] text-[26px] text-primary">
               {locale === 'ka' ? 'სურათების ატვირთვა' : 'Upload Images'}
@@ -177,7 +177,7 @@ export function ImageUploadDialog({ isOpen, onClose }: ImageUploadDialogProps) {
 
         {/* Drop zone */}
         <div
-          className={`mx-8 mt-6 shrink-0 border-2 border-dashed transition-colors cursor-pointer ${
+          className={`mx-4 sm:mx-8 mt-4 sm:mt-6 shrink-0 border-2 border-dashed transition-colors cursor-pointer ${
             isDragging ? 'border-primary bg-primary/5' : 'border-outline-variant hover:border-primary'
           }`}
           onDragOver={(e) => { e.preventDefault(); setIsDragging(true) }}
@@ -209,7 +209,7 @@ export function ImageUploadDialog({ isOpen, onClose }: ImageUploadDialogProps) {
 
         {/* File list */}
         {entries.length > 0 && (
-          <div className="flex-1 overflow-y-auto px-8 py-4 flex flex-col gap-3 min-h-0">
+          <div className="flex-1 overflow-y-auto px-4 sm:px-8 py-4 flex flex-col gap-3 min-h-0">
             {entries.map((entry) => (
               <div
                 key={entry.id}
@@ -276,7 +276,7 @@ export function ImageUploadDialog({ isOpen, onClose }: ImageUploadDialogProps) {
         )}
 
         {/* Footer actions */}
-        <div className="px-8 py-5 border-t border-outline-variant/20 flex items-center justify-between gap-3 shrink-0">
+        <div className="px-4 sm:px-8 py-4 sm:py-5 border-t border-outline-variant/20 flex items-center justify-between gap-3 shrink-0">
           <button
             type="button"
             onClick={onClose}

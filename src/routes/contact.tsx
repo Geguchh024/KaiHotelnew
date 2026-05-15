@@ -7,6 +7,21 @@ import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/components/Footer'
 
 export const Route = createFileRoute('/contact')({
+  head: () => ({
+    meta: [
+      {
+        title: 'კონტაქტი — Contact | Kai Hotel Bar Tbilisi',
+      },
+      {
+        name: 'description',
+        content: 'Contact Kai Hotel Bar — 24 Samtredia Street, Didube, Tbilisi 0119. Phone: +995 511 222 028. Near metro station. Send us a message for reservations or inquiries.',
+      },
+      {
+        name: 'keywords',
+        content: 'Kai Hotel contact, hotel Tbilisi phone, სასტუმრო კონტაქტი თბილისი, 24 Samtredia Street Tbilisi, Kai Hotel address',
+      },
+    ],
+  }),
   component: ContactPage,
 })
 
@@ -74,18 +89,18 @@ function ContactPage() {
 
       <main>
         {/* Page Header */}
-        <section className="pt-32 pb-10 px-8 max-w-[1280px] mx-auto border-b border-outline-variant/20">
+        <section className="pt-24 sm:pt-32 pb-8 sm:pb-10 px-4 sm:px-8 max-w-[1280px] mx-auto border-b border-outline-variant/20">
           <span className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.4em] text-primary block mb-3">
             {locale === 'ka' ? 'მოთხოვნა' : 'Inquiry'}
           </span>
-          <h1 className="font-[EB_Garamond] text-[40px] md:text-[52px] leading-[1.1] text-primary">
+          <h1 className="font-[EB_Garamond] text-[30px] sm:text-[40px] md:text-[52px] leading-[1.1] text-primary">
             {locale === 'ka' ? 'კონსიერჟთან დაკავშირება' : 'Connect with the Concierge'}
           </h1>
         </section>
 
         {/* Contact info strip */}
         <section className="border-b border-outline-variant/20 bg-surface-container-low">
-          <div className="px-8 max-w-[1280px] mx-auto py-10 grid grid-cols-1 sm:grid-cols-3 gap-8">
+          <div className="px-4 sm:px-8 max-w-[1280px] mx-auto py-8 sm:py-10 grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
             {/* Phone */}
             <div className="flex items-start gap-4">
               <div className="w-10 h-10 border border-outline-variant/40 flex items-center justify-center shrink-0">
@@ -142,15 +157,15 @@ function ContactPage() {
         </section>
 
         {/* Form section */}
-        <section className="py-20 px-8 max-w-[1280px] mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-start">
+        <section className="py-12 sm:py-20 px-4 sm:px-8 max-w-[1280px] mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-start">
 
             {/* Left — editorial copy */}
             <div>
               <span className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.4em] text-primary block mb-4">
                 {locale === 'ka' ? 'შეტყობინება' : 'Message'}
               </span>
-              <h2 className="font-[EB_Garamond] text-[36px] md:text-[44px] leading-[1.15] text-primary mb-6">
+              <h2 className="font-[EB_Garamond] text-[28px] sm:text-[36px] md:text-[44px] leading-[1.15] text-primary mb-4 sm:mb-6">
                 {locale === 'ka'
                   ? 'გვიამბეთ თქვენი სურვილების შესახებ'
                   : 'Tell Us How We Can Help'}

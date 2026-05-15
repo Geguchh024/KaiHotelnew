@@ -162,8 +162,8 @@ export function SettingsTab() {
               )}
             </div>
 
-            {/* Address � bilingual side-by-side */}
-            <div className="grid grid-cols-2 gap-4">
+            {/* Address — bilingual side-by-side */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="flex flex-col gap-1">
                 <label htmlFor="settings-address-ka" className={labelClass}>
                   {t('admin.settings.addressKa')}
@@ -239,7 +239,7 @@ export function SettingsTab() {
             {t('admin.settings.about')}
           </h4>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1">
               <label htmlFor="settings-about-ka" className={labelClass}>
                 {t('admin.settings.aboutKa')}

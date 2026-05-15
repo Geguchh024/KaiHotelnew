@@ -16,13 +16,13 @@ export function RoomsTab() {
   const rooms = useQuery(api.rooms.list) ?? []
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
-        <h3 className="font-[EB_Garamond] text-[28px] text-primary">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-6 sm:mb-8">
+        <h3 className="font-[EB_Garamond] text-[24px] sm:text-[28px] text-primary">
           {t('admin.rooms.title')}
         </h3>
         <button
           onClick={() => setIsAddDialogOpen(true)}
-          className="bg-primary text-on-primary px-6 py-2.5 rounded-full font-[Hanken_Grotesk] text-[13px] font-semibold hover:opacity-90 transition-opacity flex items-center gap-2"
+          className="bg-primary text-on-primary px-5 sm:px-6 py-2.5 rounded-full font-[Hanken_Grotesk] text-[12px] sm:text-[13px] font-semibold hover:opacity-90 transition-opacity flex items-center gap-2 self-start sm:self-auto"
         >
           <span className="material-symbols-outlined text-[18px]">add</span>
           {t('admin.rooms.addRoom')}

@@ -11,6 +11,21 @@ import { Footer } from '@/components/Footer'
 import { addDays, format } from 'date-fns'
 
 export const Route = createFileRoute('/')({
+  head: () => ({
+    meta: [
+      {
+        title: 'Kai Hotel Bar Tbilisi | სასტუმრო თბილისში — From ₾33/night',
+      },
+      {
+        name: 'description',
+        content: 'Kai Hotel Bar Tbilisi, Didube — from ₾33/night. Economy, Twin, Deluxe, Triple & Dorm. Free Wi-Fi, AC, terrace, balcony. Free cancellation, pay at property.',
+      },
+      {
+        name: 'keywords',
+        content: 'Kai Hotel Tbilisi, Kai Hotel Bar, hotel Tbilisi, სასტუმრო თბილისი, hotel Didube Tbilisi, cheap hotel Tbilisi, hotel near metro Tbilisi, accommodation Tbilisi Georgia, hostel Tbilisi',
+      },
+    ],
+  }),
   component: Home,
 })
 
@@ -30,24 +45,26 @@ function Home() {
 
       <main>
         {/* Hero Section */}
-        <section className="relative h-[85vh] flex items-center justify-center overflow-hidden">
+        <section className="relative h-[75vh] sm:h-[80vh] md:h-[85vh] flex items-center justify-center overflow-hidden">
           <div className="absolute inset-0 z-0">
             <BlurhashImage
               src="https://images.unsplash.com/photo-1565008576549-57569a49371d?q=80&w=1258&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
               alt="Kai Hotel"
               blurhash="LkH^woxCI=sn}ls,R.sm^LoIR-n%"
               className="w-full h-full"
+              priority
+              sizes="100vw"
             />
             <div className="absolute inset-0 bg-black/65"></div>
           </div>
-          <div className="relative z-10 text-center px-6 max-w-3xl">
-            <span className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.3em] text-white/90 block mb-4">
+          <div className="relative z-10 text-center px-4 sm:px-6 max-w-3xl">
+            <span className="font-[Hanken_Grotesk] text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.3em] text-white/90 block mb-3 sm:mb-4">
               {t('hero.welcome')}
             </span>
-            <h1 className="font-[EB_Garamond] text-[32px] md:text-[48px] leading-[1.15] tracking-[-0.01em] text-white mb-4">
+            <h1 className="font-[EB_Garamond] text-[28px] sm:text-[36px] md:text-[48px] leading-[1.15] tracking-[-0.01em] text-white mb-3 sm:mb-4">
               {t('hero.title')}
             </h1>
-            <p className="font-[Hanken_Grotesk] text-[15px] leading-[1.5] text-white/80 max-w-xl mx-auto mb-8">
+            <p className="font-[Hanken_Grotesk] text-[13px] sm:text-[15px] leading-[1.5] text-white/80 max-w-xl mx-auto mb-6 sm:mb-8">
               {t('hero.subtitle')}
             </p>
             <div className="flex justify-center gap-3 flex-wrap">
@@ -62,8 +79,8 @@ function Home() {
         </section>
 
         {/* Booking Bar */}
-        <section className="relative z-20 -mt-12 px-6 max-w-[1080px] mx-auto">
-          <div className="bg-surface-container-lowest border border-outline-variant/30 p-6 md:p-8 shadow-sm">
+        <section className="relative z-20 -mt-12 px-4 sm:px-6 max-w-[1080px] mx-auto">
+          <div className="bg-surface-container-lowest border border-outline-variant/30 p-4 sm:p-6 md:p-8 shadow-sm">
             <h3 className="font-[EB_Garamond] text-[18px] font-medium text-primary mb-5">
               {t('booking.title')}
             </h3>
@@ -130,7 +147,7 @@ function Home() {
         </section>
 
         {/* Rooms Preview */}
-        <section className="py-20 px-6 max-w-[1280px] mx-auto">
+        <section className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 max-w-[1280px] mx-auto">
           <div className="text-center mb-12">
             <span className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.4em] text-primary block mb-2">
               {t('rooms.label')}
@@ -145,7 +162,7 @@ function Home() {
 
           {rooms.length > 0 ? (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                 {rooms.slice(0, 3).map((room) => (
                   <div key={room._id} className="group cursor-pointer">
                     <div className="aspect-[4/3] overflow-hidden mb-4 relative">
@@ -192,8 +209,8 @@ function Home() {
         </section>
 
         {/* Amenities Section */}
-        <section className="py-20 bg-surface-container-low">
-          <div className="px-6 max-w-[1280px] mx-auto">
+        <section className="py-12 sm:py-16 md:py-20 bg-surface-container-low">
+          <div className="px-4 sm:px-6 max-w-[1280px] mx-auto">
             <div className="text-center mb-12">
               <span className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.4em] text-primary block mb-2">
                 {t('amenities.label')}
@@ -233,7 +250,7 @@ function Home() {
         </section>
 
         {/* Reviews Section */}
-        <section className="py-20 px-6 max-w-[1280px] mx-auto">
+        <section className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 max-w-[1280px] mx-auto">
           <div className="text-center mb-12">
             <span className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.4em] text-primary block mb-2">
               {t('reviews.label')}
@@ -245,7 +262,7 @@ function Home() {
               {t('reviews.description')}
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 sm:gap-6">
             {[
               { nameKey: 'reviews.review1.name', countryKey: 'reviews.review1.country', textKey: 'reviews.review1.text' },
               { nameKey: 'reviews.review2.name', countryKey: 'reviews.review2.country', textKey: 'reviews.review2.text' },
@@ -284,20 +301,20 @@ function Home() {
         </section>
 
         {/* Gallery Preview */}
-        <section className="py-20 bg-surface-container-low overflow-hidden">
-          <div className="px-6 max-w-[1280px] mx-auto mb-8 flex items-end justify-between">
+        <section className="py-12 sm:py-16 md:py-20 bg-surface-container-low overflow-hidden">
+          <div className="px-4 sm:px-6 max-w-[1280px] mx-auto mb-6 sm:mb-8 flex items-end justify-between gap-4">
             <div>
               <span className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.4em] text-primary block mb-2">
                 {locale === 'ka' ? 'გალერეა' : 'Gallery'}
               </span>
-              <h2 className="font-[EB_Garamond] text-[28px] md:text-[36px] leading-[1.2] text-primary">
+              <h2 className="font-[EB_Garamond] text-[24px] sm:text-[28px] md:text-[36px] leading-[1.2] text-primary">
                 Kai Hotel
               </h2>
             </div>
             {galleryImages.length > 0 && (
               <Link
                 to="/gallery"
-                className="font-[Hanken_Grotesk] text-[12px] font-semibold uppercase tracking-[0.05em] text-primary border border-primary px-5 py-2 hover:bg-primary/5 transition-colors shrink-0"
+                className="font-[Hanken_Grotesk] text-[11px] sm:text-[12px] font-semibold uppercase tracking-[0.05em] text-primary border border-primary px-3 sm:px-5 py-2 hover:bg-primary/5 transition-colors shrink-0"
               >
                 {locale === 'ka' ? 'სრული გალერეა' : 'View All'}
               </Link>
@@ -305,7 +322,7 @@ function Home() {
           </div>
 
           {galleryImages.length > 0 ? (
-            <div className="px-6 max-w-[1280px] mx-auto">
+            <div className="px-4 sm:px-6 max-w-[1280px] mx-auto">
               {/* Mobile: 2-col uniform grid */}
               <div className="grid grid-cols-2 gap-2 md:hidden">
                 {galleryImages.slice(0, 4).map((img) => (
@@ -347,7 +364,7 @@ function Home() {
               </div>
             </div>
           ) : (
-            <div className="px-6 max-w-[1280px] mx-auto text-center py-12">
+            <div className="px-4 sm:px-6 max-w-[1280px] mx-auto text-center py-12">
               <span className="material-symbols-outlined text-[48px] text-secondary/40 block mb-4">
                 photo_library
               </span>

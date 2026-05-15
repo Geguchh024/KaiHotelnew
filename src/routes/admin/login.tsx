@@ -43,10 +43,10 @@ function LoginPage() {
 
   return (
     <div className="min-h-screen bg-surface-container-low flex items-center justify-center p-4">
-      <div className="bg-surface-container-lowest border border-outline-variant/30 p-10 w-full max-w-md">
+      <div className="bg-surface-container-lowest border border-outline-variant/30 p-6 sm:p-10 w-full max-w-md">
         {/* Hotel name header */}
-        <div className="text-center mb-10">
-          <h1 className="font-[EB_Garamond] text-[36px] leading-[1.2] text-primary mb-1">
+        <div className="text-center mb-8 sm:mb-10">
+          <h1 className="font-[EB_Garamond] text-[30px] sm:text-[36px] leading-[1.2] text-primary mb-1">
             Kai Hotel Bar
           </h1>
           <p className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.15em] text-secondary/70">

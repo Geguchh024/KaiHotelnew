@@ -173,10 +173,10 @@ export function RoomFormDialog({ isOpen, room, onClose }: RoomFormDialogProps) {
       aria-label={title}
     >
       <div className="absolute inset-0 bg-black/40" onClick={onClose} aria-hidden="true" />
-      <div className="relative bg-surface-container-lowest border border-outline-variant/30 w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-xl">
+      <div className="relative bg-surface-container-lowest border border-outline-variant/30 w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-xl mx-2 sm:mx-0">
         {/* Header */}
-        <div className="flex items-center justify-between p-8 border-b border-outline-variant/20">
-          <h2 className="font-[EB_Garamond] text-[28px] text-primary">{title}</h2>
+        <div className="flex items-center justify-between p-4 sm:p-8 border-b border-outline-variant/20">
+          <h2 className="font-[EB_Garamond] text-[22px] sm:text-[28px] text-primary">{title}</h2>
           <button
             onClick={onClose}
             className="text-on-surface-variant hover:text-on-surface transition-colors"
@@ -187,9 +187,9 @@ export function RoomFormDialog({ isOpen, room, onClose }: RoomFormDialogProps) {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-8 flex flex-col gap-6">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-8 flex flex-col gap-5 sm:gap-6">
           {/* Bilingual name fields */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1">
               <label className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.1em] text-secondary">
                 {t('admin.rooms.nameKa')}
@@ -221,7 +221,7 @@ export function RoomFormDialog({ isOpen, room, onClose }: RoomFormDialogProps) {
           </div>
 
           {/* Bilingual description fields */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1">
               <label className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.1em] text-secondary">
                 {t('admin.rooms.descriptionKa')}
@@ -247,7 +247,7 @@ export function RoomFormDialog({ isOpen, room, onClose }: RoomFormDialogProps) {
           </div>
 
           {/* Price and capacity */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1">
               <label className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.1em] text-secondary">
                 {t('admin.rooms.pricePerNight')}

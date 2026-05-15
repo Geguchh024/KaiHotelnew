@@ -231,7 +231,15 @@ export const pendingCount = query({
   args: { sessionToken: v.string() },
   returns: v.number(),
   handler: async (ctx, args) => {
-    await validateSession(ctx, args.sessionToken);
+    // Gracefully return 0 if session is invalid (e.g. stale localStorage token)
+    const session = await ctx.db
+      .query("adminSessions")
+      .withIndex("by_token", (q) => q.eq("token", args.sessionToken))
+      .first();
+    if (!session || session.expiresAt <= Date.now()) {
+      return 0;
+    }
+
     const pending = await ctx.db
       .query("reservations")
       .withIndex("by_status", (q) => q.eq("status", "pending"))

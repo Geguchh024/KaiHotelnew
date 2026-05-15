@@ -10,6 +10,21 @@ import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/components/Footer'
 
 export const Route = createFileRoute('/rooms')({
+  head: () => ({
+    meta: [
+      {
+        title: 'ნომრები — Rooms | Kai Hotel Bar Tbilisi | From ₾33/night',
+      },
+      {
+        name: 'description',
+        content: 'Kai Hotel Bar Tbilisi rooms from ₾33/night. Economy ₾82, Twin ₾96, Deluxe ₾90, Triple ₾94, Dorm ₾33. AC, Free Wi-Fi, balcony, flat-screen TV in all rooms.',
+      },
+      {
+        name: 'keywords',
+        content: 'Kai Hotel rooms Tbilisi, hotel rooms Tbilisi, ნომრები თბილისი, economy room Tbilisi, twin room Tbilisi, dorm Tbilisi, cheap room Tbilisi Georgia',
+      },
+    ],
+  }),
   component: RoomsPage,
 })
 
@@ -27,7 +42,7 @@ function RoomModal({ room, onClose, locale }: { room: Room; onClose: () => void;
       <div className="absolute inset-0 bg-black/50" onClick={onClose} aria-hidden="true" />
 
       {/* Panel */}
-      <div className="relative bg-surface-container-lowest border border-outline-variant/30 w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-xl">
+      <div className="relative bg-surface-container-lowest border border-outline-variant/30 w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-xl mx-4">
         {/* Image */}
         <div className="aspect-[16/9] overflow-hidden relative">
           <BlurhashImage
@@ -47,10 +62,10 @@ function RoomModal({ room, onClose, locale }: { room: Room; onClose: () => void;
         </div>
 
         {/* Content */}
-        <div className="p-8">
+        <div className="p-5 sm:p-8">
           {/* Header */}
-          <div className="flex items-start justify-between gap-4 mb-5">
-            <h2 className="font-[EB_Garamond] text-[28px] leading-[1.2] text-primary">
+          <div className="flex items-start justify-between gap-3 sm:gap-4 mb-5">
+            <h2 className="font-[EB_Garamond] text-[22px] sm:text-[28px] leading-[1.2] text-primary">
               {locale === 'ka' ? room.nameKa : room.nameEn}
             </h2>
             <div className="text-right shrink-0">
@@ -126,26 +141,26 @@ function RoomsPage() {
 
       <main>
         {/* Page Header */}
-        <section className="pt-32 pb-10 px-8 max-w-[1280px] mx-auto border-b border-outline-variant/20">
+        <section className="pt-24 sm:pt-32 pb-8 sm:pb-10 px-4 sm:px-8 max-w-[1280px] mx-auto border-b border-outline-variant/20">
           <span className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.4em] text-primary block mb-3">
             {t('rooms.label')}
           </span>
-          <h1 className="font-[EB_Garamond] text-[40px] md:text-[52px] leading-[1.1] text-primary">
+          <h1 className="font-[EB_Garamond] text-[32px] sm:text-[40px] md:text-[52px] leading-[1.1] text-primary">
             {locale === 'ka' ? 'ჩვენი ნომრები' : 'The Suite Collection'}
           </h1>
         </section>
 
         {/* Intro */}
-        <section className="py-10 px-8 max-w-[1280px] mx-auto border-b border-outline-variant/20">
+        <section className="py-8 sm:py-10 px-4 sm:px-8 max-w-[1280px] mx-auto border-b border-outline-variant/20">
           <p className="font-[Hanken_Grotesk] text-[15px] leading-[1.7] text-secondary max-w-2xl">
             {t('rooms.description')}
           </p>
         </section>
 
         {/* Rooms grid */}
-        <section className="py-16 px-8 max-w-[1280px] mx-auto">
+        <section className="py-10 sm:py-16 px-4 sm:px-8 max-w-[1280px] mx-auto">
           {rooms.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
               {rooms.map((room) => (
                 <div
                   key={room._id}
@@ -207,8 +222,8 @@ function RoomsPage() {
         </section>
 
         {/* Amenities strip */}
-        <section className="py-14 bg-surface-container-low border-y border-outline-variant/20">
-          <div className="px-8 max-w-[1280px] mx-auto">
+        <section className="py-10 sm:py-14 bg-surface-container-low border-y border-outline-variant/20">
+          <div className="px-4 sm:px-8 max-w-[1280px] mx-auto">
             <div className="flex flex-col md:flex-row md:items-center gap-10">
               <div className="md:w-56 shrink-0">
                 <span className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.4em] text-primary block mb-2">
@@ -240,11 +255,11 @@ function RoomsPage() {
         </section>
 
         {/* CTA */}
-        <section className="py-20 px-8 max-w-[1280px] mx-auto text-center">
+        <section className="py-12 sm:py-20 px-4 sm:px-8 max-w-[1280px] mx-auto text-center">
           <span className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.4em] text-primary block mb-4">
             {locale === 'ka' ? 'დაჯავშნეთ' : 'Reserve'}
           </span>
-          <h2 className="font-[EB_Garamond] text-[32px] md:text-[40px] text-primary mb-6">
+          <h2 className="font-[EB_Garamond] text-[28px] sm:text-[32px] md:text-[40px] text-primary mb-4 sm:mb-6">
             {locale === 'ka' ? 'მოამზადეთ თქვენი ვიზიტი' : 'Plan Your Stay'}
           </h2>
           <p className="font-[Hanken_Grotesk] text-[14px] text-secondary max-w-md mx-auto mb-8">

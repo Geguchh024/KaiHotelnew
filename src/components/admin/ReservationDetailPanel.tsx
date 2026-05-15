@@ -70,9 +70,9 @@ export function ReservationDetailPanel({
   return (
     <div className="border border-outline-variant/40 bg-surface-container-lowest rounded-sm mt-1 overflow-hidden">
       {/* Panel header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-outline-variant/30 bg-surface-container-low">
-        <div className="flex items-center gap-3">
-          <h4 className="font-[EB_Garamond] text-[20px] text-primary">
+      <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-outline-variant/30 bg-surface-container-low">
+        <div className="flex items-center gap-3 flex-wrap">
+          <h4 className="font-[EB_Garamond] text-[18px] sm:text-[20px] text-primary">
             {reservation.referenceCode}
           </h4>
           <StatusBadge status={reservation.status as Status} />
@@ -87,7 +87,7 @@ export function ReservationDetailPanel({
       </div>
 
       {/* Panel body */}
-      <div className="px-6 py-5 space-y-5">
+      <div className="px-4 sm:px-6 py-4 sm:py-5 space-y-4 sm:space-y-5">
         {/* Guest info */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
@@ -229,7 +229,7 @@ export function ReservationDetailPanel({
 
         {/* Action buttons */}
         {transitions.length > 0 && (
-          <div className="flex items-center gap-3 pt-3 border-t border-outline-variant/30">
+          <div className="flex items-center gap-2 sm:gap-3 pt-3 border-t border-outline-variant/30 flex-wrap">
             {transitions.map((tr) => (
               <button
                 key={tr}

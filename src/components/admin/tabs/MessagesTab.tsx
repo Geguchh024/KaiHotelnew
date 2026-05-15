@@ -27,8 +27,8 @@ export function MessagesTab() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
-        <h3 className="font-[EB_Garamond] text-[28px] text-primary">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-6 sm:mb-8">
+        <h3 className="font-[EB_Garamond] text-[24px] sm:text-[28px] text-primary">
           {t('admin.messages.title')}
         </h3>
         {messages.length > 0 && (

@@ -22,8 +22,8 @@ export function MessageDetailPanel({ message, onClose }: MessageDetailPanelProps
   return (
     <div className="border border-outline-variant/40 bg-surface-container-lowest rounded-sm mt-1 overflow-hidden">
       {/* Panel header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-outline-variant/30 bg-surface-container-low">
-        <h4 className="font-[EB_Garamond] text-[20px] text-primary">
+      <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-outline-variant/30 bg-surface-container-low">
+        <h4 className="font-[EB_Garamond] text-[18px] sm:text-[20px] text-primary">
           {locale === 'ka' ? 'შეტყობინების დეტალები' : 'Message Details'}
         </h4>
         <button
@@ -36,7 +36,7 @@ export function MessageDetailPanel({ message, onClose }: MessageDetailPanelProps
       </div>
 
       {/* Panel body */}
-      <div className="px-6 py-5 space-y-5">
+      <div className="px-4 sm:px-6 py-4 sm:py-5 space-y-4 sm:space-y-5">
         {/* Sender name + email */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>

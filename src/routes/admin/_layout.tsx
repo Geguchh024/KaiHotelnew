@@ -80,6 +80,7 @@ function AdminLayoutComponent() {
   const navigate = useNavigate()
   // Start as null (matches server render), populate client-side in useEffect
   const [isAuthed, setIsAuthed] = useState<boolean | null>(null)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   useEffect(() => {
     const token = localStorage.getItem('adminSessionToken')
@@ -101,8 +102,23 @@ function AdminLayoutComponent() {
 
   return (
     <div className="flex min-h-screen bg-background">
-      <AdminSidebar activeTab={tab} />
-      <main className="ml-64 flex-1 min-h-screen px-8 py-10 max-w-[1280px]">
+      <AdminSidebar activeTab={tab} isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+
+      {/* Mobile top bar */}
+      <div className="fixed top-0 left-0 right-0 z-30 lg:hidden bg-surface-container-low border-b border-outline-variant/50 px-4 py-3 flex items-center gap-3">
+        <button
+          onClick={() => setSidebarOpen(true)}
+          className="p-1.5 text-primary hover:bg-surface-container-high rounded-full transition-colors"
+          aria-label="Open menu"
+        >
+          <span className="material-symbols-outlined text-[24px]">menu</span>
+        </button>
+        <h1 className="font-[EB_Garamond] text-[20px] leading-[1.4] font-medium text-primary">
+          Kai Admin
+        </h1>
+      </div>
+
+      <main className="lg:ml-64 flex-1 min-h-screen px-4 sm:px-6 lg:px-8 py-6 lg:py-10 pt-16 lg:pt-10 max-w-[1280px]">
         <AdminHeader />
         <AdminErrorBoundary>
           <TabComponent />

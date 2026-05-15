@@ -1,0 +1,1 @@
+import{r as e,j as t}from"./vendor-react-CfXBnK6w.js";import"./vendor-convex-Cz01P4Po.js";function r(){const[s,a]=e.useState("pages"),[n,o]=e.useState(0);return t.jsx("div",{className:"min-h-screen flex items-center justify-center bg-slate-900 text-slate-400 font-mono text-sm",children:"SEO Dev Panel is only available in development mode."})}export{r as component};

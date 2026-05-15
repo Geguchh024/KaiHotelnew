@@ -1,9 +1,10 @@
+import { memo } from 'react'
 import { Link } from '@tanstack/react-router'
 import { useQuery } from 'convex/react'
 import { api } from '../../convex/_generated/api'
 import { useI18n } from '@/lib/i18n'
 
-export function Footer() {
+export const Footer = memo(function Footer() {
   const { t, locale } = useI18n()
   const siteSettings = useQuery(api.siteSettings.get)
   const sponsors = useQuery(api.sponsors.list) ?? []
@@ -27,7 +28,7 @@ export function Footer() {
                   className="flex items-center gap-2 font-[Hanken_Grotesk] text-[13px] text-secondary hover:text-primary transition-colors"
                 >
                   {sponsor.logoUrl && (
-                    <img src={sponsor.logoUrl} alt={sponsor.name} className="h-5 w-auto object-contain" />
+                    <img src={sponsor.logoUrl} alt={sponsor.name} className="h-5 w-auto object-contain" loading="lazy" decoding="async" />
                   )}
                   {sponsor.name}
                 </a>
@@ -38,8 +39,8 @@ export function Footer() {
       )}
 
       {/* Main footer */}
-      <div className="py-12 px-6 max-w-[1280px] mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+      <div className="py-10 sm:py-12 px-4 sm:px-6 max-w-[1280px] mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10">
           {/* Brand & About */}
           <div>
             <Link to="/" className="font-[EB_Garamond] text-[20px] font-medium text-primary block mb-3">
@@ -125,4 +126,4 @@ export function Footer() {
       </div>
     </footer>
   )
-}
+})
