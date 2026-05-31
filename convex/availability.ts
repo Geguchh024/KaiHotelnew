@@ -24,6 +24,28 @@ export function overlaps(a1: number, a2: number, b1: number, b2: number): boolea
 /** One day = 86_400_000 ms. */
 export const MS_PER_DAY = 86_400_000;
 
+/**
+ * Maximum stay length, in nights. Bounds the lower edge of the overlap-scan
+ * window so conflict detection only has to read the relevant slice of a room's
+ * reservations (see `conflictScanLowerBound`). Also enforced at creation time
+ * so the bound holds for every stored reservation.
+ */
+export const MAX_STAY_NIGHTS = 365;
+
+/**
+ * Lower bound (inclusive) on `checkInDate` for any reservation that could
+ * overlap the half-open range [ci, co).
+ *
+ * A reservation overlaps iff `r.checkInDate < co && ci < r.checkOutDate`.
+ * Because every stored stay is at most `MAX_STAY_NIGHTS` long, any overlapping
+ * reservation must start no earlier than `ci - MAX_STAY_NIGHTS days`. Querying
+ * the index from this lower bound (instead of from the beginning of time)
+ * guarantees we never silently drop relevant rows behind a `.take()` cap.
+ */
+export function conflictScanLowerBound(ci: number): number {
+  return ci - MAX_STAY_NIGHTS * MS_PER_DAY;
+}
+
 /** Normalize an epoch-ms timestamp to UTC midnight of that calendar date. */
 export function normalizeToUtcMidnight(ts: number): number {
   const d = new Date(ts);
@@ -100,6 +122,8 @@ export function validateGuestInput(input: GuestInput) {
   const co = normalizeToUtcMidnight(input.checkOutDate);
   if (ci >= co) throw new ConvexError("Check-out must be after check-in");
   if (ci < normalizeToUtcMidnight(input.now)) throw new ConvexError("Check-in cannot be in the past");
+  if (nightCount(ci, co) > MAX_STAY_NIGHTS)
+    throw new ConvexError(`Stay cannot exceed ${MAX_STAY_NIGHTS} nights`);
   return {
     guestFullName: name,
     guestEmail: email,

@@ -8,6 +8,7 @@ import {
   normalizeToUtcMidnight,
   ACTIVE_STATUSES,
   MS_PER_DAY,
+  MAX_STAY_NIGHTS,
   type Status,
   type Transition,
 } from "../availability";
@@ -301,7 +302,12 @@ describe("Property 7: Date ordering and past-date rejection", () => {
           const normalizedCo = normalizeToUtcMidnight(co);
           const todayMidnight = normalizeToUtcMidnight(now);
 
-          const shouldReject = normalizedCi >= normalizedCo || normalizedCi < todayMidnight;
+          const tooLong =
+            (normalizedCo - normalizedCi) / MS_PER_DAY > MAX_STAY_NIGHTS;
+          const shouldReject =
+            normalizedCi >= normalizedCo ||
+            normalizedCi < todayMidnight ||
+            tooLong;
 
           try {
             validateGuestInput(input);

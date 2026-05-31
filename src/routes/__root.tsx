@@ -184,15 +184,22 @@ export const Route = createRootRoute({
       // Font stylesheets with display=swap for non-blocking rendering
       {
         rel: 'stylesheet',
-        href: 'https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&family=Hanken+Grotesk:wght@400;600;700&display=swap',
+        href: 'https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Hanken+Grotesk:wght@400;500;600;700&display=swap',
       },
       {
         rel: 'stylesheet',
-        href: 'https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;500;600;700&display=swap',
+        href: 'https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;500;600;700&family=Noto+Serif+Georgian:wght@400;500;600;700&display=swap',
       },
       {
         rel: 'stylesheet',
         href: 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap',
+      },
+      // Preload the hero LCP image so it paints as early as possible.
+      {
+        rel: 'preload',
+        as: 'image',
+        href: 'https://images.unsplash.com/photo-1565008576549-57569a49371d?q=80&w=1258&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+        fetchPriority: 'high',
       },
     ],
   }),
@@ -293,9 +300,6 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
         name: 'Book a Room',
       },
     },
-    sameAs: [
-      'https://www.booking.com/hotel/ge/kai-t-39-bilisi1.en-gb.html',
-    ],
   }
 
   // Local Business structured data for Google Maps / Local Pack

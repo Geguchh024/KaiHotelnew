@@ -167,19 +167,21 @@ export function RoomFormDialog({ isOpen, room, onClose }: RoomFormDialogProps) {
 
   return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 flex sm:items-center sm:justify-center sm:p-4"
       role="dialog"
       aria-modal="true"
       aria-label={title}
     >
       <div className="absolute inset-0 bg-black/40" onClick={onClose} aria-hidden="true" />
-      <div className="relative bg-surface-container-lowest border border-outline-variant/30 w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-xl mx-2 sm:mx-0">
+      <div className="relative bg-surface-container-lowest border-0 sm:border border-outline-variant/30 w-full sm:max-w-2xl h-full sm:h-auto sm:max-h-[90vh] overflow-y-auto shadow-xl">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 sm:p-8 border-b border-outline-variant/20">
-          <h2 className="font-[EB_Garamond] text-[22px] sm:text-[28px] text-primary">{title}</h2>
+        <div className="sticky top-0 z-10 flex items-center justify-between p-4 sm:p-8 bg-surface-container-lowest border-b border-outline-variant/20">
+          <h2 className="font-[EB_Garamond] text-[20px] sm:text-[28px] text-primary truncate pr-2">
+            {title}
+          </h2>
           <button
             onClick={onClose}
-            className="text-on-surface-variant hover:text-on-surface transition-colors"
+            className="text-on-surface-variant hover:text-on-surface p-1.5 rounded-full hover:bg-surface-container-high transition-colors shrink-0"
             aria-label="Close"
           >
             <span className="material-symbols-outlined">close</span>
@@ -331,7 +333,10 @@ export function RoomFormDialog({ isOpen, room, onClose }: RoomFormDialogProps) {
           </div>
 
           {/* Actions */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-outline-variant/20">
+          <div
+            className="sticky bottom-0 -mx-4 sm:-mx-8 px-4 sm:px-8 py-3 sm:py-4 bg-surface-container-lowest border-t border-outline-variant/20 flex items-center justify-end gap-3"
+            style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 12px)' }}
+          >
             <button
               type="button"
               onClick={onClose}

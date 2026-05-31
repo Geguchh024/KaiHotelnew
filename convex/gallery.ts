@@ -9,7 +9,7 @@ export const list = query({
       .query("galleryImages")
       .withIndex("by_display_order")
       .order("asc")
-      .collect();
+      .take(500);
   },
 });
 

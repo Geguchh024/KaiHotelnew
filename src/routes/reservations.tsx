@@ -108,39 +108,41 @@ function Reservations() {
     setSelectedRooms((prev) => prev.filter((id) => id !== roomId))
   }
 
-  // Mutation for creating reservation
-  const createReservation = useMutation(api.reservations.create)
+  // Atomic group-booking mutation: all selected rooms are booked together in a
+  // single transaction (or none are), so there is never a partial booking.
+  const createGroup = useMutation(api.reservations.createGroup)
 
   const handleConfirm = async () => {
     if (selectedRooms.length === 0 || !checkIn || !checkOut) return
     setError(null)
     setSubmitting(true)
     try {
-      // Create a reservation for each selected room, splitting guests proportionally
-      let lastReferenceCode = ''
+      // Split guests across the selected rooms: fill each room up to capacity,
+      // the last room takes the remainder (at least 1 each).
       let remainingGuests = guestCount
-      for (let i = 0; i < selectedRooms.length; i++) {
-        const roomId = selectedRooms[i]
+      const roomsPayload = selectedRooms.map((roomId, i) => {
         const roomData = rooms?.find((r) => r._id === roomId)
-        // Assign guests: fill each room up to capacity, last room gets the remainder
-        const roomGuestCount = i < selectedRooms.length - 1
-          ? Math.min(remainingGuests, roomData?.capacity ?? remainingGuests)
-          : remainingGuests
+        const roomGuestCount =
+          i < selectedRooms.length - 1
+            ? Math.min(remainingGuests, roomData?.capacity ?? remainingGuests)
+            : remainingGuests
         remainingGuests -= roomGuestCount
+        return { roomId, guestCount: Math.max(1, roomGuestCount) }
+      })
 
-        const result = await createReservation({
-          roomId,
-          guestFullName: fullName.trim(),
-          guestEmail: email.trim(),
-          guestPhone: phone.trim(),
-          guestCount: Math.max(1, roomGuestCount),
-          checkInDate: toUtcMidnight(checkIn),
-          checkOutDate: toUtcMidnight(checkOut),
-          specialRequests: specialRequests.trim() || undefined,
-        })
-        lastReferenceCode = result.referenceCode
-      }
-      void navigate({ to: '/reservations/confirmation/$referenceCode', params: { referenceCode: lastReferenceCode } })
+      const result = await createGroup({
+        guestFullName: fullName.trim(),
+        guestEmail: email.trim(),
+        guestPhone: phone.trim(),
+        checkInDate: toUtcMidnight(checkIn),
+        checkOutDate: toUtcMidnight(checkOut),
+        specialRequests: specialRequests.trim() || undefined,
+        rooms: roomsPayload,
+      })
+      void navigate({
+        to: '/reservations/confirmation/$referenceCode',
+        params: { referenceCode: result.referenceCode },
+      })
     } catch (err: unknown) {
       if (err instanceof ConvexError) {
         setError(err.data as string)

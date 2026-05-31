@@ -5,12 +5,18 @@ import { MessageDetailPanel } from '@/components/admin/MessageDetailPanel'
 import type { Message } from '@/components/admin/MessageRow'
 import { useQuery } from 'convex/react'
 import { api } from '../../../../convex/_generated/api'
+import { useAdminAuth } from '@/contexts/AdminAuthContext'
 
 export function MessagesTab() {
   const { locale, t } = useI18n()
+  const { sessionToken } = useAdminAuth()
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null)
 
-  const messages = useQuery(api.messages.list) ?? []
+  const messages =
+    useQuery(
+      api.messages.list,
+      sessionToken ? { sessionToken } : 'skip',
+    ) ?? []
 
   const handleSelectMessage = (message: Message) => {
     // Toggle off if already selected

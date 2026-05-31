@@ -145,9 +145,9 @@ export function ReservationRow({
               onTransition(reservation._id, tr)
             }}
             title={t(`admin.reservations.action.${tr}`)}
-            className="p-1 rounded-full text-on-surface-variant hover:bg-surface-container-high hover:text-primary transition-colors"
+            className="p-2 rounded-full text-on-surface-variant hover:bg-surface-container-high active:bg-surface-container-high hover:text-primary transition-colors"
           >
-            <span className="material-symbols-outlined text-[16px]">
+            <span className="material-symbols-outlined text-[20px]">
               {TRANSITION_ICONS[tr]}
             </span>
           </button>

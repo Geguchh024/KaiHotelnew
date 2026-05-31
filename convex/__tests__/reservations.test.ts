@@ -381,12 +381,12 @@ describe("Property 11: Unauthorized admin calls rejected", () => {
             })
           ).rejects.toThrow("Unauthorized");
 
-          // Test pendingCount with bad token
-          await expect(
-            t.query(api.reservations.pendingCount, {
-              sessionToken: badToken,
-            })
-          ).rejects.toThrow("Unauthorized");
+          // pendingCount degrades gracefully for an invalid/stale token: it
+          // returns 0 (the sidebar badge simply hides) and exposes NO data.
+          const badCount = await t.query(api.reservations.pendingCount, {
+            sessionToken: badToken,
+          });
+          expect(badCount).toBe(0);
 
           // Create a reservation to have a valid ID for transitionStatus
           const result = await t.mutation(api.reservations.create, {
@@ -533,5 +533,351 @@ describe("Full-lifecycle integration test", () => {
         checkOutDate: futureDate(27),
       })
     ).rejects.toThrow("Room is not available for those dates");
+  });
+});
+
+
+// ─── Property 12: Group booking is atomic ───────────────────────────────────
+// A multi-room booking either commits every room or none. If ANY room in the
+// selection conflicts with an existing active reservation, the whole group is
+// rejected and no new reservations are written.
+
+describe("Property 12: Group booking atomicity", () => {
+  it("rejects the entire group when any room conflicts, writing nothing", async () => {
+    await fc.assert(
+      fc.asyncProperty(
+        fc.integer({ min: 0, max: 200 }),
+        fc.integer({ min: 1, max: 14 }),
+        async (baseOffset, nights) => {
+          const t = convexTest(schema, modules);
+
+          // Seed two rooms + an admin
+          const { roomA, roomB } = await t.run(async (ctx: any) => {
+            const mk = (name: string) =>
+              ctx.db.insert("rooms", {
+                nameKa: name,
+                nameEn: name,
+                descriptionKa: "d",
+                descriptionEn: "d",
+                pricePerNight: 100,
+                capacity: 4,
+                amenities: [],
+                imageUrl: "https://example.com/r.jpg",
+                createdAt: Date.now(),
+                updatedAt: Date.now(),
+              });
+            const roomA = await mk("Room A");
+            const roomB = await mk("Room B");
+            return { roomA, roomB };
+          });
+
+          const ci = futureDate(baseOffset);
+          const co = futureDate(baseOffset + nights);
+
+          // Pre-book roomB for the same dates so the group must fail on roomB.
+          await t.mutation(api.reservations.create, {
+            roomId: roomB,
+            guestFullName: "Existing Guest",
+            guestEmail: "existing@example.com",
+            guestPhone: "+1234567890",
+            guestCount: 1,
+            checkInDate: ci,
+            checkOutDate: co,
+          });
+
+          const before = await t.run(async (ctx: any) =>
+            ctx.db.query("reservations").collect(),
+          );
+
+          // Attempt a group booking of [roomA (free), roomB (taken)] — must fail.
+          await expect(
+            t.mutation(api.reservations.createGroup, {
+              guestFullName: "Group Guest",
+              guestEmail: "group@example.com",
+              guestPhone: "+1987654321",
+              checkInDate: ci,
+              checkOutDate: co,
+              rooms: [
+                { roomId: roomA, guestCount: 2 },
+                { roomId: roomB, guestCount: 2 },
+              ],
+            }),
+          ).rejects.toThrow();
+
+          // Nothing new was written — roomA was NOT partially booked.
+          const after = await t.run(async (ctx: any) =>
+            ctx.db.query("reservations").collect(),
+          );
+          expect(after.length).toBe(before.length);
+        },
+      ),
+      { numRuns: 15 },
+    );
+  });
+
+  it("commits all rooms and links them with one bookingGroupId on success", async () => {
+    const t = convexTest(schema, modules);
+    const { roomA, roomB } = await t.run(async (ctx: any) => {
+      const mk = (name: string) =>
+        ctx.db.insert("rooms", {
+          nameKa: name,
+          nameEn: name,
+          descriptionKa: "d",
+          descriptionEn: "d",
+          pricePerNight: 80,
+          capacity: 3,
+          amenities: [],
+          imageUrl: "https://example.com/r.jpg",
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+        });
+      const roomA = await mk("Room A");
+      const roomB = await mk("Room B");
+      return { roomA, roomB };
+    });
+
+    const ci = futureDate(5);
+    const co = futureDate(8); // 3 nights
+
+    const result = await t.mutation(api.reservations.createGroup, {
+      guestFullName: "Group Guest",
+      guestEmail: "group@example.com",
+      guestPhone: "+1987654321",
+      checkInDate: ci,
+      checkOutDate: co,
+      rooms: [
+        { roomId: roomA, guestCount: 2 },
+        { roomId: roomB, guestCount: 1 },
+      ],
+    });
+
+    expect(result.referenceCodes.length).toBe(2);
+    expect(result.bookingGroupId).toBeTruthy();
+
+    // The group lookup returns both rooms for either reference code.
+    const group = await t.query(api.reservations.getReservationGroup, {
+      referenceCode: result.referenceCode,
+    });
+    expect(group.length).toBe(2);
+    const groupIds = new Set(group.map((r: any) => r.bookingGroupId));
+    expect(groupIds.size).toBe(1);
+    expect(group.every((r: any) => r.totalPrice === 80 * 3)).toBe(true);
+  });
+
+  it("rejects a group that selects the same room twice", async () => {
+    const t = convexTest(schema, modules);
+    const { roomId } = await seedRoomAndAdmin(t);
+    await expect(
+      t.mutation(api.reservations.createGroup, {
+        guestFullName: "Dup Guest",
+        guestEmail: "dup@example.com",
+        guestPhone: "+1234567890",
+        checkInDate: futureDate(1),
+        checkOutDate: futureDate(3),
+        rooms: [
+          { roomId, guestCount: 1 },
+          { roomId, guestCount: 1 },
+        ],
+      }),
+    ).rejects.toThrow("Duplicate room in selection");
+  });
+});
+
+
+// ─── Property 13: Bounded conflict scan stays correct past the read cap ──────
+// Even with many historical reservations on a room, a new overlapping booking
+// is still detected (the scan window is bounded but always covers any stay
+// that could overlap).
+
+describe("Property 13: Conflict detection survives a large history", () => {
+  it("detects an overlap against the most recent reservation among many", async () => {
+    const t = convexTest(schema, modules);
+    const { roomId } = await seedRoomAndAdmin(t);
+
+    // Create a long run of back-to-back, non-overlapping 1-night stays.
+    const N = 120;
+    for (let i = 0; i < N; i++) {
+      await t.mutation(api.reservations.create, {
+        roomId,
+        guestFullName: `Guest ${i}`,
+        guestEmail: `g${i}@example.com`,
+        guestPhone: "+1234567890",
+        guestCount: 1,
+        checkInDate: futureDate(i),
+        checkOutDate: futureDate(i + 1),
+      });
+    }
+
+    // Attempt to overlap the very last (most recent date) stay — must be rejected.
+    await expect(
+      t.mutation(api.reservations.create, {
+        roomId,
+        guestFullName: "Overlap Guest",
+        guestEmail: "overlap@example.com",
+        guestPhone: "+1234567890",
+        guestCount: 1,
+        checkInDate: futureDate(N - 1),
+        checkOutDate: futureDate(N),
+      }),
+    ).rejects.toThrow("Room is not available for those dates");
+  });
+});
+
+
+// ─── Max-stay guard ──────────────────────────────────────────────────────────
+
+describe("Max-stay validation", () => {
+  it("rejects stays longer than the configured maximum", async () => {
+    const t = convexTest(schema, modules);
+    const { roomId } = await seedRoomAndAdmin(t);
+    await expect(
+      t.mutation(api.reservations.create, {
+        roomId,
+        guestFullName: "Long Stay",
+        guestEmail: "long@example.com",
+        guestPhone: "+1234567890",
+        guestCount: 1,
+        checkInDate: futureDate(0),
+        checkOutDate: futureDate(400), // 400 nights > 365
+      }),
+    ).rejects.toThrow();
+  });
+});
+
+
+// ─── Property 14: Admin walk-in group atomicity & status assignment ─────────
+
+describe("Property 14: Walk-in group mutation", () => {
+  it("commits all rooms with shared bookingGroupId and assigns checkedIn for today", async () => {
+    const t = convexTest(schema, modules);
+    const { roomId, sessionToken } = await seedRoomAndAdmin(t);
+    const { roomId: roomB } = await t.run(async (ctx: any) => {
+      const id = await ctx.db.insert("rooms", {
+        nameKa: "B", nameEn: "B",
+        descriptionKa: "d", descriptionEn: "d",
+        pricePerNight: 50, capacity: 3, amenities: [],
+        imageUrl: "https://example.com/b.jpg",
+        createdAt: Date.now(), updatedAt: Date.now(),
+      });
+      return { roomId: id };
+    });
+
+    // Today → tomorrow (UTC midnight)
+    const today = new Date();
+    const ci = Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate());
+    const co = ci + MS_PER_DAY;
+
+    const result = await t.mutation(api.reservations.createWalkInGroup, {
+      sessionToken,
+      guestFullName: "Walk-In Guest",
+      guestPhone: "+1234567890",
+      checkInDate: ci,
+      checkOutDate: co,
+      rooms: [
+        { roomId, guestCount: 2 },
+        { roomId: roomB, guestCount: 1, totalPrice: 75 },
+      ],
+    });
+
+    expect(result.referenceCodes.length).toBe(2);
+
+    const all = await t.run(async (ctx: any) =>
+      ctx.db.query("reservations").collect(),
+    );
+    expect(all.length).toBe(2);
+    // All status = checkedIn (check-in is today)
+    expect(all.every((r: any) => r.status === "checkedIn")).toBe(true);
+    // Same bookingGroupId
+    const groups = new Set(all.map((r: any) => r.bookingGroupId));
+    expect(groups.size).toBe(1);
+    // Price override applied for room B
+    const overridden = all.find((r: any) => r.roomId === roomB);
+    expect(overridden!.totalPrice).toBe(75);
+  });
+
+  it("assigns 'confirmed' status when check-in is in the future", async () => {
+    const t = convexTest(schema, modules);
+    const { roomId, sessionToken } = await seedRoomAndAdmin(t);
+    const ci = futureDate(7);
+    const co = futureDate(10);
+
+    await t.mutation(api.reservations.createWalkInGroup, {
+      sessionToken,
+      guestFullName: "Future Guest",
+      checkInDate: ci,
+      checkOutDate: co,
+      rooms: [{ roomId, guestCount: 1 }],
+    });
+
+    const all = await t.run(async (ctx: any) =>
+      ctx.db.query("reservations").collect(),
+    );
+    expect(all[0].status).toBe("confirmed");
+    expect(all[0].checkedInAt).toBeUndefined();
+  });
+
+  it("rejects when any room conflicts and writes nothing", async () => {
+    const t = convexTest(schema, modules);
+    const { roomId, sessionToken } = await seedRoomAndAdmin(t);
+    const { roomId: roomB } = await t.run(async (ctx: any) => {
+      const id = await ctx.db.insert("rooms", {
+        nameKa: "B", nameEn: "B",
+        descriptionKa: "d", descriptionEn: "d",
+        pricePerNight: 50, capacity: 3, amenities: [],
+        imageUrl: "https://example.com/b.jpg",
+        createdAt: Date.now(), updatedAt: Date.now(),
+      });
+      return { roomId: id };
+    });
+
+    const ci = futureDate(5);
+    const co = futureDate(7);
+
+    // Pre-book roomB so the group must fail.
+    await t.mutation(api.reservations.create, {
+      roomId: roomB,
+      guestFullName: "Existing",
+      guestEmail: "x@y.com",
+      guestPhone: "+1234567890",
+      guestCount: 1,
+      checkInDate: ci,
+      checkOutDate: co,
+    });
+
+    const before = await t.run(async (ctx: any) =>
+      ctx.db.query("reservations").collect(),
+    );
+
+    await expect(
+      t.mutation(api.reservations.createWalkInGroup, {
+        sessionToken,
+        guestFullName: "New",
+        checkInDate: ci,
+        checkOutDate: co,
+        rooms: [
+          { roomId, guestCount: 1 },
+          { roomId: roomB, guestCount: 1 },
+        ],
+      }),
+    ).rejects.toThrow();
+
+    const after = await t.run(async (ctx: any) =>
+      ctx.db.query("reservations").collect(),
+    );
+    expect(after.length).toBe(before.length);
+  });
+
+  it("requires a valid admin session", async () => {
+    const t = convexTest(schema, modules);
+    const { roomId } = await seedRoomAndAdmin(t);
+    await expect(
+      t.mutation(api.reservations.createWalkInGroup, {
+        sessionToken: "bogus",
+        guestFullName: "X",
+        checkInDate: futureDate(1),
+        checkOutDate: futureDate(2),
+        rooms: [{ roomId, guestCount: 1 }],
+      }),
+    ).rejects.toThrow("Unauthorized");
   });
 });

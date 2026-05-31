@@ -23,8 +23,11 @@ B2_APPLICATION_KEY
 B2_BUCKET_ID
 B2_BUCKET_NAME
 B2_ENDPOINT
+ADMIN_SETUP_SECRET
 ```
 
 ## Seeding Admin Credentials
 
-Run the `seedAdmin` mutation from the Convex dashboard or CLI to create the initial admin user. Passwords are stored as bcrypt hashes — never in plaintext.
+Set `ADMIN_SETUP_SECRET`, then run the `seedAdmin` action from the Convex
+dashboard or CLI with `username`, `password`, and `setupSecret` to create the
+initial admin user. Passwords are stored as bcrypt hashes - never in plaintext.

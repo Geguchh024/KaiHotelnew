@@ -55,7 +55,9 @@ export default defineSchema({
     body: v.string(),
     isRead: v.boolean(),
     submittedAt: v.number(), // Unix ms timestamp
-  }).index("by_submitted_at", ["submittedAt"]),
+  })
+    .index("by_submitted_at", ["submittedAt"])
+    .index("by_isRead", ["isRead"]),
 
   siteSettings: defineTable({
     // Singleton — only one record; upserted by settings mutation
@@ -73,6 +75,10 @@ export default defineSchema({
   reservations: defineTable({
     roomId: v.id("rooms"),
     referenceCode: v.string(),
+    // Shared identifier for reservations booked together as a single group
+    // (e.g. one guest reserving multiple rooms in one checkout). Optional so
+    // single-room and legacy reservations remain valid.
+    bookingGroupId: v.optional(v.string()),
     guestFullName: v.string(),
     guestEmail: v.string(),
     guestPhone: v.string(),
@@ -95,6 +101,7 @@ export default defineSchema({
     specialRequests: v.optional(v.string()),
   })
     .index("by_reference_code", ["referenceCode"])
+    .index("by_booking_group", ["bookingGroupId"])
     .index("by_room_and_checkInDate", ["roomId", "checkInDate"])
     .index("by_status", ["status"])
     .index("by_created_at", ["createdAt"]),

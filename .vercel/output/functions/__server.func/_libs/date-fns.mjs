@@ -179,7 +179,8 @@ function startOfYear(date, options) {
   return date_;
 }
 function endOfWeek(date, options) {
-  const weekStartsOn = options?.weekStartsOn;
+  const defaultOptions2 = getDefaultOptions();
+  const weekStartsOn = options?.weekStartsOn ?? options?.locale?.options?.weekStartsOn ?? defaultOptions2.weekStartsOn ?? defaultOptions2.locale?.options?.weekStartsOn ?? 0;
   const _date = toDate(date, options?.in);
   const day = _date.getDay();
   const diff = (day < weekStartsOn ? -7 : 0) + 6 - (day - weekStartsOn);
@@ -1999,19 +2000,19 @@ const ka = {
 };
 export {
   addDays as a,
-  endOfMonth as b,
-  startOfWeek as c,
+  startOfMonth as b,
+  addMonths as c,
   differenceInDays as d,
   enUS as e,
   format as f,
-  endOfWeek as g,
-  startOfDay as h,
-  subMonths as i,
-  addMonths as j,
+  subMonths as g,
+  endOfMonth as h,
+  startOfWeek as i,
+  endOfWeek as j,
   ka as k,
-  isSameDay as l,
-  isSameMonth as m,
-  isBefore as n,
+  isSameMonth as l,
+  isBefore as m,
+  isSameDay as n,
   isAfter as o,
-  startOfMonth as s
+  startOfDay as s
 };

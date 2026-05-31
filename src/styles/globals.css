@@ -30,9 +30,17 @@
   --color-error: #ba1a1a;
   --color-on-error: #ffffff;
 
-  --font-family-display: 'EB Garamond', serif;
-  --font-family-body: 'Hanken Grotesk', sans-serif;
-  --font-family-georgian: 'Noto Sans Georgian', sans-serif;
+  /* Premium bilingual type system.
+     Latin serif (EB Garamond) pairs with an elegant Georgian serif
+     (Noto Serif Georgian) so headings render beautifully in both scripts.
+     Per-glyph font fallback handles mixed ka/en text automatically. */
+  --font-family-display: 'EB Garamond', 'Noto Serif Georgian', Georgia, 'Times New Roman', serif;
+  --font-family-body: 'Hanken Grotesk', 'Noto Sans Georgian', system-ui, -apple-system, sans-serif;
+  --font-family-georgian: 'Noto Sans Georgian', system-ui, sans-serif;
+  --font-family-georgian-display: 'Noto Serif Georgian', 'EB Garamond', Georgia, serif;
+
+  /* Refined easing curve used across all motion for a calm, premium feel. */
+  --ease-premium: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .material-symbols-outlined {
@@ -42,18 +50,45 @@
 body {
   background-color: #fbf9f9;
   font-family: var(--font-family-body);
-  /* Smooth scrolling for anchor links */
+  /* Crisp, premium text rendering */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  font-feature-settings: 'kern' 1, 'liga' 1;
+  font-synthesis: none;
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-family-display);
+  font-feature-settings: 'kern' 1, 'liga' 1, 'dlig' 1;
 }
 
 .font-georgian {
   font-family: var(--font-family-georgian);
+}
+
+/* ─── Premium bilingual font fallbacks ────────────────────────────────────
+   The codebase uses inline Tailwind arbitrary-value font utilities
+   (font-[EB_Garamond], font-[Hanken_Grotesk]) which compile to a single
+   font-family with no fallback — so Georgian glyphs in those elements fall
+   back to an arbitrary system font. These unlayered overrides attach the
+   correct Georgian companion fonts and OpenType features to every existing
+   usage at once, without editing any component. Unlayered rules intentionally
+   win over Tailwind's layered utilities. */
+.font-\[EB_Garamond\] {
+  font-family: 'EB Garamond', 'Noto Serif Georgian', Georgia, 'Times New Roman', serif;
+  font-feature-settings: 'kern' 1, 'liga' 1, 'dlig' 1;
+}
+
+.font-\[Hanken_Grotesk\] {
+  font-family: 'Hanken Grotesk', 'Noto Sans Georgian', system-ui, -apple-system, sans-serif;
+  font-feature-settings: 'kern' 1, 'liga' 1;
+}
+
+/* Georgian headings get the serif companion explicitly when tagged. */
+.font-georgian.font-\[EB_Garamond\],
+h1.font-georgian, h2.font-georgian, h3.font-georgian {
+  font-family: var(--font-family-georgian-display);
 }
 
 @layer base {
@@ -64,20 +99,31 @@ h1, h2, h3, h4, h5, h6 {
 
 /* GPU-accelerated image transitions */
 img {
-  will-change: opacity;
-  contain: layout style;
+  display: block;
 }
 
-/* Content-visibility for off-screen sections — skip rendering until scrolled into view */
-section {
-  content-visibility: auto;
-  contain-intrinsic-size: auto 500px;
+.blurhash-image {
+  isolation: isolate;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.blurhash-image__placeholder {
+  z-index: 0;
+  transform: scale(1.06);
+  transition: opacity 0.8s var(--ease-premium);
+  will-change: opacity;
+}
+
+.blurhash-image__asset {
+  z-index: 1;
+  transition: opacity 0.68s var(--ease-premium);
+  backface-visibility: hidden;
 }
 
 /* Sponsor logos — prevent layout shift */
 footer img {
   aspect-ratio: auto;
-  contain: layout style paint;
 }
 
 /* Animations for dropdowns */
@@ -95,6 +141,78 @@ footer img {
   animation: fadeIn 0.15s ease-out, slideInFromTop 0.15s ease-out;
 }
 
+/* ─── Premium motion system ───────────────────────────────────────────────
+   Scroll-reveal: elements start hidden + slightly offset and ease into place
+   when they enter the viewport (toggled via the `.is-visible` class added by
+   the useScrollReveal hook / IntersectionObserver). */
+@keyframes heroRise {
+  from { opacity: 0; transform: translate3d(0, 18px, 0); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes kenBurns {
+  from { transform: scale(1); }
+  to   { transform: scale(1.08); }
+}
+
+/* Base state for reveal targets — hidden until observed. */
+.reveal {
+  opacity: 0;
+  transform: translate3d(0, 18px, 0);
+  transition:
+    opacity 0.68s var(--ease-premium),
+    transform 0.78s var(--ease-premium);
+  will-change: opacity, transform;
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  will-change: auto;
+}
+
+/* Optional stagger steps for grids of cards. */
+.reveal[data-delay="1"] { transition-delay: 0.05s; }
+.reveal[data-delay="2"] { transition-delay: 0.10s; }
+.reveal[data-delay="3"] { transition-delay: 0.15s; }
+.reveal[data-delay="4"] { transition-delay: 0.20s; }
+.reveal[data-delay="5"] { transition-delay: 0.25s; }
+
+/* Hero content entrance on first paint. */
+.hero-rise {
+  opacity: 0;
+  animation: heroRise 0.9s var(--ease-premium) forwards;
+}
+.hero-rise-1 { animation-delay: 0.05s; }
+.hero-rise-2 { animation-delay: 0.18s; }
+.hero-rise-3 { animation-delay: 0.31s; }
+.hero-rise-4 { animation-delay: 0.44s; }
+
+/* Slow Ken Burns drift on the hero background for a living, premium feel. */
+.ken-burns {
+  animation: kenBurns 18s var(--ease-premium) forwards;
+  transform-origin: center;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+/* Subtle lift used on interactive cards. */
+.lift {
+  transition: transform 0.4s var(--ease-premium), box-shadow 0.4s var(--ease-premium);
+}
+.lift:hover {
+  transform: translateY(-4px);
+}
+
+/* Image zoom-on-hover helper for cards (paired with overflow-hidden parent). */
+.img-zoom {
+  transition: transform 0.6s var(--ease-premium);
+  backface-visibility: hidden;
+}
+.group:hover .img-zoom {
+  transform: scale(1.05);
+}
+
 /* Reduce motion for users who prefer it */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -103,5 +221,8 @@ footer img {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+  .reveal { opacity: 1 !important; transform: none !important; }
+  .hero-rise { opacity: 1 !important; }
+  .ken-burns { animation: none !important; }
 }
 

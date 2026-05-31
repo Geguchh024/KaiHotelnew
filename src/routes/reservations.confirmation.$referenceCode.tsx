@@ -16,6 +16,7 @@ function ConfirmationPage() {
   const dateLocale = locale === 'ka' ? ka : enUS
 
   const reservation = useQuery(api.reservations.getByReferenceCode, { referenceCode })
+  const group = useQuery(api.reservations.getReservationGroup, { referenceCode })
   const rooms = useQuery(api.rooms.list)
 
   // Loading state
@@ -65,6 +66,17 @@ function ConfirmationPage() {
     ? (locale === 'ka' ? room.nameKa : room.nameEn)
     : (locale === 'ka' ? 'ნომერი' : 'Room')
 
+  // Group booking: all rooms reserved together. Falls back to the single
+  // reservation while the group query is still loading.
+  const groupItems = group && group.length > 0 ? group : [reservation]
+  const isGroup = groupItems.length > 1
+  const groupTotalPrice = groupItems.reduce((sum, r) => sum + r.totalPrice, 0)
+  const groupGuestCount = groupItems.reduce((sum, r) => sum + r.guestCount, 0)
+  const roomNameFor = (roomId: string) => {
+    const r = rooms?.find((x) => x._id === roomId)
+    return r ? (locale === 'ka' ? r.nameKa : r.nameEn) : (locale === 'ka' ? 'ნომერი' : 'Room')
+  }
+
   // Calculate night count
   const MS_PER_DAY = 86_400_000
   const nights = Math.round((reservation.checkOutDate - reservation.checkInDate) / MS_PER_DAY)
@@ -110,6 +122,13 @@ function ConfirmationPage() {
             <p className="font-[Hanken_Grotesk] text-[22px] sm:text-[28px] font-bold text-primary tracking-[0.1em]">
               {reservation.referenceCode}
             </p>
+            {isGroup && (
+              <p className="font-[Hanken_Grotesk] text-[10px] text-on-surface-variant mt-2 font-georgian">
+                {locale === 'ka'
+                  ? `ჯგუფური ჯავშანი — ${groupItems.length} ნომერი დაჯავშნილია ერთად`
+                  : `Group booking — ${groupItems.length} rooms reserved together`}
+              </p>
+            )}
           </div>
 
           {/* Reservation Details */}
@@ -121,10 +140,24 @@ function ConfirmationPage() {
                   {t('res.roomDetails')}
                 </h4>
                 <div className="space-y-2 text-[11px]">
-                  <div className="flex justify-between">
-                    <span className="text-secondary font-georgian">{locale === 'ka' ? 'ნომერი' : 'Room'}</span>
-                    <span className="text-primary font-semibold">{roomName}</span>
-                  </div>
+                  {isGroup ? (
+                    <div className="space-y-1.5 pb-1">
+                      {groupItems.map((r) => (
+                        <div key={r._id} className="flex justify-between items-center">
+                          <span className="text-secondary font-georgian">
+                            {roomNameFor(r.roomId)}
+                            <span className="text-on-surface-variant/60 ml-1 font-mono text-[10px]">{r.referenceCode}</span>
+                          </span>
+                          <span className="text-primary font-semibold">&#8382;{Math.round(r.totalPrice)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="flex justify-between">
+                      <span className="text-secondary font-georgian">{locale === 'ka' ? 'ნომერი' : 'Room'}</span>
+                      <span className="text-primary font-semibold">{roomName}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between">
                     <span className="text-secondary font-georgian">{t('booking.checkin')}</span>
                     <span className="text-primary font-semibold">{format(checkInDate, 'dd MMM yyyy', { locale: dateLocale })}</span>
@@ -139,7 +172,7 @@ function ConfirmationPage() {
                   </div>
                   <div className="flex justify-between border-t border-outline-variant/20 pt-2 mt-2">
                     <span className="text-primary font-semibold font-georgian">{t('res.total')}</span>
-                    <span className="text-primary font-bold text-[14px]">&#8382;{Math.round(reservation.totalPrice)}</span>
+                    <span className="text-primary font-bold text-[14px]">&#8382;{Math.round(groupTotalPrice)}</span>
                   </div>
                 </div>
               </div>
@@ -164,7 +197,7 @@ function ConfirmationPage() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-secondary font-georgian">{t('booking.guests')}</span>
-                    <span className="text-primary font-semibold">{reservation.guestCount}</span>
+                    <span className="text-primary font-semibold">{groupGuestCount}</span>
                   </div>
                   {reservation.specialRequests && (
                     <div className="pt-2 border-t border-outline-variant/20 mt-2">

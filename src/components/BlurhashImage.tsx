@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect, useCallback, memo } from 'react'
+import { memo, useCallback, useEffect, useRef, useState } from 'react'
+import type { SyntheticEvent } from 'react'
 import { decode } from 'blurhash'
 
 interface BlurhashImageProps {
@@ -8,12 +9,15 @@ interface BlurhashImageProps {
   className?: string
   /** Mark as high-priority (above the fold). Disables lazy loading. */
   priority?: boolean
-  /** Responsive sizes attribute for the browser to pick the right source */
+  /** Responsive sizes attribute for the browser to pick the right source. */
   sizes?: string
+  /** How the full image fits its frame. Defaults to cover for cards and heroes. */
+  objectFit?: 'cover' | 'contain'
 }
 
-// In-memory cache for decoded blurhash data URLs to avoid re-decoding
+// Keep decoded placeholders and image state across repeated cards and navigation.
 const blurhashCache = new Map<string, string>()
+const decodedImageCache = new Set<string>()
 
 function decodeBlurhashToDataUrl(hash: string): string | null {
   if (blurhashCache.has(hash)) return blurhashCache.get(hash)!
@@ -41,15 +45,9 @@ function decodeBlurhashToDataUrl(hash: string): string | null {
 }
 
 /**
- * Renders an image with a BlurHash placeholder that shows while the
- * full image is loading. Once the image loads, it fades in over the blur.
- *
- * Optimizations:
- * - Native lazy loading for off-screen images (disabled with `priority`)
- * - `decoding="async"` to avoid blocking the main thread
- * - `fetchpriority` hint for above-the-fold images
- * - Blurhash decode results are cached in memory
- * - Memoized to prevent unnecessary re-renders
+ * Renders a BlurHash immediately, then cross-fades to the full image only
+ * after its pixels have decoded. The overlap prevents a blank frame between
+ * the placeholder and the final image on slower connections.
  */
 export const BlurhashImage = memo(function BlurhashImage({
   src,
@@ -58,32 +56,79 @@ export const BlurhashImage = memo(function BlurhashImage({
   className = '',
   priority = false,
   sizes,
+  objectFit = 'cover',
 }: BlurhashImageProps) {
-  const [isLoaded, setIsLoaded] = useState(false)
+  const [loadedSrc, setLoadedSrc] = useState<string | null>(() =>
+    decodedImageCache.has(src) ? src : null,
+  )
+  const [placeholder, setPlaceholder] = useState<{
+    hash: string
+    dataUrl: string
+  } | null>(null)
   const imgRef = useRef<HTMLImageElement>(null)
-  const blurhashDataUrl = blurhash ? decodeBlurhashToDataUrl(blurhash) : null
+  const currentSrcRef = useRef(src)
 
-  // If the image is already cached by the browser, mark as loaded immediately.
+  const isLoaded = loadedSrc === src
+  const blurhashDataUrl =
+    placeholder && placeholder.hash === blurhash ? placeholder.dataUrl : null
+
+  const revealDecodedImage = useCallback(
+    async (image: HTMLImageElement, expectedSrc: string) => {
+      try {
+        await image.decode()
+      } catch {
+        // Cached images can reject decode() even when their pixels are ready.
+      }
+
+      if (currentSrcRef.current !== expectedSrc || image.naturalWidth === 0) {
+        return
+      }
+
+      decodedImageCache.add(expectedSrc)
+      setLoadedSrc(expectedSrc)
+    },
+    [],
+  )
+
   useEffect(() => {
-    if (imgRef.current?.complete && imgRef.current.naturalWidth > 0) {
-      setIsLoaded(true)
-    }
-  }, [src])
+    currentSrcRef.current = src
+    setLoadedSrc(decodedImageCache.has(src) ? src : null)
 
-  const handleLoad = useCallback(() => setIsLoaded(true), [])
+    if (blurhash) {
+      const dataUrl = decodeBlurhashToDataUrl(blurhash)
+      setPlaceholder(dataUrl ? { hash: blurhash, dataUrl } : null)
+    } else {
+      setPlaceholder(null)
+    }
+
+    const image = imgRef.current
+    if (image?.complete && image.naturalWidth > 0) {
+      void revealDecodedImage(image, src)
+    }
+  }, [blurhash, revealDecodedImage, src])
+
+  const handleLoad = useCallback(
+    (event: SyntheticEvent<HTMLImageElement>) => {
+      void revealDecodedImage(event.currentTarget, currentSrcRef.current)
+    },
+    [revealDecodedImage],
+  )
 
   return (
-    <div className={`relative overflow-hidden ${className}`}>
-      {/* BlurHash placeholder as a background — no extra canvas element needed */}
-      {blurhashDataUrl && !isLoaded && (
+    <div
+      className={`blurhash-image relative overflow-hidden bg-surface-container ${className}`}
+      aria-busy={!isLoaded}
+    >
+      {blurhashDataUrl && (
         <div
-          className="absolute inset-0 w-full h-full bg-cover bg-center"
+          className={`blurhash-image__placeholder absolute inset-0 w-full h-full bg-cover bg-center ${
+            isLoaded ? 'opacity-0' : 'opacity-100'
+          }`}
           style={{ backgroundImage: `url(${blurhashDataUrl})` }}
           aria-hidden="true"
         />
       )}
 
-      {/* Actual image — always rendered, fades in on load */}
       <img
         ref={imgRef}
         src={src}
@@ -92,9 +137,9 @@ export const BlurhashImage = memo(function BlurhashImage({
         decoding="async"
         fetchPriority={priority ? 'high' : 'auto'}
         sizes={sizes}
-        className={`w-full h-full object-cover transition-opacity duration-500 ${
-          isLoaded ? 'opacity-100' : 'opacity-0'
-        }`}
+        className={`blurhash-image__asset relative block w-full h-full ${
+          objectFit === 'contain' ? 'object-contain' : 'object-cover'
+        } ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
         onLoad={handleLoad}
       />
     </div>

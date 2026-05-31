@@ -1,14 +1,20 @@
 import { useI18n } from '@/lib/i18n'
 import { useQuery } from 'convex/react'
 import { api } from '../../../../convex/_generated/api'
+import { useAdminAuth } from '@/contexts/AdminAuthContext'
 
 export function AnalyticsTab() {
   const { locale, t } = useI18n()
+  const { sessionToken } = useAdminAuth()
 
   const rooms = useQuery(api.rooms.list) ?? []
   const galleryImages = useQuery(api.gallery.list) ?? []
   const sponsors = useQuery(api.sponsors.list) ?? []
-  const unreadMessages = useQuery(api.messages.unreadCount) ?? 0
+  const unreadMessages =
+    useQuery(
+      api.messages.unreadCount,
+      sessionToken ? { sessionToken } : 'skip',
+    ) ?? 0
 
   const stats = [
     {

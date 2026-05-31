@@ -7,6 +7,7 @@ describe("Booking.com removal smoke test", () => {
     "src/routes/index.tsx",
     "src/routes/rooms.tsx",
     "src/components/Navbar.tsx",
+    "src/routes/__root.tsx",
   ];
 
   for (const file of filesToCheck) {

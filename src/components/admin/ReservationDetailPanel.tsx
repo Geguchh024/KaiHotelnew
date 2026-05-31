@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useI18n } from '@/lib/i18n'
 import { useAdminAuth } from '@/contexts/AdminAuthContext'
-import { useMutation } from 'convex/react'
+import { useMutation, useQuery } from 'convex/react'
 import { api } from '../../../convex/_generated/api'
 import { StatusBadge } from './StatusBadge'
 import { ConfirmationDialog } from './ConfirmationDialog'
@@ -10,6 +10,7 @@ import { ka, enUS } from 'date-fns/locale'
 import { allowedTransitions, nightCount } from '../../../convex/availability'
 import type { Status, Transition } from '../../../convex/availability'
 import type { Reservation } from './ReservationRow'
+import { transitionPrompt } from './transitionPrompt'
 
 interface ReservationDetailPanelProps {
   reservation: Reservation
@@ -34,33 +35,44 @@ export function ReservationDetailPanel({
   const { sessionToken } = useAdminAuth()
   const transitionMutation = useMutation(api.reservations.transitionStatus)
   const dateLocale = locale === 'ka' ? ka : enUS
-  const [cancelDialogOpen, setCancelDialogOpen] = useState(false)
+  // Pending transition awaiting confirmation — covers every action the panel
+  // can trigger so destructive AND state-changing operations always have a
+  // second tap.
+  const [pendingTransition, setPendingTransition] =
+    useState<Transition | null>(null)
+
+  // If this reservation is part of a multi-room group booking, load the
+  // sibling reservations so the admin sees the full booking at a glance.
+  const group = useQuery(
+    api.reservations.getReservationGroup,
+    reservation.bookingGroupId ? { referenceCode: reservation.referenceCode } : 'skip',
+  )
+  const groupSiblings = (group ?? []).filter((r) => r._id !== reservation._id)
 
   const nights = nightCount(reservation.checkInDate, reservation.checkOutDate)
   const transitions = allowedTransitions(reservation.status as Status)
 
-  const handleTransition = async (transition: Transition) => {
-    if (!sessionToken) return
-    if (transition === 'cancel') {
-      setCancelDialogOpen(true)
-      return
-    }
-    await transitionMutation({
-      sessionToken,
-      id: reservation._id,
-      transition,
-    })
+  // Open the confirmation dialog instead of running the mutation directly.
+  const requestTransition = (transition: Transition) => {
+    setPendingTransition(transition)
   }
 
-  const handleConfirmCancel = async () => {
-    if (!sessionToken) return
+  const handleConfirmTransition = async () => {
+    if (!sessionToken || !pendingTransition) return
     await transitionMutation({
       sessionToken,
       id: reservation._id,
-      transition: 'cancel',
+      transition: pendingTransition,
     })
-    setCancelDialogOpen(false)
+    setPendingTransition(null)
   }
+
+  const promptCopy = pendingTransition
+    ? transitionPrompt(pendingTransition, locale, {
+        guestName: reservation.guestFullName,
+        roomName,
+      })
+    : null
 
   function formatTimestamp(ts: number | undefined): string {
     if (!ts) return '—'
@@ -88,6 +100,24 @@ export function ReservationDetailPanel({
 
       {/* Panel body */}
       <div className="px-4 sm:px-6 py-4 sm:py-5 space-y-4 sm:space-y-5">
+        {/* Group-booking banner */}
+        {groupSiblings.length > 0 && (
+          <div className="flex items-start gap-2.5 bg-primary/5 border border-primary/20 rounded-sm px-3 py-2.5">
+            <span className="material-symbols-outlined text-primary text-[18px] mt-0.5">group_work</span>
+            <div className="min-w-0">
+              <p className="font-[Hanken_Grotesk] text-[12px] font-semibold text-primary">
+                {locale === 'ka'
+                  ? `ჯგუფური ჯავშანი — ${groupSiblings.length + 1} ნომერი`
+                  : `Group booking — ${groupSiblings.length + 1} rooms`}
+              </p>
+              <p className="font-[Hanken_Grotesk] text-[11px] text-on-surface-variant mt-0.5">
+                {locale === 'ka' ? 'დაკავშირებული კოდები:' : 'Linked codes:'}{' '}
+                {groupSiblings.map((r) => r.referenceCode).join(', ')}
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Guest info */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
@@ -233,7 +263,7 @@ export function ReservationDetailPanel({
             {transitions.map((tr) => (
               <button
                 key={tr}
-                onClick={() => void handleTransition(tr)}
+                onClick={() => requestTransition(tr)}
                 className={[
                   'flex items-center gap-2 px-4 py-2.5 rounded-full font-[Hanken_Grotesk] text-[13px] font-semibold transition-all duration-200',
                   tr === 'cancel'
@@ -251,15 +281,19 @@ export function ReservationDetailPanel({
         )}
       </div>
 
-      {/* Cancel confirmation dialog */}
+      {/* Confirmation dialog — every transition (confirm / check-in /
+          check-out / mark no-show / cancel) requires a second tap so the
+          admin never triggers an irreversible state by accident. */}
       <ConfirmationDialog
-        isOpen={cancelDialogOpen}
-        title={t('admin.reservations.confirmCancelTitle')}
-        description={t('admin.reservations.confirmCancelDescription')}
-        onConfirm={() => void handleConfirmCancel()}
-        onCancel={() => setCancelDialogOpen(false)}
-        confirmLabel={t('admin.reservations.action.cancel')}
-        cancelLabel={t('admin.common.cancel')}
+        isOpen={pendingTransition !== null && promptCopy !== null}
+        title={promptCopy?.title ?? ''}
+        description={promptCopy?.description ?? ''}
+        onConfirm={() => void handleConfirmTransition()}
+        onCancel={() => setPendingTransition(null)}
+        confirmLabel={promptCopy?.confirmLabel}
+        cancelLabel={promptCopy?.cancelLabel}
+        tone={promptCopy?.tone}
+        icon={promptCopy?.icon}
       />
     </div>
   )

@@ -5,7 +5,7 @@ import { validateSession } from "./utils";
 export const list = query({
   args: {},
   handler: async (ctx) => {
-    return await ctx.db.query("rooms").collect();
+    return await ctx.db.query("rooms").take(100);
   },
 });
 

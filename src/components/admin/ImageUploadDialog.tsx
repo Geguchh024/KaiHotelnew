@@ -139,7 +139,7 @@ export function ImageUploadDialog({ isOpen, onClose }: ImageUploadDialogProps) {
 
   return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 flex sm:items-center sm:justify-center sm:p-4"
       role="dialog"
       aria-modal="true"
     >
@@ -151,7 +151,7 @@ export function ImageUploadDialog({ isOpen, onClose }: ImageUploadDialogProps) {
       />
 
       {/* Dialog */}
-      <div className="relative bg-surface-container-lowest border border-outline-variant/30 w-full max-w-2xl max-h-[90vh] flex flex-col shadow-xl mx-2 sm:mx-0">
+      <div className="relative bg-surface-container-lowest border-0 sm:border border-outline-variant/30 w-full sm:max-w-2xl h-full sm:h-auto sm:max-h-[90vh] flex flex-col shadow-xl">
         {/* Header */}
         <div className="flex items-center justify-between px-4 sm:px-8 py-4 sm:py-6 border-b border-outline-variant/20 shrink-0">
           <div>

@@ -10,8 +10,16 @@ import bcrypt from "bcryptjs";
  * Hashes the password with bcrypt, then calls an internal mutation to write to DB.
  */
 export const seedAdmin = action({
-  args: { username: v.string(), password: v.string() },
+  args: {
+    username: v.string(),
+    password: v.string(),
+    setupSecret: v.string(),
+  },
   handler: async (ctx, args) => {
+    const setupSecret = process.env.ADMIN_SETUP_SECRET;
+    if (!setupSecret || args.setupSecret !== setupSecret) {
+      throw new ConvexError("Unauthorized");
+    }
     const passwordHash = await bcrypt.hash(args.password, 12);
     await ctx.runMutation(internal.auth.insertAdminUser, {
       username: args.username,

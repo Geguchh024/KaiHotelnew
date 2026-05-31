@@ -3,21 +3,26 @@ import { query, mutation } from "./_generated/server";
 import { validateSession } from "./utils";
 
 export const list = query({
-  args: {},
-  handler: async (ctx) => {
+  args: { sessionToken: v.string() },
+  handler: async (ctx, args) => {
+    await validateSession(ctx, args.sessionToken);
     return await ctx.db
       .query("messages")
       .withIndex("by_submitted_at")
       .order("desc")
-      .collect();
+      .take(500);
   },
 });
 
 export const unreadCount = query({
-  args: {},
-  handler: async (ctx) => {
-    const messages = await ctx.db.query("messages").collect();
-    return messages.filter((m) => !m.isRead).length;
+  args: { sessionToken: v.string() },
+  handler: async (ctx, args) => {
+    await validateSession(ctx, args.sessionToken);
+    const messages = await ctx.db
+      .query("messages")
+      .withIndex("by_isRead", (q) => q.eq("isRead", false))
+      .take(1000);
+    return messages.length;
   },
 });
 

@@ -1,33 +1,50 @@
+import { Component, type ReactNode } from 'react'
 import { useNavigate } from '@tanstack/react-router'
+import { useQuery } from 'convex/react'
+import { ConvexError } from 'convex/values'
 import { useI18n } from '@/lib/i18n'
 import { useAdminAuth } from '@/contexts/AdminAuthContext'
 import { cn } from '@/lib/utils'
-import { useQuery, useMutation } from 'convex/react'
-import { ConvexError } from 'convex/values'
 import { api } from '../../../convex/_generated/api'
-import { Component, type ReactNode } from 'react'
 
-type AdminTab = 'analytics' | 'rooms' | 'reservations' | 'gallery' | 'sponsors' | 'messages' | 'settings'
+type AdminTab =
+  | 'analytics'
+  | 'rooms'
+  | 'reservations'
+  | 'gallery'
+  | 'sponsors'
+  | 'messages'
+  | 'settings'
 
 interface AdminSidebarProps {
   activeTab: AdminTab
-  isOpen: boolean
-  onClose: () => void
 }
 
+/**
+ * Desktop-only navigation sidebar. Mirrors the bottom-nav destinations
+ * (Dashboard · Bookings · Rooms · Messages · Settings) one-for-one so the
+ * IA stays consistent across breakpoints. Gallery, Sponsors, language and
+ * sign-out continue to live inside the Settings hub.
+ */
 const navItems: { icon: string; tab: AdminTab; labelKey: string }[] = [
-  { icon: 'analytics', tab: 'analytics', labelKey: 'admin.sidebar.analytics' },
+  { icon: 'dashboard', tab: 'analytics', labelKey: 'admin.sidebar.analytics' },
+  {
+    icon: 'event_available',
+    tab: 'reservations',
+    labelKey: 'admin.sidebar.reservations',
+  },
   { icon: 'bed', tab: 'rooms', labelKey: 'admin.sidebar.rooms' },
-  { icon: 'event_available', tab: 'reservations', labelKey: 'admin.sidebar.reservations' },
-  { icon: 'photo_library', tab: 'gallery', labelKey: 'admin.sidebar.gallery' },
-  { icon: 'handshake', tab: 'sponsors', labelKey: 'admin.sidebar.sponsors' },
   { icon: 'mail', tab: 'messages', labelKey: 'admin.sidebar.messages' },
   { icon: 'settings', tab: 'settings', labelKey: 'admin.sidebar.settings' },
 ]
 
+// When Gallery or Sponsors are open they live inside Settings — keep the
+// Settings nav item highlighted.
+const SETTINGS_GROUP = new Set<AdminTab>(['settings', 'gallery', 'sponsors'])
+
 /**
- * Error boundary that catches Convex "Unauthorized" errors from stale session
- * tokens and triggers a logout + redirect to /admin/login.
+ * Catches the Convex "Unauthorized" error from a stale token and triggers a
+ * client-side logout so the layout can redirect to /admin/login cleanly.
  */
 class AuthErrorBoundary extends Component<
   { children: ReactNode; onUnauthorized: () => void },
@@ -44,7 +61,8 @@ class AuthErrorBoundary extends Component<
 
   componentDidCatch(error: unknown) {
     const isUnauthorized =
-      (error instanceof ConvexError && String(error.data).includes('Unauthorized')) ||
+      (error instanceof ConvexError &&
+        String(error.data).includes('Unauthorized')) ||
       (error instanceof Error && error.message.includes('Unauthorized'))
     if (isUnauthorized) {
       this.props.onUnauthorized()
@@ -57,7 +75,7 @@ class AuthErrorBoundary extends Component<
   }
 }
 
-export function AdminSidebar({ activeTab, isOpen, onClose }: AdminSidebarProps) {
+export function AdminSidebar({ activeTab }: AdminSidebarProps) {
   const { logout } = useAdminAuth()
 
   const handleUnauthorized = () => {
@@ -67,121 +85,97 @@ export function AdminSidebar({ activeTab, isOpen, onClose }: AdminSidebarProps) 
 
   return (
     <AuthErrorBoundary onUnauthorized={handleUnauthorized}>
-      <AdminSidebarInner activeTab={activeTab} isOpen={isOpen} onClose={onClose} />
+      <AdminSidebarInner activeTab={activeTab} />
     </AuthErrorBoundary>
   )
 }
 
-function AdminSidebarInner({ activeTab, isOpen, onClose }: AdminSidebarProps) {
-  const { locale, setLocale, t } = useI18n()
-  const { logout, sessionToken } = useAdminAuth()
+function AdminSidebarInner({ activeTab }: AdminSidebarProps) {
+  const { t } = useI18n()
+  const { sessionToken } = useAdminAuth()
   const navigate = useNavigate()
-  const logoutMutation = useMutation(api.auth.logout)
 
-  const unreadCount = useQuery(api.messages.unreadCount) ?? 0
-  const pendingReservations = useQuery(
-    api.reservations.pendingCount,
-    sessionToken ? { sessionToken } : 'skip'
-  ) ?? 0
+  const unreadCount =
+    useQuery(
+      api.messages.unreadCount,
+      sessionToken ? { sessionToken } : 'skip',
+    ) ?? 0
+  const pendingReservations =
+    useQuery(
+      api.reservations.pendingCount,
+      sessionToken ? { sessionToken } : 'skip',
+    ) ?? 0
 
   const handleTabClick = (tab: AdminTab) => {
     void navigate({ to: '/admin', search: (prev) => ({ ...prev, tab }) })
-    onClose()
-  }
-
-  const handleLogout = async () => {
-    if (sessionToken) {
-      await logoutMutation({ sessionToken })
-    }
-    logout()
   }
 
   return (
-    <>
-      {/* Mobile backdrop */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black/40 z-40 lg:hidden"
-          onClick={onClose}
-          aria-hidden="true"
-        />
-      )}
+    <aside
+      className="hidden lg:flex h-screen w-72 fixed left-0 top-0 bg-surface-container-lowest border-r border-outline-variant/40 flex-col px-5 py-6 xl:px-6 xl:py-7 z-40"
+      aria-label="Admin sidebar"
+    >
+      {/* Header */}
+      <div className="mb-8 border-b border-outline-variant/30 pb-6">
+        <h1 className="font-[EB_Garamond] text-[27px] leading-[1.25] font-medium text-primary mb-1">
+          {t('admin.sidebar.title')}
+        </h1>
+        <p className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.15em] text-secondary/70">
+          Botanical Suite
+        </p>
+      </div>
 
-      {/* Sidebar */}
-      <aside
-        className={cn(
-          'h-screen w-64 fixed left-0 top-0 bg-surface-container-low border-r border-outline-variant/50 flex flex-col p-6 z-50 transition-transform duration-300',
-          'lg:translate-x-0',
-          isOpen ? 'translate-x-0' : '-translate-x-full',
-        )}
+      {/* Navigation */}
+      <nav
+        className="flex-1 flex flex-col gap-1 overflow-y-auto"
+        aria-label="Admin navigation"
       >
-        {/* Header */}
-        <div className="mb-10 flex items-start justify-between">
-          <div>
-            <h1 className="font-[EB_Garamond] text-[24px] leading-[1.4] font-medium text-primary mb-1">
-              {t('admin.sidebar.title')}
-            </h1>
-            <p className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.15em] text-secondary/70">
-              Botanical Suite
-            </p>
-          </div>
-          {/* Language toggle */}
-          <button
-            onClick={() => setLocale(locale === 'ka' ? 'en' : 'ka')}
-            className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.05em] text-secondary hover:text-primary transition-colors border border-outline-variant px-2 py-1 rounded-sm mt-1"
-            aria-label="Toggle language"
-          >
-            {locale === 'ka' ? 'EN' : 'ქარ'}
-          </button>
-        </div>
-
-        {/* Navigation */}
-        <nav className="flex-1 flex flex-col gap-1.5 overflow-y-auto" aria-label="Admin navigation">
-          {navItems.map((item) => (
+        {navItems.map((item) => {
+          const isActive =
+            item.tab === 'settings'
+              ? SETTINGS_GROUP.has(activeTab)
+              : activeTab === item.tab
+          return (
             <button
               key={item.tab}
               onClick={() => handleTabClick(item.tab)}
               className={cn(
-                'flex items-center gap-3 px-4 py-3 rounded-full transition-all duration-200 text-left',
-                activeTab === item.tab
-                  ? 'bg-primary-container text-on-primary-container'
-                  : 'text-on-surface-variant hover:bg-surface-container-high',
+                'flex items-center gap-3 px-3.5 py-3 rounded-md border transition-all duration-200 text-left',
+                isActive
+                  ? 'bg-primary text-on-primary border-primary shadow-sm'
+                  : 'text-on-surface-variant border-transparent hover:bg-surface-container-low hover:border-outline-variant/40',
               )}
-              aria-current={activeTab === item.tab ? 'page' : undefined}
+              aria-current={isActive ? 'page' : undefined}
             >
-              <span className="material-symbols-outlined text-[20px]">{item.icon}</span>
+              <span className="material-symbols-outlined text-[20px]">
+                {item.icon}
+              </span>
               <span className="font-[Hanken_Grotesk] text-[13px] font-semibold flex-1">
                 {t(item.labelKey)}
               </span>
-              {/* Unread badge for messages */}
               {item.tab === 'messages' && unreadCount > 0 && (
                 <span className="bg-error text-on-error text-[10px] font-bold rounded-full px-1.5 py-0.5 min-w-[18px] text-center">
                   {unreadCount}
                 </span>
               )}
-              {/* Pending badge for reservations */}
               {item.tab === 'reservations' && pendingReservations > 0 && (
                 <span className="bg-error text-on-error text-[10px] font-bold rounded-full px-1.5 py-0.5 min-w-[18px] text-center">
                   {pendingReservations}
                 </span>
               )}
             </button>
-          ))}
-        </nav>
+          )
+        })}
+      </nav>
 
-        {/* Footer */}
-        <div className="mt-auto pt-6 border-t border-outline-variant/30">
-          <button
-            onClick={() => void handleLogout()}
-            className="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-all duration-200 rounded-full text-left w-full"
-          >
-            <span className="material-symbols-outlined text-[20px]">logout</span>
-            <span className="font-[Hanken_Grotesk] text-[13px] font-semibold">
-              {t('admin.sidebar.logout')}
-            </span>
-          </button>
-        </div>
-      </aside>
-    </>
+      {/* Footer hint — language + sign-out are inside Settings now,
+          so the sidebar stays focused on navigation only. */}
+      <div className="mt-auto pt-6 border-t border-outline-variant/30">
+        <p className="font-[Hanken_Grotesk] text-[10px] text-on-surface-variant/70 leading-relaxed">
+          {t('admin.sidebar.title')} ·{' '}
+          <span className="text-on-surface-variant">v1</span>
+        </p>
+      </div>
+    </aside>
   )
 }

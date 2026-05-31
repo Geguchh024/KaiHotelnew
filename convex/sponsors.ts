@@ -9,7 +9,7 @@ export const list = query({
       .query("sponsors")
       .withIndex("by_display_order")
       .order("asc")
-      .collect();
+      .take(100);
   },
 });
 

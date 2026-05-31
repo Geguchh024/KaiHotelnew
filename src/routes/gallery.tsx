@@ -6,6 +6,7 @@ import { useI18n } from '@/lib/i18n'
 import { BlurhashImage } from '@/components/BlurhashImage'
 import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/components/Footer'
+import { Reveal } from '@/components/Reveal'
 
 export const Route = createFileRoute('/gallery')({
   head: () => ({
@@ -109,19 +110,21 @@ function GalleryPage() {
       <main>
         {/* Page Header */}
         <section className="pt-24 sm:pt-32 pb-8 sm:pb-10 px-4 sm:px-8 max-w-[1280px] mx-auto border-b border-outline-variant/20">
-          <span className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.4em] text-primary block mb-3">
-            {locale === 'ka' ? 'პერსპექტივა' : 'Perspective'}
-          </span>
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 sm:gap-4">
-            <h1 className="font-[EB_Garamond] text-[32px] sm:text-[40px] md:text-[52px] leading-[1.1] text-primary">
-              {locale === 'ka' ? 'ვიზუალური პოეზია' : 'Visual Poetry'}
-            </h1>
-            {galleryImages.length > 0 && (
-              <span className="font-[Hanken_Grotesk] text-[12px] text-secondary sm:pb-2 shrink-0">
-                {galleryImages.length} {locale === 'ka' ? 'სურათი' : 'images'}
-              </span>
-            )}
-          </div>
+          <Reveal>
+            <span className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.4em] text-primary block mb-3">
+              {locale === 'ka' ? 'პერსპექტივა' : 'Perspective'}
+            </span>
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 sm:gap-4">
+              <h1 className="font-[EB_Garamond] text-[32px] sm:text-[40px] md:text-[52px] leading-[1.1] text-primary">
+                {locale === 'ka' ? 'ვიზუალური პოეზია' : 'Visual Poetry'}
+              </h1>
+              {galleryImages.length > 0 && (
+                <span className="font-[Hanken_Grotesk] text-[12px] text-secondary sm:pb-2 shrink-0">
+                  {galleryImages.length} {locale === 'ka' ? 'სურათი' : 'images'}
+                </span>
+              )}
+            </div>
+          </Reveal>
         </section>
 
         {/* Gallery */}
@@ -137,13 +140,13 @@ function GalleryPage() {
                     onClick={() => setLightboxIndex(galleryImages.indexOf(img))}
                   >
                     <BlurhashImage
-                      className="w-full h-full"
+                      className="w-full h-full img-zoom"
                       src={img.imageUrl}
                       alt={img.altText}
                       blurhash={img.blurhash}
                     />
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/25 transition-colors duration-300 flex items-center justify-center">
-                      <span className="material-symbols-outlined text-white text-[20px] opacity-0 group-hover:opacity-100 transition-opacity duration-300">zoom_in</span>
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/25 transition-colors duration-500 flex items-center justify-center">
+                      <span className="material-symbols-outlined text-white text-[20px] opacity-0 group-hover:opacity-100 transition-opacity duration-500">zoom_in</span>
                     </div>
                   </div>
                 ))}
@@ -163,13 +166,13 @@ function GalleryPage() {
                       onClick={() => setLightboxIndex(idx)}
                     >
                       <BlurhashImage
-                        className="w-full h-full"
+                        className="w-full h-full img-zoom"
                         src={img.imageUrl}
                         alt={img.altText}
                         blurhash={img.blurhash}
                       />
-                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/25 transition-colors duration-300 flex items-center justify-center">
-                        <span className="material-symbols-outlined text-white text-[22px] opacity-0 group-hover:opacity-100 transition-opacity duration-300">zoom_in</span>
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/25 transition-colors duration-500 flex items-center justify-center">
+                        <span className="material-symbols-outlined text-white text-[22px] opacity-0 group-hover:opacity-100 transition-opacity duration-500">zoom_in</span>
                       </div>
                     </div>
                   )
@@ -219,13 +222,18 @@ function GalleryPage() {
           )}
 
           <div
-            className="max-w-[88vw] max-h-[88vh]"
+            className="max-w-[88vw]"
             onClick={(e) => e.stopPropagation()}
           >
-            <img
+            <BlurhashImage
+              key={galleryImages[lightboxIndex]._id}
               src={galleryImages[lightboxIndex].imageUrl}
               alt={galleryImages[lightboxIndex].altText}
-              className="max-w-full max-h-[88vh] object-contain"
+              blurhash={galleryImages[lightboxIndex].blurhash}
+              className="w-[88vw] h-[82vh] bg-black"
+              objectFit="contain"
+              priority
+              sizes="88vw"
             />
             {galleryImages[lightboxIndex].altText && (
               <p className="font-[Hanken_Grotesk] text-[12px] text-white/50 mt-3 text-center">

@@ -8,6 +8,7 @@ import { useI18n } from '@/lib/i18n'
 import { BlurhashImage } from '@/components/BlurhashImage'
 import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/components/Footer'
+import { Reveal } from '@/components/Reveal'
 
 export const Route = createFileRoute('/rooms')({
   head: () => ({
@@ -142,68 +143,74 @@ function RoomsPage() {
       <main>
         {/* Page Header */}
         <section className="pt-24 sm:pt-32 pb-8 sm:pb-10 px-4 sm:px-8 max-w-[1280px] mx-auto border-b border-outline-variant/20">
-          <span className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.4em] text-primary block mb-3">
-            {t('rooms.label')}
-          </span>
-          <h1 className="font-[EB_Garamond] text-[32px] sm:text-[40px] md:text-[52px] leading-[1.1] text-primary">
-            {locale === 'ka' ? 'ჩვენი ნომრები' : 'The Suite Collection'}
-          </h1>
+          <Reveal>
+            <span className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.4em] text-primary block mb-3">
+              {t('rooms.label')}
+            </span>
+            <h1 className="font-[EB_Garamond] text-[32px] sm:text-[40px] md:text-[52px] leading-[1.1] text-primary">
+              {locale === 'ka' ? 'ჩვენი ნომრები' : 'The Suite Collection'}
+            </h1>
+          </Reveal>
         </section>
 
         {/* Intro */}
         <section className="py-8 sm:py-10 px-4 sm:px-8 max-w-[1280px] mx-auto border-b border-outline-variant/20">
-          <p className="font-[Hanken_Grotesk] text-[15px] leading-[1.7] text-secondary max-w-2xl">
-            {t('rooms.description')}
-          </p>
+          <Reveal>
+            <p className="font-[Hanken_Grotesk] text-[15px] leading-[1.7] text-secondary max-w-2xl">
+              {t('rooms.description')}
+            </p>
+          </Reveal>
         </section>
 
         {/* Rooms grid */}
         <section className="py-10 sm:py-16 px-4 sm:px-8 max-w-[1280px] mx-auto">
           {rooms.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
-              {rooms.map((room) => (
-                <div
+              {rooms.map((room, i) => (
+                <Reveal
                   key={room._id}
+                  delay={((i % 3) + 1) as 1 | 2 | 3}
                   className="group cursor-pointer"
-                  onClick={() => setSelectedRoom(room)}
                 >
-                  {/* 4:3 image — less tall than before */}
-                  <div className="aspect-[4/3] overflow-hidden mb-5 relative">
-                    <BlurhashImage
-                      className="w-full h-full"
-                      src={room.imageUrl}
-                      alt={locale === 'ka' ? room.nameKa : room.nameEn}
-                      blurhash={room.blurhash}
-                    />
-                    <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/20 transition-colors duration-300 flex items-end p-5">
-                      <span className="font-[Hanken_Grotesk] text-white text-[11px] font-semibold uppercase tracking-[0.1em] opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        {locale === 'ka' ? 'დეტალების ნახვა' : 'View Details'}
+                  <div onClick={() => setSelectedRoom(room)}>
+                    {/* 4:3 image — less tall than before */}
+                    <div className="aspect-[4/3] overflow-hidden mb-5 relative">
+                      <BlurhashImage
+                        className="w-full h-full img-zoom"
+                        src={room.imageUrl}
+                        alt={locale === 'ka' ? room.nameKa : room.nameEn}
+                        blurhash={room.blurhash}
+                      />
+                      <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/20 transition-colors duration-500 flex items-end p-5">
+                        <span className="font-[Hanken_Grotesk] text-white text-[11px] font-semibold uppercase tracking-[0.1em] opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-500">
+                          {locale === 'ka' ? 'დეტალების ნახვა' : 'View Details'}
+                        </span>
+                      </div>
+                    </div>
+
+                    <h3 className="font-[EB_Garamond] text-[20px] leading-[1.3] text-primary mb-1.5 group-hover:text-primary-container transition-colors duration-300">
+                      {locale === 'ka' ? room.nameKa : room.nameEn}
+                    </h3>
+                    <p className="font-[Hanken_Grotesk] text-[13px] leading-[1.6] text-secondary mb-4 line-clamp-2">
+                      {locale === 'ka' ? room.descriptionKa : room.descriptionEn}
+                    </p>
+
+                    <div className="flex justify-between items-center border-t border-outline-variant/30 pt-3">
+                      <span className="font-[Hanken_Grotesk] text-[13px] font-semibold text-primary">
+                        ${Math.round(room.pricePerNight)}
+                        <span className="font-normal text-secondary ml-1">
+                          / {locale === 'ka' ? 'ღამე' : 'night'}
+                        </span>
                       </span>
+                      <div className="flex items-center gap-1 text-secondary">
+                        <span className="material-symbols-outlined text-[15px]">person</span>
+                        <span className="font-[Hanken_Grotesk] text-[12px]">
+                          {room.capacity}
+                        </span>
+                      </div>
                     </div>
                   </div>
-
-                  <h3 className="font-[EB_Garamond] text-[20px] leading-[1.3] text-primary mb-1.5">
-                    {locale === 'ka' ? room.nameKa : room.nameEn}
-                  </h3>
-                  <p className="font-[Hanken_Grotesk] text-[13px] leading-[1.6] text-secondary mb-4 line-clamp-2">
-                    {locale === 'ka' ? room.descriptionKa : room.descriptionEn}
-                  </p>
-
-                  <div className="flex justify-between items-center border-t border-outline-variant/30 pt-3">
-                    <span className="font-[Hanken_Grotesk] text-[13px] font-semibold text-primary">
-                      ${Math.round(room.pricePerNight)}
-                      <span className="font-normal text-secondary ml-1">
-                        / {locale === 'ka' ? 'ღამე' : 'night'}
-                      </span>
-                    </span>
-                    <div className="flex items-center gap-1 text-secondary">
-                      <span className="material-symbols-outlined text-[15px]">person</span>
-                      <span className="font-[Hanken_Grotesk] text-[12px]">
-                        {room.capacity}
-                      </span>
-                    </div>
-                  </div>
-                </div>
+                </Reveal>
               ))}
             </div>
           ) : (
@@ -223,7 +230,7 @@ function RoomsPage() {
 
         {/* Amenities strip */}
         <section className="py-10 sm:py-14 bg-surface-container-low border-y border-outline-variant/20">
-          <div className="px-4 sm:px-8 max-w-[1280px] mx-auto">
+          <Reveal className="px-4 sm:px-8 max-w-[1280px] mx-auto">
             <div className="flex flex-col md:flex-row md:items-center gap-10">
               <div className="md:w-56 shrink-0">
                 <span className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.4em] text-primary block mb-2">
@@ -251,30 +258,32 @@ function RoomsPage() {
                 ))}
               </div>
             </div>
-          </div>
+          </Reveal>
         </section>
 
         {/* CTA */}
         <section className="py-12 sm:py-20 px-4 sm:px-8 max-w-[1280px] mx-auto text-center">
-          <span className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.4em] text-primary block mb-4">
-            {locale === 'ka' ? 'დაჯავშნეთ' : 'Reserve'}
-          </span>
-          <h2 className="font-[EB_Garamond] text-[28px] sm:text-[32px] md:text-[40px] text-primary mb-4 sm:mb-6">
-            {locale === 'ka' ? 'მოამზადეთ თქვენი ვიზიტი' : 'Plan Your Stay'}
-          </h2>
-          <p className="font-[Hanken_Grotesk] text-[14px] text-secondary max-w-md mx-auto mb-8">
-            {locale === 'ka'
-              ? 'დაჯავშნეთ ნომერი პირდაპირ ჩვენს საიტზე საუკეთესო ფასად.'
-              : 'Book directly with us for the best rate.'}
-          </p>
-          <div className="flex justify-center gap-4 flex-wrap">
-            <Link
-              to="/reservations"
-              className="bg-primary text-on-primary px-10 py-3 font-[Hanken_Grotesk] text-[12px] font-semibold uppercase tracking-[0.05em] hover:opacity-90 transition-opacity"
-            >
-              {t('nav.bookNow')}
-            </Link>
-          </div>
+          <Reveal>
+            <span className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.4em] text-primary block mb-4">
+              {locale === 'ka' ? 'დაჯავშნეთ' : 'Reserve'}
+            </span>
+            <h2 className="font-[EB_Garamond] text-[28px] sm:text-[32px] md:text-[40px] text-primary mb-4 sm:mb-6">
+              {locale === 'ka' ? 'მოამზადეთ თქვენი ვიზიტი' : 'Plan Your Stay'}
+            </h2>
+            <p className="font-[Hanken_Grotesk] text-[14px] text-secondary max-w-md mx-auto mb-8">
+              {locale === 'ka'
+                ? 'დაჯავშნეთ ნომერი პირდაპირ ჩვენს საიტზე საუკეთესო ფასად.'
+                : 'Book directly with us for the best rate.'}
+            </p>
+            <div className="flex justify-center gap-4 flex-wrap">
+              <Link
+                to="/reservations"
+                className="bg-primary text-on-primary px-10 py-3 font-[Hanken_Grotesk] text-[12px] font-semibold uppercase tracking-[0.05em] hover:opacity-90 hover:scale-[1.02] transition-all duration-300"
+              >
+                {t('nav.bookNow')}
+              </Link>
+            </div>
+          </Reveal>
         </section>
       </main>
 

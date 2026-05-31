@@ -1,8 +1,8 @@
 import { Component, useEffect, useState, type ReactNode } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { z } from 'zod'
+import { AdminBottomNav } from '@/components/admin/AdminBottomNav'
 import { AdminSidebar } from '@/components/admin/AdminSidebar'
-import { AdminHeader } from '@/components/admin/AdminHeader'
 import { AnalyticsTab } from '@/components/admin/tabs/AnalyticsTab'
 import { RoomsTab } from '@/components/admin/tabs/RoomsTab'
 import { GalleryTab } from '@/components/admin/tabs/GalleryTab'
@@ -10,10 +10,20 @@ import { SponsorsTab } from '@/components/admin/tabs/SponsorsTab'
 import { MessagesTab } from '@/components/admin/tabs/MessagesTab'
 import { SettingsTab } from '@/components/admin/tabs/SettingsTab'
 import { ReservationsTab } from '@/components/admin/tabs/ReservationsTab'
+import { useI18n } from '@/lib/i18n'
+import { useIsDesktop } from '@/hooks/useMediaQuery'
 
 const adminSearchSchema = z.object({
   tab: z
-    .enum(['analytics', 'rooms', 'reservations', 'gallery', 'sponsors', 'messages', 'settings'])
+    .enum([
+      'analytics',
+      'rooms',
+      'reservations',
+      'gallery',
+      'sponsors',
+      'messages',
+      'settings',
+    ])
     .default('analytics'),
 })
 
@@ -46,9 +56,13 @@ class AdminErrorBoundary extends Component<
   render() {
     if (this.state.hasError) {
       return (
-        <div className="flex flex-col items-center justify-center py-24 gap-4">
-          <span className="material-symbols-outlined text-[48px] text-error/60">error</span>
-          <p className="font-[EB_Garamond] text-[24px] text-primary">Something went wrong</p>
+        <div className="flex flex-col items-center justify-center py-24 gap-4 text-center px-6">
+          <span className="material-symbols-outlined text-[48px] text-error/60">
+            error
+          </span>
+          <p className="font-[EB_Garamond] text-[24px] text-primary">
+            Something went wrong
+          </p>
           <p className="font-[Hanken_Grotesk] text-[14px] text-on-surface-variant">
             {this.state.error?.message ?? 'An unexpected error occurred.'}
           </p>
@@ -78,9 +92,8 @@ const TAB_COMPONENTS: Record<AdminTab, () => React.JSX.Element> = {
 function AdminLayoutComponent() {
   const { tab } = Route.useSearch()
   const navigate = useNavigate()
-  // Start as null (matches server render), populate client-side in useEffect
+  const isDesktop = useIsDesktop()
   const [isAuthed, setIsAuthed] = useState<boolean | null>(null)
-  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   useEffect(() => {
     const token = localStorage.getItem('adminSessionToken')
@@ -95,35 +108,99 @@ function AdminLayoutComponent() {
     }
   }, [navigate])
 
-  // null = still checking (SSR + first client paint), false = redirecting
+  // Gallery and Sponsors are no longer first-class destinations — they live
+  // inside the Settings hub. Bookmarks and old links land us here, so we
+  // bounce them to the Settings tab and surface the right sub-tab via a
+  // hash fragment that SettingsTab reads on mount.
+  useEffect(() => {
+    if (tab === 'gallery' || tab === 'sponsors') {
+      const sub = tab
+      void navigate({
+        to: '/admin',
+        search: (prev) => ({ ...prev, tab: 'settings' }),
+        hash: `sub=${sub}`,
+        replace: true,
+      })
+    }
+  }, [tab, navigate])
+
   if (!isAuthed) return null
 
   const TabComponent = TAB_COMPONENTS[tab]
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <AdminSidebar activeTab={tab} isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+    <div className="min-h-screen bg-background lg:pl-72">
+      {/* Desktop sidebar — visible on lg+, fixed at the left edge */}
+      <AdminSidebar activeTab={tab} />
 
-      {/* Mobile top bar */}
-      <div className="fixed top-0 left-0 right-0 z-30 lg:hidden bg-surface-container-low border-b border-outline-variant/50 px-4 py-3 flex items-center gap-3">
-        <button
-          onClick={() => setSidebarOpen(true)}
-          className="p-1.5 text-primary hover:bg-surface-container-high rounded-full transition-colors"
-          aria-label="Open menu"
-        >
-          <span className="material-symbols-outlined text-[24px]">menu</span>
-        </button>
-        <h1 className="font-[EB_Garamond] text-[20px] leading-[1.4] font-medium text-primary">
-          Kai Admin
-        </h1>
-      </div>
+      {/* Top app bar — mobile only; on desktop the sidebar already labels
+          the active section so a duplicate top bar would be redundant. */}
+      <AdminTopBar activeTab={tab} />
 
-      <main className="lg:ml-64 flex-1 min-h-screen px-4 sm:px-6 lg:px-8 py-6 lg:py-10 pt-16 lg:pt-10 max-w-[1280px]">
-        <AdminHeader />
-        <AdminErrorBoundary>
-          <TabComponent />
-        </AdminErrorBoundary>
+      <main
+        className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 pt-[64px] sm:pt-[72px] lg:pt-8 lg:pb-12"
+        style={
+          isDesktop
+            ? undefined
+            : {
+                // Reserve space for the mobile bottom nav. On desktop the
+                // sidebar layout uses Tailwind's lg:pb-12 instead.
+                paddingBottom:
+                  'calc(env(safe-area-inset-bottom, 0px) + 88px)',
+              }
+        }
+      >
+        {/* Inner content rail — keeps line lengths comfortable on very
+            wide screens without clipping when the sidebar takes its 256px. */}
+        <div className="w-full max-w-[1440px] mx-auto">
+          <AdminErrorBoundary>
+            <TabComponent />
+          </AdminErrorBoundary>
+        </div>
       </main>
+
+      {/* Bottom nav — mobile only */}
+      <AdminBottomNav activeTab={tab} />
+    </div>
+  )
+}
+
+// ─── Top app bar ───────────────────────────────────────────────────────────
+
+const TAB_LABELS: Record<AdminTab, { ka: string; en: string; icon: string }> = {
+  analytics: { ka: 'მთავარი', en: 'Dashboard', icon: 'dashboard' },
+  rooms: { ka: 'ნომრები', en: 'Rooms', icon: 'bed' },
+  reservations: { ka: 'ჯავშნები', en: 'Bookings', icon: 'event_available' },
+  gallery: { ka: 'გალერეა', en: 'Gallery', icon: 'photo_library' },
+  sponsors: { ka: 'პარტნიორები', en: 'Sponsors', icon: 'handshake' },
+  messages: { ka: 'შეტყობინებები', en: 'Messages', icon: 'mail' },
+  settings: { ka: 'პარამეტრები', en: 'Settings', icon: 'settings' },
+}
+
+function AdminTopBar({ activeTab }: { activeTab: AdminTab }) {
+  const { locale } = useI18n()
+  const meta = TAB_LABELS[activeTab]
+  const label = locale === 'ka' ? meta.ka : meta.en
+
+  return (
+    <div
+      className="lg:hidden fixed top-0 left-0 right-0 z-30 bg-surface-container-low/95 backdrop-blur-md border-b border-outline-variant/40 flex items-center gap-3 px-4 sm:px-6 py-2.5 sm:py-3"
+      style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 10px)' }}
+    >
+      <div className="flex items-center gap-2 min-w-0 max-w-[1280px] mx-auto w-full">
+        <span
+          className="material-symbols-outlined text-primary text-[20px]"
+          aria-hidden="true"
+        >
+          {meta.icon}
+        </span>
+        <h1 className="font-[EB_Garamond] text-[18px] sm:text-[22px] leading-tight font-medium text-primary truncate">
+          {label}
+        </h1>
+        <span className="ml-auto font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.05em] text-secondary/60">
+          Kai Admin
+        </span>
+      </div>
     </div>
   )
 }

@@ -5,6 +5,7 @@ import { api } from '../../convex/_generated/api'
 import { useI18n } from '@/lib/i18n'
 import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/components/Footer'
+import { Reveal } from '@/components/Reveal'
 
 export const Route = createFileRoute('/contact')({
   head: () => ({
@@ -90,19 +91,21 @@ function ContactPage() {
       <main>
         {/* Page Header */}
         <section className="pt-24 sm:pt-32 pb-8 sm:pb-10 px-4 sm:px-8 max-w-[1280px] mx-auto border-b border-outline-variant/20">
-          <span className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.4em] text-primary block mb-3">
-            {locale === 'ka' ? 'მოთხოვნა' : 'Inquiry'}
-          </span>
-          <h1 className="font-[EB_Garamond] text-[30px] sm:text-[40px] md:text-[52px] leading-[1.1] text-primary">
-            {locale === 'ka' ? 'კონსიერჟთან დაკავშირება' : 'Connect with the Concierge'}
-          </h1>
+          <Reveal>
+            <span className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.4em] text-primary block mb-3">
+              {locale === 'ka' ? 'მოთხოვნა' : 'Inquiry'}
+            </span>
+            <h1 className="font-[EB_Garamond] text-[30px] sm:text-[40px] md:text-[52px] leading-[1.1] text-primary">
+              {locale === 'ka' ? 'კონსიერჟთან დაკავშირება' : 'Connect with the Concierge'}
+            </h1>
+          </Reveal>
         </section>
 
         {/* Contact info strip */}
         <section className="border-b border-outline-variant/20 bg-surface-container-low">
           <div className="px-4 sm:px-8 max-w-[1280px] mx-auto py-8 sm:py-10 grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
             {/* Phone */}
-            <div className="flex items-start gap-4">
+            <Reveal delay={1} className="flex items-start gap-4">
               <div className="w-10 h-10 border border-outline-variant/40 flex items-center justify-center shrink-0">
                 <span className="material-symbols-outlined text-primary text-[20px]">call</span>
               </div>
@@ -117,10 +120,10 @@ function ContactPage() {
                   {siteSettings?.phone ?? '+995 511 222 028'}
                 </a>
               </div>
-            </div>
+            </Reveal>
 
             {/* Email */}
-            <div className="flex items-start gap-4">
+            <Reveal delay={2} className="flex items-start gap-4">
               <div className="w-10 h-10 border border-outline-variant/40 flex items-center justify-center shrink-0">
                 <span className="material-symbols-outlined text-primary text-[20px]">mail</span>
               </div>
@@ -135,10 +138,10 @@ function ContactPage() {
                   {siteSettings?.email ?? 'info@kai.com.ge'}
                 </a>
               </div>
-            </div>
+            </Reveal>
 
             {/* Address */}
-            <div className="flex items-start gap-4">
+            <Reveal delay={3} className="flex items-start gap-4">
               <div className="w-10 h-10 border border-outline-variant/40 flex items-center justify-center shrink-0">
                 <span className="material-symbols-outlined text-primary text-[20px]">location_on</span>
               </div>
@@ -152,7 +155,7 @@ function ContactPage() {
                     : (siteSettings?.addressEn ?? 'Georgia')}
                 </span>
               </div>
-            </div>
+            </Reveal>
           </div>
         </section>
 
@@ -161,7 +164,7 @@ function ContactPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-start">
 
             {/* Left — editorial copy */}
-            <div>
+            <Reveal>
               <span className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.4em] text-primary block mb-4">
                 {locale === 'ka' ? 'შეტყობინება' : 'Message'}
               </span>
@@ -205,10 +208,10 @@ function ContactPage() {
                   </a>
                 )}
               </div>
-            </div>
+            </Reveal>
 
             {/* Right — form */}
-            <div>
+            <Reveal delay={2}>
               {isSuccess ? (
                 <div className="border border-outline-variant/30 bg-surface-container-low p-12 text-center">
                   <span
@@ -326,7 +329,7 @@ function ContactPage() {
                   </div>
                 </form>
               )}
-            </div>
+            </Reveal>
           </div>
         </section>
       </main>

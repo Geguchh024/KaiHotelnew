@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+<meta charset="UTF-8" />
+<title>Kai Hotel Calendar & Bar Income</title>
+<style>
+  body {
+    font-family: "Segoe UI", sans-serif;
+    background: #f4f4f4;
+    margin: 0; padding: 20px;
+    text-align: center;
+  }
+  #auth, #calendarApp {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  }
+  input, select, button, textarea {
+    padding: 8px;
+    margin: 6px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 15px;
+  }
+  button {
+    background: #10b981;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  button:hover {
+    background: #059669;
+  }
+  table {
+    border-collapse: collapse;
+    margin-top: 20px;
+    width: max-content;
+    font-size: 13px;
+  }
+  th, td {
+    border: 1px solid #ddd;
+    padding: 4px;
+    min-width: 35px;
+    text-align: center;
+    position: relative;
+  }
+  th {
+    background: #f3f4f6;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+  td.available { background: #d1fae5; }
+  td.occupied { background: #fecaca; cursor: pointer; }
+  td.color-0 { background: #fef08a; cursor: pointer; }
+  td.color-1 { background: #c7d2fe; cursor: pointer; }
+  td.color-2 { background: #fbcfe8; cursor: pointer; }
+  td.color-3 { background: #a5f3fc; cursor: pointer; }
+  td.color-4 { background: #ddd6fe; cursor: pointer; }
+  .icon {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    font-size: 11px;
+    opacity: 0.7;
+  }
+  .income-container {
+    display: flex;
+    gap: 20px;
+    margin-top: 30px;
+    justify-content: center;
+  }
+  .income-box {
+    background: #f9fafb;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    text-align: left;
+    width: 48%;
+    box-sizing: border-box;
+  }
+  .income-box h3 {
+    margin-top: 0;
+  }
+  #modal {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.4);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+  }
+  #modalContent {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    max-width: 400px;
+    width: 100%;
+    text-align: left;
+  }
+  .modal-buttons {
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .modal-buttons button {
+    flex: 1;
+    margin: 5px;
+  }
+  .bold-amount {
+    font-weight: bold;
+    color: #1f2937;
+  }
+  #todayLine, #todayLine2 {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: red;
+    z-index: 3;
+  }
+  #todayLine2 {
+    background-color: red;
+  }
+  #calendarWrapper {
+    position: relative;
+    overflow-x: auto;
+  }
+  .sticky-left {
+    position: sticky;
+    left: 0;
+    background: white;
+    z-index: 3;
+    min-width: 55px;
+  }
+  #weeklyIncomeTable, #weeklyBarIncomeTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 13px;
+  }
+  #weeklyIncomeTable th, #weeklyIncomeTable td,
+  #weeklyBarIncomeTable th, #weeklyBarIncomeTable td {
+    border: 1px solid #ccc;
+    padding: 6px 10px;
+    text-align: center;
+  }
+  #weeklyIncomeTable th, #weeklyBarIncomeTable th {
+    background-color: #f0f0f0;
+  }
+  /* Scrollbar fix for sticky */
+  #calendar th.sticky-left, #calendar td.sticky-left {
+    z-index: 4;
+  }
+
+  /* Зебра только для строк с номерами комнат */
+#calendar tr:not(:first-child):nth-child(odd),
+#weeklyIncomeTable tbody tr:nth-child(odd),
+#weeklyBarIncomeTable tbody tr:nth-child(odd) {
+  background-color: #db91cf;
+  color: rgb(0, 0, 0);
+}
+
+#calendar tr:not(:first-child):nth-child(even),
+#weeklyIncomeTable tbody tr:nth-child(even),
+#weeklyBarIncomeTable tbody tr:nth-child(even) {
+  background-color: #a5d0dd;
+  color: rgb(0, 0, 0);
+}
+
+/* Всегда чёрный текст для номера комнаты */
+#calendar td.sticky-left {
+  color: black !important;
+}
+
+</style>
+</head>
+<body>
+
+<div id="auth">
+  <h2>შეიყვანე პინ კოდი</h2>
+  <input type="password" id="pinInput" placeholder="პაროლი" />
+  <button onclick="checkPin()">შესვლა</button>
+  <p id="error" style="color: red;"></p>
+</div>
+
+<div id="calendarApp" style="display:none;">
+  <h2>ჯავშნების კალენდარი</h2>
+  <div>
+    <select id="room"></select>
+    <input type="date" id="start" />
+    <input type="date" id="end" />
+    <select id="status">
+      <option value="booked">დაჯავშნილია</option>
+      <option value="occupied">დაკავებულია</option>
+    </select>
+    <select id="payment">
+      <option value="none">გადასახდელი</option>
+      <option value="cash">ნაღდი</option>
+      <option value="card">ბარათი</option>
+    </select>
+    <input type="number" id="amount" placeholder="თანხა ₾" />
+    <textarea id="comment" placeholder="კომენტარი"></textarea>
+    <button onclick="addReservation()">დამატება</button>
+  </div>
+
+  <div id="calendarWrapper">
+    <div id="todayLine"></div>
+    <div id="todayLine2"></div>
+    <table id="calendar"></table>
+  </div>
+
+  <div class="income-container">
+    <div class="income-box" style="width: 48%;">
+      <h3>📅 დღიური შემოსავალი სასტუმრო</h3>
+      <input type="date" id="incomeDate" />
+      <button onclick="calculateIncome()">განახლება</button>
+      <p id="incomeCash">ნაღდი: 0₾</p>
+      <p id="incomeCard">ბარათი: 0₾</p>
+      <p id="incomeDebt">ნისია: 0₾</p>
+      <p id="incomeTotal"><b>ჯამი: 0₾</b></p>
+    </div>
+
+    <div class="income-box" style="width: 48%;">
+      <h3>📅 ბარის დღიური შემოსავალი</h3>
+      <input type="text" id="barItem" placeholder="პროდუქტი" />
+      <select id="barPayment">
+        <option value="cash">ნაღდი</option>
+        <option value="card">ბარათი</option>
+        <option value="debt">ნისია</option>
+      </select>
+      <input type="number" id="barAmount" placeholder="თანხა ₾" />
+      <button onclick="addBarSale()">დამატება</button>
+      <input type="date" id="barSalesDate" />
+<button onclick="renderBarSalesList()">პროდუქტების ნახვა</button>
+<div id="barSalesList" style="max-height: 200px; overflow-y: auto; margin-top: 10px; border: 1px solid #ccc; padding: 5px;">
+  <div id="barSalesInner"></div>
+</div>
+      <p id="barIncomeCash">ნაღდი: 0₾</p>
+      <p id="barIncomeCard">ბარათი: 0₾</p>
+      <p id="barIncomeDebt">ნისია: 0₾</p>
+      <p id="barIncomeTotal"><b>ჯამი: 0₾</b></p>
+    </div>
+  </div>
+
+  <div class="income-container">
+    <div class="income-box" style="width: 48%;">
+      <h3>📆 სასტუმროს შემოსავალი</h3>
+      <table id="weeklyIncomeTable">
+        <thead>
+          <tr>
+            <th>თარიღი</th>
+            <th>ნაღდი</th>
+            <th>ბარათი</th>
+            <th>ნისია</th>
+            <th>ჯამი</th>
+          </tr>
+        </thead>
+        <tbody id="weeklyIncome"></tbody>
+      </table>
+    </div>
+
+    <div class="income-box" style="width: 48%;">
+      <h3>📆 ბარის შემოსავალი</h3>
+      <table id="weeklyBarIncomeTable">
+        <thead>
+          <tr>
+            <th>თარიღი</th>
+            <th>ნაღდი</th>
+            <th>ბარათი</th>
+            <th>ნისია</th>
+            <th>ჯამი</th>
+          </tr>
+        </thead>
+        <tbody id="weeklyBarIncome"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div id="modal">
+  <div id="modalContent">
+    <h3>რედაქტირება</h3>
+    <label>შემოსვლა: <input type="date" id="editStart"></label><br>
+    <label>გასვლა: <input type="date" id="editEnd"></label><br>
+    <label>სტატუსი:
+      <select id="editStatus">
+        <option value="booked">დაჯავშნილია</option>
+        <option value="occupied">დაკავებულია</option>
+      </select>
+    </label><br>
+    <label>გადახდა:
+      <select id="editPayment">
+        <option value="none">გადასახდელი</option>
+        <option value="cash">ნაღდი</option>
+        <option value="card">ბარათი</option>
+      </select>
+    </label><br>
+    <label>თანხა: <input type="number" id="editAmount" /></label><br>
+    <label>კომენტარი: <textarea id="editComment"></textarea></label>
+    <div class="modal-buttons">
+      <button onclick="saveEdit()">შენახვა</button>
+      <button onclick="deleteEdit()">წაშლა</button>
+      <button onclick="closeModal()">დახურვა</button>
+    </div>
+  </div>
+</div>
+<div id="barModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); z-index:11; align-items:center; justify-content:center;">
+  <div style="background:white; padding:20px; border-radius:12px; max-width:400px; width:100%;">
+    <h3>პროდუქტის რედაქტირება</h3>
+    <label>პროდუქტი: <input type="text" id="editBarItem"></label><br>
+    <label>გადახდა:
+      <select id="editBarPayment">
+        <option value="cash">ნაღდი</option>
+        <option value="card">ბარათი</option>
+        <option value="debt">ნისია</option>
+      </select>
+    </label><br>
+    <label>თანხა: <input type="number" id="editBarAmount"></label><br>
+    <div class="modal-buttons">
+      <button onclick="saveBarEdit()">შენახვა</button>
+      <button onclick="deleteBarEdit()">წაშლა</button>
+      <button onclick="closeBarModal()">დახურვა</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const roomsBase = ["101","102","103","106","107/1","107/2","107/3","107/4","201","202","203","204","206","207","302","303","304","305","306"];
+  const today = new Date();
+const startDate = new Date(today.getFullYear(), today.getMonth() - 1, 15); // середина прошлого месяца
+startDate.setHours(0, 0, 0, 0);
+  // календарь до конца текущего года
+  // календарь на 18 месяцев вперёд (включая 2026 и дальше)
+    const endDate = new Date(startDate);
+    endDate.setMonth(endDate.getMonth() + 18);
+    endDate.setHours(0, 0, 0, 0);
+
+
+  let reservations = [];
+  let currentBarEdit = null;
+  let barSales = [];
+  let currentEdit = null;
+
+  // --- AUTH ---
+  function checkPin() {
+    const pin = document.getElementById("pinInput").value;
+    if (pin === "511222028") {
+      document.getElementById("auth").style.display = "none";
+      document.getElementById("calendarApp").style.display = "block";
+      init();
+    } else {
+      document.getElementById("error").textContent = "არასწორი კოდი!";
+    }
+  }
+
+  // --- DATE GENERATION ---
+  function generateDates(start, end) {
+    const dates = [];
+    const cur = new Date(start);
+    while (cur <= end) {
+      dates.push(new Date(cur));
+      cur.setDate(cur.getDate() + 1);
+    }
+    return dates;
+  }
+
+  // --- INIT ---
+  function init() {
+    const sel = document.getElementById("room");
+    roomsBase.forEach(r => {
+      const opt = document.createElement("option");
+      opt.value = r;
+      opt.textContent = r;
+      sel.appendChild(opt);
+    });
+    loadReservations();
+    loadBarSales();
+    renderCalendar();
+    renderWeeklyIncome();
+    renderWeeklyBarIncome();
+  }
+
+  // --- LOAD / SAVE ---
+  function loadReservations() {
+    const d = localStorage.getItem("kaiHotelReservations");
+    reservations = d ? JSON.parse(d) : [];
+  }
+  function saveReservations() {
+    localStorage.setItem("kaiHotelReservations", JSON.stringify(reservations));
+  }
+  function loadBarSales() {
+    const d = localStorage.getItem("kaiHotelBarSales");
+    barSales = d ? JSON.parse(d) : [];
+  }
+  function saveBarSales() {
+    localStorage.setItem("kaiHotelBarSales", JSON.stringify(barSales));
+  }
+
+  // --- ADD RESERVATION ---
+  function addReservation() {
+    const room = document.getElementById("room").value;
+    const start = document.getElementById("start").value;
+    const end = document.getElementById("end").value;
+    const status = document.getElementById("status").value;
+    const payment = document.getElementById("payment").value;
+    const amount = parseFloat(document.getElementById("amount").value) || 0;
+    const comment = document.getElementById("comment").value;
+    if (!room || !start || !end) return alert("შეავსე ყველა ველი");
+
+    for (let r of reservations) {
+      if (r.room === room && !(new Date(r.end) <= new Date(start) || new Date(r.start) >= new Date(end))) {
+        return alert("ამ თარიღებში უკვე არსებობს ჩანაწერი");
+      }
+    }
+
+    reservations.push({ room, start, end, status, payment, amount, comment });
+    saveReservations();
+    renderCalendar();
+    renderWeeklyIncome();
+  }
+
+  // --- ADD BAR SALE ---
+  function addBarSale() {
+    const item = document.getElementById("barItem").value.trim();
+    const payment = document.getElementById("barPayment").value;
+    const amount = parseFloat(document.getElementById("barAmount").value) || 0;
+    if (!item || amount <= 0) return alert("შეავსე პროდუქტი და თანხა სწორად");
+    barSales.push({ item, payment, amount, date: (new Date()).toISOString().split("T")[0] });
+    saveBarSales();
+    renderWeeklyBarIncome();
+    renderBarIncome();
+    document.getElementById("barItem").value = "";
+    document.getElementById("barAmount").value = "";
+    renderBarSalesList();
+  }
+
+  // --- TOGGLE BAR SALES LIST ---
+
+function renderBarSalesList() {
+  const date = document.getElementById("barSalesDate").value;
+  const list = document.getElementById("barSalesInner");
+  if (!date) return list.innerHTML = "<i>აირჩიეთ თარიღი</i>";
+
+  const filtered = barSales
+    .map((sale, index) => ({ ...sale, index }))
+    .filter(sale => sale.date === date);
+
+  if (filtered.length === 0) {
+    list.innerHTML = "<i>ჩანაწერი არ მოიძებნა</i>";
+    return;
+  }
+
+  let html = "<b>პროდუქცია:</b><br>";
+  filtered.forEach(sale => {
+    html += `
+      ${sale.date} — ${sale.item} — ${sale.payment} — ${sale.amount}₾
+      <button onclick="openBarModal(${sale.index})">✏️</button>
+      <button onclick="deleteBarEditDirect(${sale.index})">🗑️</button>
+      <br>
+    `;
+  });
+
+  list.innerHTML = html;
+}
+
+  // --- RENDER CALENDAR ---
+  function renderCalendar() {
+  const table = document.getElementById("calendar");
+  const dates = generateDates(startDate, endDate);
+  table.innerHTML = "";
+
+  const header = document.createElement("tr");
+  header.innerHTML = `<th class="sticky-left">ოთახი</th>` + dates.map(d => {
+    const m = d.getMonth() + 1;
+    const day = d.getDate();
+    return `<th>${m}/${day}</th>`;
+  }).join("");
+  table.appendChild(header);
+
+  // --- Определение текущей даты ---
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const todayStr = today.toISOString().split("T")[0];
+  const todayIndex = dates.findIndex(d => {
+    const dStr = d.toISOString().split("T")[0];
+    return dStr === todayStr;
+  });
+
+  // --- Отрисовка номеров ---
+  roomsBase.forEach(room => {
+    const row = document.createElement("tr");
+    row.innerHTML = `<td class="sticky-left"><b>${room}</b></td>`;
+    const roomRes = reservations
+      .filter(r => r.room === room)
+      .sort((a, b) => new Date(a.start) - new Date(b.start));
+    
+    let index = 0;
+    const map = {};
+
+let color = 0;
+
+    roomRes.forEach(res => {
+  let cur = new Date(res.start);
+  cur.setHours(0, 0, 0, 0);
+  const endDate = new Date(res.end);
+  endDate.setHours(0, 0, 0, 0);
+  while (cur < endDate) {
+    const key = cur.toISOString().split("T")[0];
+    map[key] = { res, color };
+    cur.setDate(cur.getDate() + 1);
+  }
+  color++;
+});
+
+    dates.forEach(date => {
+      const cell = document.createElement("td");
+      const dayStr = date.toISOString().split("T")[0];
+      const data = map[dayStr];
+      if (data) {
+        const r = data.res;
+        const icon = r.payment === "card" ? "💳" : r.payment === "cash" ? "💵" : r.payment === "none" ? "❓" : "";
+        const comment = r.comment ? "💬" : "";
+        const isFirstDay = r.start === dayStr;
+        const colorClass = r.status === "occupied" ? `color-${data.color % 5}` : "occupied";
+        cell.className = colorClass;
+        cell.innerHTML = `<div class="icon">${icon}${isFirstDay ? comment : ""}</div>`;
+        cell.onclick = () => openModal(r);
+      } else {
+        cell.className = "available";
+      }
+      row.appendChild(cell);
+    });
+
+    table.appendChild(row);
+  });
+
+  // --- Вертикальные линии по краям текущего дня ---
+ // --- Вертикальные линии + автоскролл к сегодняшнему дню ---
+setTimeout(() => {
+  const headers = table.querySelectorAll("th");
+  const th = headers[todayIndex + 1]; // +1 из-за "ოთახი"
+
+  if (th) {
+    const offset = th.offsetLeft;
+    const width = th.offsetWidth;
+
+    const wrapper = document.getElementById("calendarWrapper");
+    const wrapperWidth = wrapper.clientWidth;
+
+    // 🔴 линии сегодняшнего дня
+    const line = document.getElementById("todayLine");
+    const line2 = document.getElementById("todayLine2");
+
+    line.style.left = offset + "px";
+    line.style.height = table.offsetHeight + "px";
+
+    line2.style.left = (offset + width) + "px";
+    line2.style.height = table.offsetHeight + "px";
+
+    // 🎯 центрирование сегодняшнего дня
+    const scrollTo = offset - (wrapperWidth / 2) + (width / 2);
+    wrapper.scrollLeft = Math.max(scrollTo, 0);
+  }
+}, 100);
+
+}
+  // --- MODAL ---
+  function openModal(res) {
+    currentEdit = res;
+    document.getElementById("modal").style.display = "flex";
+    document.getElementById("editStart").value = res.start;
+    document.getElementById("editEnd").value = res.end;
+    document.getElementById("editStatus").value = res.status;
+    document.getElementById("editPayment").value = res.payment;
+    document.getElementById("editAmount").value = res.amount;
+    document.getElementById("editComment").value = res.comment;
+  }
+  function closeModal() {
+    document.getElementById("modal").style.display = "none";
+    currentEdit = null;
+  }
+  function saveEdit() {
+    if (!currentEdit) return;
+    currentEdit.start = document.getElementById("editStart").value;
+    currentEdit.end = document.getElementById("editEnd").value;
+    currentEdit.status = document.getElementById("editStatus").value;
+    currentEdit.payment = document.getElementById("editPayment").value;
+    currentEdit.amount = parseFloat(document.getElementById("editAmount").value) || 0;
+    currentEdit.comment = document.getElementById("editComment").value;
+    saveReservations();
+    renderCalendar();
+    renderWeeklyIncome();
+    closeModal();
+  }
+  function deleteEdit() {
+    if (!currentEdit) return;
+    reservations = reservations.filter(r => r !== currentEdit);
+    saveReservations();
+    renderCalendar();
+    renderWeeklyIncome();
+    closeModal();
+  }
+
+  // --- INCOME CALCULATIONS ---
+  function calculateIncome() {
+  const date = document.getElementById("incomeDate").value;
+  if (!date) return alert("აირჩიეთ თარიღი");
+  let cash = 0, card = 0, debt = 0;
+  reservations.forEach(r => {
+    if (date === r.start) { // сумма считается только в дате заезда
+      if (r.payment === "cash") cash += r.amount;
+      else if (r.payment === "card") card += r.amount;
+      else if (r.payment === "none") debt += r.amount;
+    }
+  });
+  document.getElementById("incomeCash").textContent = `ნაღდი: ${cash.toFixed(2)}₾`;
+  document.getElementById("incomeCard").textContent = `ბარათი: ${card.toFixed(2)}₾`;
+  document.getElementById("incomeDebt").textContent = `ნისია: ${debt.toFixed(2)}₾`;
+  document.getElementById("incomeTotal").innerHTML = `<b>ჯამი: ${(cash + card + debt).toFixed(2)}₾</b>`;
+}
+
+
+  // --- BAR INCOME ---
+  function renderBarIncome() {
+    const todayStr = (new Date()).toISOString().split("T")[0];
+    let cash = 0, card = 0, debt = 0;
+    barSales.forEach(sale => {
+      if (sale.date === todayStr) {
+        if (sale.payment === "cash") cash += sale.amount;
+        else if (sale.payment === "card") card += sale.amount;
+        else if (sale.payment === "debt") debt += sale.amount;
+      }
+    });
+    document.getElementById("barIncomeCash").textContent = `ნაღდი: ${cash.toFixed(2)}₾`;
+    document.getElementById("barIncomeCard").textContent = `ბარათი: ${card.toFixed(2)}₾`;
+    document.getElementById("barIncomeDebt").textContent = `ნისია: ${debt.toFixed(2)}₾`;
+    document.getElementById("barIncomeTotal").innerHTML = `<b>ჯამი: ${(cash + card + debt).toFixed(2)}₾</b>`;
+  }
+
+  // --- WEEKLY INCOME ---
+function renderWeeklyIncome() {
+  const tbody = document.getElementById("weeklyIncome");
+  tbody.innerHTML = "";
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const start = new Date(today);
+  start.setDate(today.getDate() - 7);
+
+  const end = new Date(today);
+  end.setDate(today.getDate() + 7);
+
+  const dates = generateDates(start, end);
+
+  dates.forEach(date => {
+    const dStr = date.toISOString().split("T")[0];
+    let cash = 0, card = 0, debt = 0;
+    
+
+    reservations.forEach(r => {
+      if (r.start === dStr) {
+        if (r.payment === "cash") cash += r.amount;
+        else if (r.payment === "card") card += r.amount;
+        else if (r.payment === "none") debt += r.amount;
+      }
+    });
+
+    const total = cash + card + debt;
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${dStr}</td>
+      <td>${cash.toFixed(2)}</td>
+      <td>${card.toFixed(2)}</td>
+      <td>${debt.toFixed(2)}</td>
+      <td>${total.toFixed(2)}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+  function renderWeeklyBarIncome() {
+  const tbody = document.getElementById("weeklyBarIncome");
+  tbody.innerHTML = "";
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const start = new Date(today);
+start.setDate(today.getDate() - 5);
+const end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+const dates = generateDates(start, end);
+ // последние 30 дней
+  dates.forEach(date => {
+    const dStr = date.toISOString().split("T")[0];
+    let cash = 0, card = 0, debt = 0;
+    barSales.forEach(sale => {
+      if (sale.date === dStr) {
+        if (sale.payment === "cash") cash += sale.amount;
+        else if (sale.payment === "card") card += sale.amount;
+        else if (sale.payment === "debt") debt += sale.amount;
+      }
+    });
+    const total = cash + card + debt;
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${dStr}</td><td>${cash.toFixed(2)}</td><td>${card.toFixed(2)}</td><td>${debt.toFixed(2)}</td><td>${total.toFixed(2)}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+function openBarModal(index) {
+  currentBarEdit = index;
+  const sale = barSales[index];
+  document.getElementById("editBarItem").value = sale.item;
+  document.getElementById("editBarPayment").value = sale.payment;
+  document.getElementById("editBarAmount").value = sale.amount;
+  document.getElementById("barModal").style.display = "flex";
+}
+
+function closeBarModal() {
+  document.getElementById("barModal").style.display = "none";
+  currentBarEdit = null;
+}
+
+function saveBarEdit() {
+  if (currentBarEdit === null) return;
+  const item = document.getElementById("editBarItem").value.trim();
+  const payment = document.getElementById("editBarPayment").value;
+  const amount = parseFloat(document.getElementById("editBarAmount").value) || 0;
+  if (!item || amount <= 0) return alert("შეავსე ველები სწორად");
+
+  barSales[currentBarEdit].item = item;
+  barSales[currentBarEdit].payment = payment;
+  barSales[currentBarEdit].amount = amount;
+  saveBarSales();
+  renderWeeklyBarIncome();
+  renderBarIncome();
+  renderBarSalesList();
+  closeBarModal();
+}
+
+function deleteBarEdit() {
+  if (currentBarEdit === null) return;
+  if (!confirm("დარწმუნებული ხარ რომ გინდა წაშლა?")) return;
+  barSales.splice(currentBarEdit, 1);
+  saveBarSales();
+  renderWeeklyBarIncome();
+  renderBarIncome();
+  renderBarSalesList();
+  closeBarModal();
+}
+function deleteBarEditDirect(index) {
+  if (!confirm("დარწმუნებული ხარ რომ გინდა წაშლა?")) return;
+  barSales.splice(index, 1);
+  saveBarSales();
+  renderWeeklyBarIncome();
+  renderBarIncome();
+  renderBarSalesList();
+}
+
+  // --- INITIAL RENDER ---
+  window.onload = () => {
+  document.getElementById("incomeDate").value = (new Date()).toISOString().split("T")[0];
+  renderBarIncome(); // 👈 чтобы сразу показать дневной доход бара при входе
+};
+</script>
+
+</body>
+</html>
