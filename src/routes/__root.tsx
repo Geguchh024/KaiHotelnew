@@ -11,7 +11,12 @@ import { I18nProvider } from '@/lib/i18n'
 import { AdminAuthProvider } from '@/contexts/AdminAuthContext'
 import '@/styles/globals.css'
 
-const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string)
+const convexUrl =
+  typeof window !== 'undefined'
+    ? (import.meta.env.VITE_CONVEX_URL as string)
+    : (typeof process !== 'undefined' ? process.env.VITE_CONVEX_URL : undefined) || (import.meta.env.VITE_CONVEX_URL as string)
+
+const convex = new ConvexReactClient(convexUrl)
 
 // Site-wide SEO constants
 const SITE_NAME = 'Kai Hotel Bar'
