@@ -185,19 +185,19 @@ export function ReservationsTab() {
     {
       key: 'active',
       icon: 'event_available',
-      label: locale === 'ka' ? 'აქტიური' : 'Active',
+      label: locale === 'ka' ? 'აქტიური' : locale === 'ru' ? 'Активные' : 'Active',
       count: activeReservations.length,
     },
     {
       key: 'archive',
       icon: 'inventory_2',
-      label: locale === 'ka' ? 'არქივი' : 'Archive',
+      label: locale === 'ka' ? 'არქივი' : locale === 'ru' ? 'Архив' : 'Archive',
       count: archiveReservations.length,
     },
     {
       key: 'timeline',
       icon: 'view_timeline',
-      label: locale === 'ka' ? 'ტაიმლაინი' : 'Timeline',
+      label: locale === 'ka' ? 'ტაიმლაინი' : locale === 'ru' ? 'Таймлайн' : 'Timeline',
       count: null,
     },
   ]
@@ -213,6 +213,8 @@ export function ReservationsTab() {
           <span className="font-[Hanken_Grotesk] text-[12px] sm:text-[13px] text-on-surface-variant whitespace-nowrap">
             {locale === 'ka'
               ? `${reservations.length} სულ`
+              : locale === 'ru'
+              ? `${reservations.length} всего`
               : `${reservations.length} total`}
           </span>
         </div>
@@ -221,7 +223,11 @@ export function ReservationsTab() {
           className="flex items-center justify-center gap-1.5 px-4 py-2.5 sm:py-2 bg-primary text-on-primary font-[Hanken_Grotesk] text-[12px] sm:text-[11px] font-semibold uppercase tracking-[0.05em] hover:opacity-90 transition-opacity rounded-sm"
         >
           <span className="material-symbols-outlined text-[16px]">person_add</span>
-          {locale === 'ka' ? 'Walk-in ჯავშანი' : 'New Walk-in'}
+          {locale === 'ka'
+            ? 'Walk-in ჯავშანი'
+            : locale === 'ru'
+            ? 'Прямое бронирование'
+            : 'New Walk-in'}
         </button>
       </div>
 
@@ -275,9 +281,13 @@ export function ReservationsTab() {
                 {viewTab === 'active'
                   ? locale === 'ka'
                     ? 'აქტიური რეზერვაციები არ არის'
+                    : locale === 'ru'
+                    ? 'Нет активных бронирований'
                     : 'No active reservations'
                   : locale === 'ka'
                   ? 'არქივი ცარიელია'
+                  : locale === 'ru'
+                  ? 'Архив пуст'
                   : 'No archived reservations'}
               </p>
             </div>
@@ -312,35 +322,43 @@ export function ReservationsTab() {
       {/* Revenue & Analytics Section — below all content */}
       <div className="mt-8 sm:mt-10 pt-6 sm:pt-8 border-t border-outline-variant/30">
         <h4 className="font-[EB_Garamond] text-[18px] sm:text-[24px] text-primary mb-4 sm:mb-5">
-          {locale === 'ka' ? 'შემოსავლები და ანალიტიკა' : 'Revenue & Analytics'}
+          {locale === 'ka'
+            ? 'შემოსავლები და ანალიტიკა'
+            : locale === 'ru'
+            ? 'Выручка и аналитика'
+            : 'Revenue & Analytics'}
         </h4>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-4 mb-5 sm:mb-6">
           <StatCard
             icon="payments"
-            label={locale === 'ka' ? 'მთლიანი შემოსავალი' : 'Total Revenue'}
+            label={locale === 'ka' ? 'მთლიანი შემოსავალი' : locale === 'ru' ? 'Общая выручка' : 'Total Revenue'}
             value={`₾${Math.round(analytics.totalRevenue).toLocaleString()}`}
           />
           <StatCard
             icon="calendar_month"
-            label={locale === 'ka' ? 'ამ თვის შემოსავალი' : 'This Month'}
+            label={locale === 'ka' ? 'ამ თვის შემოსავალი' : locale === 'ru' ? 'В этом месяце' : 'This Month'}
             value={`₾${Math.round(analytics.thisMonthRevenue).toLocaleString()}`}
             subtext={
               analytics.lastMonthRevenue > 0
                 ? `${
-                    locale === 'ka' ? 'წინა თვე' : 'Last month'
+                    locale === 'ka'
+                      ? 'წინა თვე'
+                      : locale === 'ru'
+                      ? 'В прошлом месяце'
+                      : 'Last month'
                   }: ₾${Math.round(analytics.lastMonthRevenue).toLocaleString()}`
                 : undefined
             }
           />
           <StatCard
             icon="avg_pace"
-            label={locale === 'ka' ? 'საშუალო ღირებულება' : 'Avg. Booking Value'}
+            label={locale === 'ka' ? 'საშუალო ღირებულება' : locale === 'ru' ? 'Ср. чек бронирования' : 'Avg. Booking Value'}
             value={`₾${analytics.avgBookingValue.toLocaleString()}`}
           />
           <StatCard
             icon="dark_mode"
-            label={locale === 'ka' ? 'სულ ღამეები' : 'Total Nights Sold'}
+            label={locale === 'ka' ? 'სულ ღამეები' : locale === 'ru' ? 'Продано ночей всего' : 'Total Nights Sold'}
             value={String(analytics.occupancyNights)}
           />
         </div>
@@ -348,25 +366,29 @@ export function ReservationsTab() {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4">
           <StatCard
             icon="book_online"
-            label={locale === 'ka' ? 'სულ ჯავშნები' : 'Total Bookings'}
+            label={locale === 'ka' ? 'სულ ჯავშნები' : locale === 'ru' ? 'Всего бронирований' : 'Total Bookings'}
             value={String(analytics.totalBookings)}
           />
           <StatCard
             icon="event_available"
-            label={locale === 'ka' ? 'აქტიური' : 'Active'}
+            label={locale === 'ka' ? 'აქტიური' : locale === 'ru' ? 'Активные' : 'Active'}
             value={String(analytics.activeBookings)}
           />
           <StatCard
             icon="check_circle"
-            label={locale === 'ka' ? 'დასრულებული' : 'Completed'}
+            label={locale === 'ka' ? 'დასრულებული' : locale === 'ru' ? 'Завершенные' : 'Completed'}
             value={String(analytics.completedBookings)}
           />
           <StatCard
             icon="cancel"
-            label={locale === 'ka' ? 'გაუქმებული' : 'Cancelled'}
+            label={locale === 'ka' ? 'გაუქმებული' : locale === 'ru' ? 'Отмененные' : 'Cancelled'}
             value={String(analytics.cancelledBookings)}
             subtext={`${analytics.cancellationRate}% ${
-              locale === 'ka' ? 'გაუქმების მაჩვენებელი' : 'cancellation rate'
+              locale === 'ka'
+                ? 'გაუქმების მაჩვენებელი'
+                : locale === 'ru'
+                ? 'уровень отмен'
+                : 'cancellation rate'
             }`}
           />
         </div>

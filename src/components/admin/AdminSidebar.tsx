@@ -1,7 +1,5 @@
-import { Component, type ReactNode } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { useQuery } from 'convex/react'
-import { ConvexError } from 'convex/values'
 import { useI18n } from '@/lib/i18n'
 import { useAdminAuth } from '@/contexts/AdminAuthContext'
 import { cn } from '@/lib/utils'
@@ -42,55 +40,7 @@ const navItems: { icon: string; tab: AdminTab; labelKey: string }[] = [
 // Settings nav item highlighted.
 const SETTINGS_GROUP = new Set<AdminTab>(['settings', 'gallery', 'sponsors'])
 
-/**
- * Catches the Convex "Unauthorized" error from a stale token and triggers a
- * client-side logout so the layout can redirect to /admin/login cleanly.
- */
-class AuthErrorBoundary extends Component<
-  { children: ReactNode; onUnauthorized: () => void },
-  { hasError: boolean }
-> {
-  constructor(props: { children: ReactNode; onUnauthorized: () => void }) {
-    super(props)
-    this.state = { hasError: false }
-  }
-
-  static getDerivedStateFromError() {
-    return { hasError: true }
-  }
-
-  componentDidCatch(error: unknown) {
-    const isUnauthorized =
-      (error instanceof ConvexError &&
-        String(error.data).includes('Unauthorized')) ||
-      (error instanceof Error && error.message.includes('Unauthorized'))
-    if (isUnauthorized) {
-      this.props.onUnauthorized()
-    }
-  }
-
-  render() {
-    if (this.state.hasError) return null
-    return this.props.children
-  }
-}
-
 export function AdminSidebar({ activeTab }: AdminSidebarProps) {
-  const { logout } = useAdminAuth()
-
-  const handleUnauthorized = () => {
-    localStorage.removeItem('adminSessionToken')
-    logout()
-  }
-
-  return (
-    <AuthErrorBoundary onUnauthorized={handleUnauthorized}>
-      <AdminSidebarInner activeTab={activeTab} />
-    </AuthErrorBoundary>
-  )
-}
-
-function AdminSidebarInner({ activeTab }: AdminSidebarProps) {
   const { t } = useI18n()
   const { sessionToken } = useAdminAuth()
   const navigate = useNavigate()

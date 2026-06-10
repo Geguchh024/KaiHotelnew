@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { format } from 'date-fns'
-import { ka, enUS } from 'date-fns/locale'
+import { ka, enUS, ru } from 'date-fns/locale'
 import { Calendar } from './calendar'
 import { cn } from '@/lib/utils'
 import type { Locale } from '@/lib/i18n'
@@ -32,7 +32,7 @@ export function DatePicker({
 }: DatePickerProps) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
-  const dateLocale = locale === 'ka' ? ka : enUS
+  const dateLocale = locale === 'ka' ? ka : locale === 'ru' ? ru : enUS
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {

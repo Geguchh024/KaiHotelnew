@@ -1,7 +1,7 @@
 import { useI18n } from '@/lib/i18n'
 import { StatusBadge } from './StatusBadge'
 import { format } from 'date-fns'
-import { ka, enUS } from 'date-fns/locale'
+import { ka, enUS, ru } from 'date-fns/locale'
 import { allowedTransitions } from '../../../convex/availability'
 import { nightCount } from '../../../convex/availability'
 import type { Status, Transition } from '../../../convex/availability'
@@ -33,7 +33,7 @@ export function ReservationRow({
   onTransition,
 }: ReservationRowProps) {
   const { locale, t } = useI18n()
-  const dateLocale = locale === 'ka' ? ka : enUS
+  const dateLocale = locale === 'ka' ? ka : locale === 'ru' ? ru : enUS
 
   const nights = nightCount(reservation.checkInDate, reservation.checkOutDate)
   const transitions = allowedTransitions(reservation.status as Status)

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useI18n } from '@/lib/i18n'
+import { useI18n, type Locale } from '@/lib/i18n'
 import { useAdminAuth } from '@/contexts/AdminAuthContext'
 import { useMutation, useQuery } from 'convex/react'
 import { ConvexError } from 'convex/values'
@@ -132,18 +132,18 @@ export function WalkInModal({ isOpen, onClose, rooms }: Props) {
     if (!sessionToken) return
     if (!checkIn || !checkOut) {
       setError(
-        locale === 'ka' ? 'აირჩიეთ თარიღები' : 'Pick check-in and check-out dates',
+        locale === 'ka' ? 'აირჩიეთ თარიღები' : locale === 'ru' ? 'Выберите даты заезда и выезда' : 'Pick check-in and check-out dates',
       )
       return
     }
     if (selectedIds.length === 0) {
       setError(
-        locale === 'ka' ? 'აირჩიეთ მინიმუმ ერთი ნომერი' : 'Select at least one room',
+        locale === 'ka' ? 'აირჩიეთ მინიმუმ ერთი ნომერი' : locale === 'ru' ? 'Выберите хотя бы один номер' : 'Select at least one room',
       )
       return
     }
     if (!form.guestFullName.trim()) {
-      setError(locale === 'ka' ? 'სახელი სავალდებულოა' : 'Guest name is required')
+      setError(locale === 'ka' ? 'სახელი სავალდებულოა' : locale === 'ru' ? 'Имя гостя обязательно' : 'Guest name is required')
       return
     }
 
@@ -207,11 +207,13 @@ export function WalkInModal({ isOpen, onClose, rooms }: Props) {
             </span>
             <div className="min-w-0">
               <h3 className="font-[EB_Garamond] text-[20px] sm:text-[22px] text-primary leading-tight truncate">
-                {locale === 'ka' ? 'Walk-in ჯავშანი' : 'Walk-in Booking'}
+                {locale === 'ka' ? 'Walk-in ჯავშანი' : locale === 'ru' ? 'Прямое бронирование (Walk-in)' : 'Walk-in Booking'}
               </h3>
               <p className="font-[Hanken_Grotesk] text-[10px] sm:text-[11px] text-on-surface-variant truncate">
                 {locale === 'ka'
                   ? 'მრავალი ნომერი · ერთიანი ჯგუფი · ატომური ჯავშანი'
+                  : locale === 'ru'
+                  ? 'Несколько номеров · Единая группа · Атомарное бронирование'
                   : 'Multi-room · Single group · Atomic booking'}
               </p>
             </div>
@@ -230,10 +232,12 @@ export function WalkInModal({ isOpen, onClose, rooms }: Props) {
           {/* Step 1 — Dates */}
           <Section
             step={1}
-            title={locale === 'ka' ? 'თარიღები' : 'Dates'}
+            title={locale === 'ka' ? 'თარიღები' : locale === 'ru' ? 'Даты' : 'Dates'}
             subtitle={
               locale === 'ka'
                 ? 'აირჩიეთ შესვლისა და გასვლის თარიღი. დაკავებული დღეები გადახაზულია.'
+                : locale === 'ru'
+                ? 'Выберите даты заезда и выезда. Занятые дни зачеркнуты.'
                 : 'Pick check-in and check-out. Booked days are shown with a strikethrough.'
             }
           >
@@ -253,10 +257,12 @@ export function WalkInModal({ isOpen, onClose, rooms }: Props) {
           {/* Step 2 — Rooms */}
           <Section
             step={2}
-            title={locale === 'ka' ? 'ნომრები' : 'Rooms'}
+            title={locale === 'ka' ? 'ნომრები' : locale === 'ru' ? 'Номера' : 'Rooms'}
             subtitle={
               locale === 'ka'
                 ? 'აირჩიეთ ერთი ან მეტი ნომერი. თითოეულს შეუძლია ჰქონდეს თავისი სტუმრების რაოდენობა და ფასის გადატანა.'
+                : locale === 'ru'
+                ? 'Выберите один или несколько номеров. Для каждого можно указать количество гостей и изменить цену.'
                 : 'Select one or more rooms. Each can carry its own guest count and an optional price override.'
             }
           >
@@ -276,18 +282,18 @@ export function WalkInModal({ isOpen, onClose, rooms }: Props) {
           {/* Step 3 — Guest details */}
           <Section
             step={3}
-            title={locale === 'ka' ? 'სტუმრის ინფორმაცია' : 'Guest Information'}
+            title={locale === 'ka' ? 'სტუმრის ინფორმაცია' : locale === 'ru' ? 'Информация о гостях' : 'Guest Information'}
           >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Field
-                label={locale === 'ka' ? 'სრული სახელი *' : 'Full Name *'}
+                label={locale === 'ka' ? 'სრული სახელი *' : locale === 'ru' ? 'Полное имя *' : 'Full Name *'}
                 value={form.guestFullName}
                 onChange={(v) => setForm((f) => ({ ...f, guestFullName: v }))}
-                placeholder={locale === 'ka' ? 'სახელი გვარი' : 'First Last'}
+                placeholder={locale === 'ka' ? 'სახელი გვარი' : locale === 'ru' ? 'Имя Фамилия' : 'First Last'}
                 disabled={saving}
               />
               <Field
-                label={locale === 'ka' ? 'ტელეფონი' : 'Phone'}
+                label={locale === 'ka' ? 'ტელეფონი' : locale === 'ru' ? 'Телефон' : 'Phone'}
                 value={form.guestPhone}
                 onChange={(v) => setForm((f) => ({ ...f, guestPhone: v }))}
                 placeholder="+995 5XX XXX XXX"
@@ -295,7 +301,7 @@ export function WalkInModal({ isOpen, onClose, rooms }: Props) {
                 disabled={saving}
               />
               <Field
-                label={locale === 'ka' ? 'ელ-ფოსტა' : 'Email'}
+                label={locale === 'ka' ? 'ელ-ფოსტა' : locale === 'ru' ? 'Эл. почта' : 'Email'}
                 value={form.guestEmail}
                 onChange={(v) => setForm((f) => ({ ...f, guestEmail: v }))}
                 placeholder="guest@example.com"
@@ -303,10 +309,10 @@ export function WalkInModal({ isOpen, onClose, rooms }: Props) {
                 disabled={saving}
               />
               <Field
-                label={locale === 'ka' ? 'შენიშვნა' : 'Special Requests'}
+                label={locale === 'ka' ? 'შენიშვნა' : locale === 'ru' ? 'Особые пожелания' : 'Special Requests'}
                 value={form.specialRequests}
                 onChange={(v) => setForm((f) => ({ ...f, specialRequests: v }))}
-                placeholder={locale === 'ka' ? 'მოთხოვნა...' : 'Notes...'}
+                placeholder={locale === 'ka' ? 'მოთხოვნა...' : locale === 'ru' ? 'Пожелания...' : 'Notes...'}
                 disabled={saving}
               />
             </div>
@@ -332,19 +338,19 @@ export function WalkInModal({ isOpen, onClose, rooms }: Props) {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div className="flex flex-wrap items-center gap-x-5 gap-y-1 font-[Hanken_Grotesk] text-[12px] text-on-surface-variant">
               <span>
-                {locale === 'ka' ? 'ნომრები:' : 'Rooms:'}{' '}
+                {locale === 'ka' ? 'ნომრები:' : locale === 'ru' ? 'Номера:' : 'Rooms:'}{' '}
                 <span className="font-semibold text-primary">{selectedIds.length}</span>
               </span>
               <span>
-                {locale === 'ka' ? 'ღამეები:' : 'Nights:'}{' '}
+                {locale === 'ka' ? 'ღამეები:' : locale === 'ru' ? 'Ночи:' : 'Nights:'}{' '}
                 <span className="font-semibold text-primary">{nights}</span>
               </span>
               <span>
-                {locale === 'ka' ? 'სტუმრები:' : 'Guests:'}{' '}
+                {locale === 'ka' ? 'სტუმრები:' : locale === 'ru' ? 'Гости:' : 'Guests:'}{' '}
                 <span className="font-semibold text-primary">{totalCapacity}</span>
               </span>
               <span>
-                {locale === 'ka' ? 'ჯამი:' : 'Total:'}{' '}
+                {locale === 'ka' ? 'ჯამი:' : locale === 'ru' ? 'Итого:' : 'Total:'}{' '}
                 <span className="font-semibold text-primary">
                   ₾{totalPrice.toLocaleString()}
                 </span>
@@ -359,9 +365,13 @@ export function WalkInModal({ isOpen, onClose, rooms }: Props) {
                   {statusPreview === 'checkedIn'
                     ? locale === 'ka'
                       ? 'შესული'
+                      : locale === 'ru'
+                      ? 'Заселен'
                       : 'Checked In'
                     : locale === 'ka'
                     ? 'დადასტურებული'
+                    : locale === 'ru'
+                    ? 'Подтверждено'
                     : 'Confirmed'}
                 </span>
               </span>
@@ -373,7 +383,7 @@ export function WalkInModal({ isOpen, onClose, rooms }: Props) {
                 disabled={saving}
                 className="px-4 py-2 font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.05em] text-secondary hover:text-primary border border-outline-variant transition-colors disabled:opacity-50"
               >
-                {locale === 'ka' ? 'გაუქმება' : 'Cancel'}
+                {locale === 'ka' ? 'გაუქმება' : locale === 'ru' ? 'Отмена' : 'Cancel'}
               </button>
               <button
                 onClick={() => void handleSubmit()}
@@ -392,13 +402,19 @@ export function WalkInModal({ isOpen, onClose, rooms }: Props) {
                 {saving
                   ? locale === 'ka'
                     ? 'შენახვა...'
+                    : locale === 'ru'
+                    ? 'Сохранение...'
                     : 'Saving...'
                   : statusPreview === 'checkedIn'
                   ? locale === 'ka'
                     ? 'შესვლა'
+                    : locale === 'ru'
+                    ? 'Заселить'
                     : 'Check In'
                   : locale === 'ka'
                   ? 'დადასტურება'
+                  : locale === 'ru'
+                  ? 'Подтвердить'
                   : 'Confirm'}
               </button>
             </div>
@@ -490,7 +506,7 @@ function DateRangeWithBlocked({
   checkIn: number | null
   checkOut: number | null
   onChange: (next: { checkIn: number | null; checkOut: number | null }) => void
-  locale: 'ka' | 'en'
+  locale: Locale
 }) {
   // We always show blocked dates for ALL rooms by default so the admin sees
   // global occupancy at a glance. Once rooms are selected, the union is
@@ -503,7 +519,10 @@ function DateRangeWithBlocked({
 
   return (
     <div className="space-y-2">
-      <BlockedDatesProvider rooms={roomsToScan}>
+      <BlockedDatesProvider
+        rooms={roomsToScan}
+        mode={selectedRoomIds.length === 0 ? 'intersection' : 'union'}
+      >
         {(blocked) => (
           <WalkInCalendar
             checkIn={checkIn}
@@ -528,9 +547,11 @@ function DateRangeWithBlocked({
  */
 function BlockedDatesProvider({
   rooms,
+  mode = 'union',
   children,
 }: {
   rooms: Doc<'rooms'>[]
+  mode?: 'union' | 'intersection'
   children: (blocked: Set<number>) => React.ReactNode
 }) {
   const { sessionToken } = useAdminAuth()
@@ -597,13 +618,30 @@ function BlockedDatesProvider({
   )
 
   const blocked = useMemo(() => {
+    const activeLists = [r0, r1, r2, r3, r4, r5, r6, r7]
+      .slice(0, Math.min(rooms.length, 8))
+      .filter((list): list is number[] => !!list)
+
     const out = new Set<number>()
-    for (const list of [r0, r1, r2, r3, r4, r5, r6, r7]) {
-      if (!list) continue
-      for (const ts of list) out.add(ts)
+    if (activeLists.length === 0) return out
+
+    if (mode === 'intersection') {
+      const firstList = activeLists[0]
+      for (const ts of firstList) {
+        const inAll = activeLists.every((list) => list.includes(ts))
+        if (inAll) {
+          out.add(ts)
+        }
+      }
+    } else {
+      for (const list of activeLists) {
+        for (const ts of list) {
+          out.add(ts)
+        }
+      }
     }
     return out
-  }, [r0, r1, r2, r3, r4, r5, r6, r7])
+  }, [r0, r1, r2, r3, r4, r5, r6, r7, rooms.length, mode])
 
   return <>{children(blocked)}</>
 }
@@ -631,7 +669,7 @@ function RoomPicker({
   checkIn: number | null
   checkOut: number | null
   nights: number
-  locale: 'ka' | 'en'
+  locale: Locale
   sessionToken: string | null
 }) {
   return (
@@ -672,7 +710,7 @@ function RoomCard({
   checkIn: number | null
   checkOut: number | null
   nights: number
-  locale: 'ka' | 'en'
+  locale: Locale
   sessionToken: string | null
 }) {
   // Per-room availability check for the selected date range. Skip the query
@@ -741,7 +779,7 @@ function RoomCard({
               ₾{Math.round(room.pricePerNight)}
               <span className="text-secondary font-normal">
                 {' '}
-                / {locale === 'ka' ? 'ღამე' : 'night'}
+                / {locale === 'ka' ? 'ღამე' : locale === 'ru' ? 'ночь' : 'night'}
               </span>
             </span>
           </div>
@@ -751,12 +789,12 @@ function RoomCard({
           <div className="flex items-center gap-3 mt-1.5 font-[Hanken_Grotesk] text-[10px] text-secondary">
             <span className="flex items-center gap-1">
               <span className="material-symbols-outlined text-[12px]">person</span>
-              {locale === 'ka' ? 'ტევადობა' : 'Capacity'}: {room.capacity}
+              {locale === 'ka' ? 'ტევადობა' : locale === 'ru' ? 'Вместимость' : 'Capacity'}: {room.capacity}
             </span>
             {unavailable && (
               <span className="flex items-center gap-1 text-error">
                 <span className="material-symbols-outlined text-[12px]">block</span>
-                {locale === 'ka' ? 'დაკავებული' : 'Booked'}
+                {locale === 'ka' ? 'დაკავებული' : locale === 'ru' ? 'Забронировано' : 'Booked'}
               </span>
             )}
           </div>
@@ -768,7 +806,7 @@ function RoomCard({
         <div className="mt-3 pt-3 border-t border-outline-variant/20 grid grid-cols-3 gap-3">
           <div className="space-y-0.5">
             <label className="font-[Hanken_Grotesk] text-[9px] font-semibold uppercase tracking-[0.05em] text-on-surface-variant block">
-              {locale === 'ka' ? 'სტუმრები' : 'Guests'}
+              {locale === 'ka' ? 'სტუმრები' : locale === 'ru' ? 'Гости' : 'Guests'}
             </label>
             <input
               type="number"
@@ -787,13 +825,15 @@ function RoomCard({
               <span className="font-[Hanken_Grotesk] text-[9px] text-error">
                 {locale === 'ka'
                   ? `მაქს. ${room.capacity}`
+                  : locale === 'ru'
+                  ? `Макс. ${room.capacity}`
                   : `Max ${room.capacity}`}
               </span>
             )}
           </div>
           <div className="space-y-0.5 col-span-2">
             <label className="font-[Hanken_Grotesk] text-[9px] font-semibold uppercase tracking-[0.05em] text-on-surface-variant block">
-              {locale === 'ka' ? 'ფასი ₾ (ცვლილება)' : 'Price ₾ (override)'}
+              {locale === 'ka' ? 'ფასი ₾ (ცვლილება)' : locale === 'ru' ? 'Цена ₾ (изменение)' : 'Price ₾ (override)'}
             </label>
             <div className="flex items-center gap-2">
               <input

@@ -14,6 +14,7 @@ export const upsert = mutation({
     sessionToken: v.string(),
     phone: v.string(),
     email: v.string(),
+    adminEmail: v.optional(v.string()),
     addressKa: v.string(),
     addressEn: v.string(),
     instagramUrl: v.string(),

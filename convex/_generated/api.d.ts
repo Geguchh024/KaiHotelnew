@@ -14,6 +14,7 @@ import type * as availability from "../availability.js";
 import type * as b2 from "../b2.js";
 import type * as gallery from "../gallery.js";
 import type * as messages from "../messages.js";
+import type * as resend from "../resend.js";
 import type * as reservations from "../reservations.js";
 import type * as rooms from "../rooms.js";
 import type * as siteSettings from "../siteSettings.js";
@@ -33,6 +34,7 @@ declare const fullApi: ApiFromModules<{
   b2: typeof b2;
   gallery: typeof gallery;
   messages: typeof messages;
+  resend: typeof resend;
   reservations: typeof reservations;
   rooms: typeof rooms;
   siteSettings: typeof siteSettings;

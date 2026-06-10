@@ -49,17 +49,17 @@ export function SettingsTab() {
     {
       key: 'general',
       icon: 'tune',
-      label: locale === 'ka' ? 'ზოგადი' : 'General',
+      label: locale === 'ka' ? 'ზოგადი' : locale === 'ru' ? 'Общие' : 'General',
     },
     {
       key: 'gallery',
       icon: 'photo_library',
-      label: locale === 'ka' ? 'გალერეა' : 'Gallery',
+      label: locale === 'ka' ? 'გალერეა' : locale === 'ru' ? 'Галерея' : 'Gallery',
     },
     {
       key: 'sponsors',
       icon: 'handshake',
-      label: locale === 'ka' ? 'პარტნიორები' : 'Sponsors',
+      label: locale === 'ka' ? 'პარტნიორები' : locale === 'ru' ? 'Партнеры' : 'Sponsors',
     },
   ]
 
@@ -87,13 +87,17 @@ export function SettingsTab() {
       {/* Account row — language + sign out */}
       <section>
         <h3 className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.1em] text-on-surface-variant mb-3">
-          {locale === 'ka' ? 'ანგარიში' : 'Account'}
+          {locale === 'ka' ? 'ანგარიში' : locale === 'ru' ? 'Аккаунт' : 'Account'}
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {/* Language */}
           <button
             type="button"
-            onClick={() => setLocale(locale === 'ka' ? 'en' : 'ka')}
+            onClick={() => {
+              if (locale === 'ka') setLocale('en')
+              else if (locale === 'en') setLocale('ru')
+              else setLocale('ka')
+            }}
             className="flex items-center gap-3 px-4 py-3.5 rounded-sm border border-outline-variant/30 bg-surface-container-lowest hover:border-primary/30 transition-colors text-left"
           >
             <span
@@ -104,12 +108,16 @@ export function SettingsTab() {
             </span>
             <div className="flex-1 min-w-0">
               <div className="font-[Hanken_Grotesk] text-[13px] font-semibold text-on-surface">
-                {locale === 'ka' ? 'ენა' : 'Language'}
+                {locale === 'ka' ? 'ენა' : locale === 'ru' ? 'Язык' : 'Language'}
               </div>
               <div className="font-[Hanken_Grotesk] text-[11px] text-on-surface-variant">
-                {locale === 'ka' ? 'ქართული' : 'English'} ·{' '}
+                {locale === 'ka' ? 'ქართული' : locale === 'ru' ? 'Русский' : 'English'} ·{' '}
                 <span className="text-primary font-semibold">
-                  {locale === 'ka' ? 'შეცვლა → English' : 'Switch → ქართული'}
+                  {locale === 'ka'
+                    ? 'შეცვლა → English'
+                    : locale === 'en'
+                    ? 'Switch → Русский'
+                    : 'Переключить → ქართული'}
                 </span>
               </div>
             </div>
@@ -140,6 +148,8 @@ export function SettingsTab() {
               <div className="font-[Hanken_Grotesk] text-[11px] text-on-surface-variant">
                 {locale === 'ka'
                   ? 'სესიის დასრულება'
+                  : locale === 'ru'
+                  ? 'Завершить сессию администратора'
                   : 'End your admin session'}
               </div>
             </div>
@@ -207,16 +217,18 @@ export function SettingsTab() {
       {/* Sign-out confirmation */}
       <ConfirmationDialog
         isOpen={signOutOpen}
-        title={locale === 'ka' ? 'გასვლა' : 'Sign out'}
+        title={locale === 'ka' ? 'გასვლა' : locale === 'ru' ? 'Выйти' : 'Sign out'}
         description={
           locale === 'ka'
             ? 'ნამდვილად გსურთ ადმინიდან გამოსვლა?'
+            : locale === 'ru'
+            ? 'Вы действительно хотите выйти из панели управления?'
             : 'Are you sure you want to sign out of the admin panel?'
         }
         onConfirm={() => void handleConfirmLogout()}
         onCancel={() => setSignOutOpen(false)}
         confirmLabel={t('admin.sidebar.logout')}
-        cancelLabel={locale === 'ka' ? 'არა, უკან' : 'No, go back'}
+        cancelLabel={locale === 'ka' ? 'არა, უკან' : locale === 'ru' ? 'Нет, назад' : 'No, go back'}
         tone="destructive"
         icon="logout"
       />

@@ -6,7 +6,7 @@ import { api } from '../../../convex/_generated/api'
 import { StatusBadge } from './StatusBadge'
 import { ConfirmationDialog } from './ConfirmationDialog'
 import { format } from 'date-fns'
-import { ka, enUS } from 'date-fns/locale'
+import { ka, enUS, ru } from 'date-fns/locale'
 import { allowedTransitions, nightCount } from '../../../convex/availability'
 import type { Status, Transition } from '../../../convex/availability'
 import type { Reservation } from './ReservationRow'
@@ -34,7 +34,7 @@ export function ReservationDetailPanel({
   const { locale, t } = useI18n()
   const { sessionToken } = useAdminAuth()
   const transitionMutation = useMutation(api.reservations.transitionStatus)
-  const dateLocale = locale === 'ka' ? ka : enUS
+  const dateLocale = locale === 'ka' ? ka : locale === 'ru' ? ru : enUS
   // Pending transition awaiting confirmation — covers every action the panel
   // can trigger so destructive AND state-changing operations always have a
   // second tap.
@@ -108,10 +108,12 @@ export function ReservationDetailPanel({
               <p className="font-[Hanken_Grotesk] text-[12px] font-semibold text-primary">
                 {locale === 'ka'
                   ? `ჯგუფური ჯავშანი — ${groupSiblings.length + 1} ნომერი`
+                  : locale === 'ru'
+                  ? `Групповое бронирование — ${groupSiblings.length + 1} номеров`
                   : `Group booking — ${groupSiblings.length + 1} rooms`}
               </p>
               <p className="font-[Hanken_Grotesk] text-[11px] text-on-surface-variant mt-0.5">
-                {locale === 'ka' ? 'დაკავშირებული კოდები:' : 'Linked codes:'}{' '}
+                {locale === 'ka' ? 'დაკავშირებული კოდები:' : locale === 'ru' ? 'Связанные коды:' : 'Linked codes:'}{' '}
                 {groupSiblings.map((r) => r.referenceCode).join(', ')}
               </p>
             </div>

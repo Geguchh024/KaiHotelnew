@@ -14,7 +14,7 @@ import {
   isAfter,
   startOfDay,
 } from 'date-fns'
-import { ka, enUS } from 'date-fns/locale'
+import { ka, enUS, ru } from 'date-fns/locale'
 import { cn } from '@/lib/utils'
 import type { Locale } from '@/lib/i18n'
 
@@ -38,7 +38,7 @@ export function Calendar({
   rangeEnd,
 }: CalendarProps) {
   const [currentMonth, setCurrentMonth] = useState(selected || new Date())
-  const dateLocale = locale === 'ka' ? ka : enUS
+  const dateLocale = locale === 'ka' ? ka : locale === 'ru' ? ru : enUS
 
   const monthStart = startOfMonth(currentMonth)
   const monthEnd = endOfMonth(monthStart)
@@ -56,6 +56,8 @@ export function Calendar({
 
   const weekDays = locale === 'ka'
     ? ['ორშ', 'სამ', 'ოთხ', 'ხუთ', 'პარ', 'შაბ', 'კვი']
+    : locale === 'ru'
+    ? ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']
     : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
   const isDisabled = (date: Date) => {
@@ -155,7 +157,7 @@ export function Calendar({
         <div className="flex items-center gap-1.5">
           <span className="w-3 h-3 bg-primary rounded-sm"></span>
           <span className="font-[Hanken_Grotesk] text-[10px] text-secondary">
-            {locale === 'ka' ? 'არჩეული' : 'Selected'}
+            {locale === 'ka' ? 'არჩეული' : locale === 'ru' ? 'Выбрано' : 'Selected'}
           </span>
         </div>
         <div className="flex items-center gap-1.5">
@@ -163,7 +165,7 @@ export function Calendar({
             <span className="w-2 h-[1px] bg-error/50 rotate-[-45deg] absolute"></span>
           </span>
           <span className="font-[Hanken_Grotesk] text-[10px] text-secondary">
-            {locale === 'ka' ? 'მიუწვდომელი' : 'Unavailable'}
+            {locale === 'ka' ? 'მიუწვდომელი' : locale === 'ru' ? 'Недоступно' : 'Unavailable'}
           </span>
         </div>
       </div>

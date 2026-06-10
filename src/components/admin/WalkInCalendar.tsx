@@ -13,7 +13,7 @@ import {
   isBefore,
   startOfDay,
 } from 'date-fns'
-import { ka, enUS } from 'date-fns/locale'
+import { ka, enUS, ru } from 'date-fns/locale'
 import { cn } from '@/lib/utils'
 import type { Locale } from '@/lib/i18n'
 
@@ -49,7 +49,7 @@ export function WalkInCalendar({
   locale = 'en',
   allowPast = false,
 }: WalkInCalendarProps) {
-  const dateLocale = locale === 'ka' ? ka : enUS
+  const dateLocale = locale === 'ka' ? ka : locale === 'ru' ? ru : enUS
   const today = startOfDay(new Date())
   const [viewMonth, setViewMonth] = useState<Date>(() => {
     if (checkIn) return startOfMonth(new Date(checkIn))
@@ -63,6 +63,8 @@ export function WalkInCalendar({
   const weekDays =
     locale === 'ka'
       ? ['ორშ', 'სამ', 'ოთხ', 'ხუთ', 'პარ', 'შაბ', 'კვი']
+      : locale === 'ru'
+      ? ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']
       : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
   const ciMs = checkIn
@@ -179,6 +181,7 @@ export function WalkInCalendar({
             inRange={inRange}
             onClick={handleClick}
             utcMidnightOf={utcMidnightOf}
+            locale={locale}
           />
         ))}
       </div>
@@ -196,16 +199,16 @@ export function WalkInCalendar({
                 {format(coDate, 'd MMM yyyy', { locale: dateLocale })}
               </span>
               <span className="ml-2 text-secondary">
-                · {nights} {locale === 'ka' ? 'ღამე' : nights === 1 ? 'night' : 'nights'}
+                · {nights} {locale === 'ka' ? 'ღამე' : locale === 'ru' ? 'ночей' : nights === 1 ? 'night' : 'nights'}
               </span>
             </span>
           ) : ciDate ? (
             <span>
-              {locale === 'ka' ? 'აირჩიეთ გასვლის თარიღი' : 'Pick a check-out date'}
+              {locale === 'ka' ? 'აირჩიეთ გასვლის თარიღი' : locale === 'ru' ? 'Выберите дату выезда' : 'Pick a check-out date'}
             </span>
           ) : (
             <span>
-              {locale === 'ka' ? 'აირჩიეთ შესვლის თარიღი' : 'Pick a check-in date'}
+              {locale === 'ka' ? 'აირჩიეთ შესვლის თარიღი' : locale === 'ru' ? 'Выберите дату заезда' : 'Pick a check-in date'}
             </span>
           )}
         </div>
@@ -213,13 +216,13 @@ export function WalkInCalendar({
           <div className="flex items-center gap-1.5">
             <span className="w-3 h-3 bg-primary rounded-sm" aria-hidden="true"></span>
             <span className="font-[Hanken_Grotesk] text-[10px] text-secondary">
-              {locale === 'ka' ? 'არჩეული' : 'Selected'}
+              {locale === 'ka' ? 'არჩეული' : locale === 'ru' ? 'Выбрано' : 'Selected'}
             </span>
           </div>
           <div className="flex items-center gap-1.5">
             <span className="w-3 h-3 bg-primary/15 rounded-sm" aria-hidden="true"></span>
             <span className="font-[Hanken_Grotesk] text-[10px] text-secondary">
-              {locale === 'ka' ? 'დიაპაზონი' : 'Range'}
+              {locale === 'ka' ? 'დიაპაზონი' : locale === 'ru' ? 'Диапазон' : 'Range'}
             </span>
           </div>
           <div className="flex items-center gap-1.5">
@@ -227,7 +230,7 @@ export function WalkInCalendar({
               <span className="w-2 h-px bg-error/60 rotate-[-45deg] absolute"></span>
             </span>
             <span className="font-[Hanken_Grotesk] text-[10px] text-secondary">
-              {locale === 'ka' ? 'დაკავებული' : 'Booked'}
+              {locale === 'ka' ? 'დაკავებული' : locale === 'ru' ? 'Занято' : 'Booked'}
             </span>
           </div>
         </div>
@@ -249,6 +252,7 @@ interface MonthGridProps {
   inRange: (d: Date) => boolean
   onClick: (d: Date) => void
   utcMidnightOf: (d: Date) => number
+  locale: Locale
 }
 
 function MonthGrid({
@@ -264,6 +268,7 @@ function MonthGrid({
   inRange,
   onClick,
   utcMidnightOf,
+  locale,
 }: MonthGridProps) {
   const monthStart = startOfMonth(monthDate)
   const monthEnd = endOfMonth(monthStart)
@@ -348,9 +353,9 @@ function MonthGrid({
                 aria-label={format(d, 'PPP')}
                 title={
                   blocked
-                    ? 'Booked'
+                    ? locale === 'ka' ? 'დაკავებული' : locale === 'ru' ? 'Забронировано' : 'Booked'
                     : past
-                    ? 'Past date'
+                    ? locale === 'ka' ? 'წარსული' : locale === 'ru' ? 'Прошедшая дата' : 'Past date'
                     : undefined
                 }
               >

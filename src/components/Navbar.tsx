@@ -41,10 +41,14 @@ export const Navbar = memo(function Navbar() {
         {/* Right side actions */}
         <div className="flex items-center gap-2 sm:gap-3">
           <button
-            onClick={() => setLocale(locale === 'ka' ? 'en' : 'ka')}
+            onClick={() => {
+              if (locale === 'ka') setLocale('en')
+              else if (locale === 'en') setLocale('ru')
+              else setLocale('ka')
+            }}
             className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.05em] text-secondary hover:text-primary transition-colors border border-outline-variant px-2 sm:px-2.5 py-1.5 rounded-sm"
           >
-            {locale === 'ka' ? 'EN' : 'ქარ'}
+            {locale === 'ka' ? 'EN' : locale === 'en' ? 'РУС' : 'ქარ'}
           </button>
           <Link
             to="/reservations"

@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState, useCallback, useMemo } from 'react'
-import { useI18n } from '@/lib/i18n'
+import { useI18n, type Locale } from '@/lib/i18n'
 import { useAdminAuth } from '@/contexts/AdminAuthContext'
 import { useQuery } from 'convex/react'
 import { api } from '../../../convex/_generated/api'
@@ -103,13 +103,13 @@ export function ReservationTimelineView({ rooms }: Props) {
 
 // ─── Legend ────────────────────────────────────────────────────────────────
 
-function Legend({ locale }: { locale: 'ka' | 'en' }) {
+function Legend({ locale }: { locale: Locale }) {
   const items = [
-    { key: 'pending', label: locale === 'ka' ? 'მოლოდინში' : 'Pending' },
-    { key: 'confirmed', label: locale === 'ka' ? 'დადასტურებული' : 'Confirmed' },
-    { key: 'checkedIn', label: locale === 'ka' ? 'შესული' : 'Checked In' },
-    { key: 'checkedOut', label: locale === 'ka' ? 'გასული' : 'Checked Out' },
-    { key: 'cancelled', label: locale === 'ka' ? 'გაუქმებული' : 'Cancelled' },
+    { key: 'pending', label: locale === 'ka' ? 'მოლოდინში' : locale === 'ru' ? 'В ожидании' : 'Pending' },
+    { key: 'confirmed', label: locale === 'ka' ? 'დადასტურებული' : locale === 'ru' ? 'Подтверждено' : 'Confirmed' },
+    { key: 'checkedIn', label: locale === 'ka' ? 'შესული' : locale === 'ru' ? 'Заселен' : 'Checked In' },
+    { key: 'checkedOut', label: locale === 'ka' ? 'გასული' : locale === 'ru' ? 'Выселен' : 'Checked Out' },
+    { key: 'cancelled', label: locale === 'ka' ? 'გაუქმებული' : locale === 'ru' ? 'Отменено' : 'Cancelled' },
   ]
   return (
     <div className="flex flex-wrap items-center gap-2.5 sm:gap-5">
@@ -136,14 +136,14 @@ interface AgendaProps {
   roomById: Record<string, string>
   selected: Reservation | null
   onSelect: (r: Reservation | null) => void
-  locale: 'ka' | 'en'
+  locale: Locale
 }
 
 type Bucket = 'today' | 'tomorrow' | 'thisWeek' | 'later' | 'past'
 
 const BUCKET_ORDER: Bucket[] = ['today', 'tomorrow', 'thisWeek', 'later', 'past']
 
-function bucketLabel(b: Bucket, locale: 'ka' | 'en') {
+function bucketLabel(b: Bucket, locale: Locale) {
   if (locale === 'ka') {
     return {
       today: 'დღეს',
@@ -151,6 +151,15 @@ function bucketLabel(b: Bucket, locale: 'ka' | 'en') {
       thisWeek: 'ამ კვირაში',
       later: 'მოგვიანებით',
       past: 'წარსული',
+    }[b]
+  }
+  if (locale === 'ru') {
+    return {
+      today: 'Сегодня',
+      tomorrow: 'Завтра',
+      thisWeek: 'На этой неделе',
+      later: 'Предстоящие',
+      past: 'Прошедшие',
     }[b]
   }
   return {
@@ -176,14 +185,14 @@ function bucketFor(reservation: Reservation, todayMs: number): Bucket {
   return 'today'
 }
 
-function formatDateShort(ms: number, locale: 'ka' | 'en') {
+function formatDateShort(ms: number, locale: Locale) {
   return new Date(ms).toLocaleDateString(
-    locale === 'ka' ? 'ka-GE' : 'en-US',
+    locale === 'ka' ? 'ka-GE' : locale === 'ru' ? 'ru-RU' : 'en-US',
     { month: 'short', day: 'numeric', timeZone: 'UTC' },
   )
 }
 
-function formatRange(ci: number, co: number, locale: 'ka' | 'en') {
+function formatRange(ci: number, co: number, locale: Locale) {
   return `${formatDateShort(ci, locale)} – ${formatDateShort(co, locale)}`
 }
 
@@ -254,7 +263,7 @@ function MobileAgenda({
           active={filterRoomId === 'all'}
           onClick={() => setFilterRoomId('all')}
         >
-          {locale === 'ka' ? 'ყველა ნომერი' : 'All rooms'}
+          {locale === 'ka' ? 'ყველა ნომერი' : locale === 'ru' ? 'Все номера' : 'All rooms'}
         </FilterPill>
         {Object.keys(roomById).map((id) => (
           <FilterPill
@@ -273,7 +282,7 @@ function MobileAgenda({
             event_busy
           </span>
           <p className="font-[Hanken_Grotesk] text-[12px] text-on-surface-variant">
-            {locale === 'ka' ? 'ჯავშნები არ არის' : 'No reservations to show'}
+            {locale === 'ka' ? 'ჯავშნები არ არის' : locale === 'ru' ? 'Бронирований нет' : 'No reservations to show'}
           </p>
         </div>
       )}
@@ -347,6 +356,8 @@ function MobileAgenda({
                 <p className="font-[Hanken_Grotesk] text-[10px] text-on-surface-variant/70 text-center pt-1">
                   {locale === 'ka'
                     ? `+ ${grouped.past.length - 30} მეტი — სრული სია არქივში`
+                    : locale === 'ru'
+                    ? `+ еще ${grouped.past.length - 30} — все записи в Архиве`
                     : `+ ${grouped.past.length - 30} more — see Archive for full history`}
                 </p>
               )}
@@ -433,7 +444,7 @@ function AgendaCard({
   isSelected: boolean
   onClick: () => void
   todayMs: number
-  locale: 'ka' | 'en'
+  locale: Locale
   muted?: boolean
 }) {
   const r = reservation
@@ -442,13 +453,13 @@ function AgendaCard({
   const startsToday = r.checkInDate === todayMs
 
   // Status pill
-  const statusLabels: Record<string, { ka: string; en: string }> = {
-    pending: { ka: 'მოლოდინში', en: 'Pending' },
-    confirmed: { ka: 'დადასტ.', en: 'Confirmed' },
-    checkedIn: { ka: 'შესული', en: 'Checked in' },
-    checkedOut: { ka: 'გასული', en: 'Checked out' },
-    cancelled: { ka: 'გაუქმ.', en: 'Cancelled' },
-    noShow: { ka: 'არ მოვიდა', en: 'No-show' },
+  const statusLabels: Record<string, { ka: string; en: string; ru: string }> = {
+    pending: { ka: 'მოლოდინში', en: 'Pending', ru: 'В ожидании' },
+    confirmed: { ka: 'დადასტ.', en: 'Confirmed', ru: 'Подтвержд.' },
+    checkedIn: { ka: 'შესული', en: 'Checked in', ru: 'Заселен' },
+    checkedOut: { ka: 'გასული', en: 'Checked out', ru: 'Выселен' },
+    cancelled: { ka: 'გაუქმ.', en: 'Cancelled', ru: 'Отменен' },
+    noShow: { ka: 'არ მოვიდა', en: 'No-show', ru: 'Неявка' },
   }
   const statusLabel = statusLabels[r.status]?.[locale] ?? r.status
 
@@ -492,7 +503,7 @@ function AgendaCard({
           </div>
           <div className="font-[Hanken_Grotesk] text-[11px] text-on-surface-variant truncate">
             {roomName} · {formatRange(r.checkInDate, r.checkOutDate, locale)} ·{' '}
-            {nights} {locale === 'ka' ? 'ღამე' : nights === 1 ? 'night' : 'nights'}
+            {nights} {locale === 'ka' ? 'ღამე' : locale === 'ru' ? 'ночей' : nights === 1 ? 'night' : 'nights'}
           </div>
           <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
             <span
@@ -506,12 +517,12 @@ function AgendaCard({
             </span>
             {startsToday && !inProgress && (
               <span className="font-[Hanken_Grotesk] text-[10px] font-semibold text-primary bg-primary/10 px-1.5 py-0.5 rounded-sm">
-                {locale === 'ka' ? 'დღეს ჩადის' : 'Arriving today'}
+                {locale === 'ka' ? 'დღეს ჩადის' : locale === 'ru' ? 'Прибывает сегодня' : 'Arriving today'}
               </span>
             )}
             {inProgress && (
               <span className="font-[Hanken_Grotesk] text-[10px] font-semibold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded-sm">
-                {locale === 'ka' ? 'მიმდინარე' : 'In stay'}
+                {locale === 'ka' ? 'მიმდინარე' : locale === 'ru' ? 'В процессе проживания' : 'In stay'}
               </span>
             )}
             <span className="font-[Hanken_Grotesk] text-[10px] text-on-surface-variant/70 ml-auto font-mono">
@@ -571,7 +582,7 @@ interface GanttProps {
   roomLabel: (r: Doc<'rooms'>) => string
   selected: Reservation | null
   onSelect: (r: Reservation | null) => void
-  locale: 'ka' | 'en'
+  locale: Locale
 }
 
 function DesktopGantt({
@@ -639,10 +650,10 @@ function DesktopGantt({
           type="button"
           onClick={scrollToToday}
           className="flex items-center gap-1 px-2.5 py-1.5 border border-outline-variant/40 hover:border-primary/40 rounded-full font-[Hanken_Grotesk] text-[11px] font-semibold text-on-surface-variant hover:text-primary transition-colors"
-          aria-label={locale === 'ka' ? 'დღევანდელ დღემდე' : 'Jump to today'}
+          aria-label={locale === 'ka' ? 'დღევანდელ დღემდე' : locale === 'ru' ? 'Перейти к сегодняшнему дню' : 'Jump to today'}
         >
           <span className="material-symbols-outlined text-[14px]">today</span>
-          {locale === 'ka' ? 'დღეს' : 'Today'}
+          {locale === 'ka' ? 'დღეს' : locale === 'ru' ? 'Сегодня' : 'Today'}
         </button>
       </div>
 
@@ -658,7 +669,7 @@ function DesktopGantt({
               style={{ height: ROW_H + 10 }}
             >
               <span className="font-[Hanken_Grotesk] text-[10px] font-semibold uppercase tracking-[0.06em] text-on-surface-variant">
-                {locale === 'ka' ? 'ოთახი' : 'Room'}
+                {locale === 'ka' ? 'ოთახი' : locale === 'ru' ? 'Номер' : 'Room'}
               </span>
             </div>
             {rooms.map((room, idx) => (

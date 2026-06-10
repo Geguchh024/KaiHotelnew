@@ -8,6 +8,7 @@ import { api } from '../../../convex/_generated/api'
 interface FormErrors {
   phone?: string
   email?: string
+  adminEmail?: string
 }
 
 type SubmitStatus = 'idle' | 'success' | 'error'
@@ -26,6 +27,7 @@ export function SiteSettingsForm() {
 
   const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
+  const [adminEmail, setAdminEmail] = useState('')
   const [addressKa, setAddressKa] = useState('')
   const [addressEn, setAddressEn] = useState('')
   const [instagramUrl, setInstagramUrl] = useState('')
@@ -41,6 +43,7 @@ export function SiteSettingsForm() {
     if (settings) {
       setPhone(settings.phone)
       setEmail(settings.email)
+      setAdminEmail(settings.adminEmail ?? '')
       setAddressKa(settings.addressKa)
       setAddressEn(settings.addressEn)
       setInstagramUrl(settings.instagramUrl)
@@ -60,6 +63,15 @@ export function SiteSettingsForm() {
     if (phoneError) newErrors.phone = phoneError
     if (emailError) newErrors.email = emailError
 
+    if (adminEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(adminEmail)) {
+      newErrors.adminEmail =
+        locale === 'ka'
+          ? 'არასწორი ელ-ფოსტის ფორმატი'
+          : locale === 'ru'
+          ? 'Неверный формат эл. почты'
+          : 'Invalid email format'
+    }
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors)
       return
@@ -73,6 +85,7 @@ export function SiteSettingsForm() {
         sessionToken: sessionToken!,
         phone,
         email,
+        adminEmail: adminEmail.trim() || undefined,
         addressKa,
         addressEn,
         instagramUrl,
@@ -149,6 +162,29 @@ export function SiteSettingsForm() {
             {errors.email && (
               <p id="settings-email-error" role="alert" className={errorClass}>
                 {errors.email}
+              </p>
+            )}
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <label htmlFor="settings-admin-email" className={labelClass}>
+              {t('admin.settings.adminEmail')}
+            </label>
+            <input
+              id="settings-admin-email"
+              type="email"
+              value={adminEmail}
+              onChange={(e) => {
+                setAdminEmail(e.target.value)
+                if (errors.adminEmail) setErrors((prev) => ({ ...prev, adminEmail: undefined }))
+              }}
+              placeholder="admin@kaihotel.ge"
+              className={inputClass}
+              aria-describedby={errors.adminEmail ? 'settings-admin-email-error' : undefined}
+            />
+            {errors.adminEmail && (
+              <p id="settings-admin-email-error" role="alert" className={errorClass}>
+                {errors.adminEmail}
               </p>
             )}
           </div>

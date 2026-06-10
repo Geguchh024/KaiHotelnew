@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react'
 import { createFileRoute, Link, Outlet, useNavigate, useMatches } from '@tanstack/react-router'
-import { useQuery, useMutation } from 'convex/react'
+import { useQuery, useMutation, useAction } from 'convex/react'
 import { ConvexError } from 'convex/values'
 import { api } from '../../convex/_generated/api'
-import { useI18n } from '@/lib/i18n'
+import { useI18n, type Locale } from '@/lib/i18n'
 import { DatePicker } from '@/components/ui/date-picker'
 import { CustomSelect } from '@/components/ui/custom-select'
 import { BlurhashImage } from '@/components/BlurhashImage'
 import { addDays, differenceInDays, format } from 'date-fns'
-import { ka, enUS } from 'date-fns/locale'
+import { ka, enUS, ru } from 'date-fns/locale'
 import { cn } from '@/lib/utils'
 import type { Id } from '../../convex/_generated/dataModel'
 import { z } from 'zod'
@@ -58,7 +58,7 @@ function toUtcMidnight(date: Date): number {
 function Reservations() {
   const { t, locale, setLocale } = useI18n()
   const navigate = useNavigate()
-  const dateLocale = locale === 'ka' ? ka : enUS
+  const dateLocale = locale === 'ka' ? ka : locale === 'ru' ? ru : enUS
   const search = Route.useSearch()
 
   // Parse search params into initial dates
@@ -68,6 +68,8 @@ function Reservations() {
 
   // Live room data from Convex
   const rooms = useQuery(api.rooms.list)
+  const settings = useQuery(api.siteSettings.get)
+  const sendEmails = useAction(api.resend.sendReservationEmails)
 
   // Form state
   const [step, setStep] = useState(1)
@@ -139,6 +141,36 @@ function Reservations() {
         specialRequests: specialRequests.trim() || undefined,
         rooms: roomsPayload,
       })
+
+      // Determine destination admin email address
+      const adminEmail = settings?.adminEmail || settings?.email || 'info@kaihotel.ge'
+
+      // Format room names for the email template
+      const roomNames = selectedRoomsData
+        .map((r) => (locale === 'ka' ? r.nameKa : r.nameEn))
+        .join(', ')
+
+      // Format check-in/check-out dates for display in the email
+      const formattedCheckIn = format(checkIn, 'PP', { locale: dateLocale })
+      const formattedCheckOut = format(checkOut, 'PP', { locale: dateLocale })
+
+      // Trigger Resend email dispatch in the background (non-blocking)
+      void sendEmails({
+        guestFullName: fullName.trim(),
+        guestEmail: email.trim(),
+        guestPhone: phone.trim(),
+        checkInDate: formattedCheckIn,
+        checkOutDate: formattedCheckOut,
+        roomNames,
+        totalPrice,
+        referenceCode: result.referenceCode,
+        specialRequests: specialRequests.trim() || undefined,
+        adminEmail,
+        locale,
+      }).catch((err) => {
+        console.error('Failed to trigger confirmation emails:', err)
+      })
+
       void navigate({
         to: '/reservations/confirmation/$referenceCode',
         params: { referenceCode: result.referenceCode },
@@ -163,10 +195,14 @@ function Reservations() {
           </Link>
           <div className="flex items-center gap-2 sm:gap-3">
             <button
-              onClick={() => setLocale(locale === 'ka' ? 'en' : 'ka')}
+              onClick={() => {
+                if (locale === 'ka') setLocale('en')
+                else if (locale === 'en') setLocale('ru')
+                else setLocale('ka')
+              }}
               className="font-[Hanken_Grotesk] text-[11px] font-semibold uppercase tracking-[0.05em] text-secondary hover:text-primary transition-colors border border-outline-variant px-2 sm:px-2.5 py-1.5 rounded-sm"
             >
-              {locale === 'ka' ? 'EN' : 'ქარ'}
+              {locale === 'ka' ? 'EN' : locale === 'en' ? 'РУС' : 'ქარ'}
             </button>
             <Link to="/" className="font-[Hanken_Grotesk] text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.05em] text-secondary hover:text-primary transition-colors">
               {t('res.backToHome')}
@@ -450,7 +486,7 @@ function Step1({
   capacityMet: boolean
   canProceedStep1: boolean
   setStep: (s: number) => void
-  locale: 'ka' | 'en'
+  locale: Locale
   t: (key: string) => string
   fromDate: number
   throughDate: number
@@ -637,7 +673,7 @@ function RoomCard({
   removeRoom: (id: Id<"rooms">) => void
   checkIn: Date | null
   checkOut: Date | null
-  locale: 'ka' | 'en'
+  locale: Locale
   t: (key: string) => string
   fromDate: number
   throughDate: number

@@ -63,6 +63,7 @@ export default defineSchema({
     // Singleton — only one record; upserted by settings mutation
     phone: v.string(),
     email: v.string(),
+    adminEmail: v.optional(v.string()),
     addressKa: v.string(),
     addressEn: v.string(),
     instagramUrl: v.string(),
