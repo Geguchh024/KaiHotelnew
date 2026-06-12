@@ -799,8 +799,43 @@ const translations: Record<Locale, Record<string, string>> = {
 
 const I18nContext = createContext<I18nContextType | null>(null)
 
-export function I18nProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocale] = useState<Locale>('ka')
+export const PUBLIC_LOCALE_STORAGE_KEY = 'kai_locale'
+export const ADMIN_LOCALE_STORAGE_KEY = 'kai_admin_locale'
+
+function readStoredLocale(storageKey: string, fallback: Locale): Locale {
+  if (typeof window === 'undefined') return fallback
+  try {
+    const saved = localStorage.getItem(storageKey)
+    if (saved === 'ka' || saved === 'en' || saved === 'ru') return saved
+  } catch {
+    // localStorage unavailable (SSR / private mode)
+  }
+  return fallback
+}
+
+type I18nProviderProps = {
+  children: ReactNode
+  defaultLocale?: Locale
+  storageKey?: string
+}
+
+export function I18nProvider({
+  children,
+  defaultLocale = 'ka',
+  storageKey = PUBLIC_LOCALE_STORAGE_KEY,
+}: I18nProviderProps) {
+  const [locale, setLocaleState] = useState<Locale>(() =>
+    readStoredLocale(storageKey, defaultLocale),
+  )
+
+  const setLocale = (next: Locale) => {
+    setLocaleState(next)
+    try {
+      localStorage.setItem(storageKey, next)
+    } catch {
+      // ignore
+    }
+  }
 
   const t = (key: string): string => {
     return translations[locale][key] || key
@@ -819,4 +854,16 @@ export function useI18n() {
     throw new Error('useI18n must be used within an I18nProvider')
   }
   return context
+}
+
+/** Admin panel uses Russian by default; preference is cached separately from the public site. */
+export function AdminI18nProvider({ children }: { children: ReactNode }) {
+  return (
+    <I18nProvider
+      defaultLocale="ru"
+      storageKey={ADMIN_LOCALE_STORAGE_KEY}
+    >
+      {children}
+    </I18nProvider>
+  )
 }
