@@ -12,7 +12,7 @@ import { SponsorsTab } from '@/components/admin/tabs/SponsorsTab'
 import { MessagesTab } from '@/components/admin/tabs/MessagesTab'
 import { SettingsTab } from '@/components/admin/tabs/SettingsTab'
 import { ReservationsTab } from '@/components/admin/tabs/ReservationsTab'
-import { AdminI18nProvider, useI18n } from '@/lib/i18n'
+import { useI18n } from '@/lib/i18n'
 import { useIsDesktop } from '@/hooks/useMediaQuery'
 
 const adminSearchSchema = z.object({
@@ -33,16 +33,8 @@ type AdminTab = z.infer<typeof adminSearchSchema>['tab']
 
 export const Route = createFileRoute('/admin/_layout')({
   validateSearch: adminSearchSchema,
-  component: AdminLayoutRoute,
+  component: AdminLayoutComponent,
 })
-
-function AdminLayoutRoute() {
-  return (
-    <AdminI18nProvider>
-      <AdminLayoutComponent />
-    </AdminI18nProvider>
-  )
-}
 
 // React error boundary for runtime errors
 interface ErrorBoundaryState {

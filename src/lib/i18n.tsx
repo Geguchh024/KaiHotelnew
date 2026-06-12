@@ -1,4 +1,13 @@
-import { createContext, useContext, useState, type ReactNode } from 'react'
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from 'react'
+import { useRouterState } from '@tanstack/react-router'
 
 export type Locale = 'ka' | 'en' | 'ru'
 
@@ -813,36 +822,50 @@ function readStoredLocale(storageKey: string, fallback: Locale): Locale {
   return fallback
 }
 
-type I18nProviderProps = {
-  children: ReactNode
-  defaultLocale?: Locale
-  storageKey?: string
+function useLocaleScope() {
+  const isAdmin = useRouterState({
+    select: (state) => state.location.pathname.startsWith('/admin'),
+  })
+
+  return {
+    storageKey: isAdmin ? ADMIN_LOCALE_STORAGE_KEY : PUBLIC_LOCALE_STORAGE_KEY,
+    defaultLocale: (isAdmin ? 'ru' : 'ka') as Locale,
+  }
 }
 
-export function I18nProvider({
-  children,
-  defaultLocale = 'ka',
-  storageKey = PUBLIC_LOCALE_STORAGE_KEY,
-}: I18nProviderProps) {
-  const [locale, setLocaleState] = useState<Locale>(() =>
-    readStoredLocale(storageKey, defaultLocale),
+export function I18nProvider({ children }: { children: ReactNode }) {
+  const { storageKey, defaultLocale } = useLocaleScope()
+  const [locale, setLocaleState] = useState<Locale>(defaultLocale)
+
+  // SSR renders the route default; client restores the cached preference after mount.
+  useEffect(() => {
+    setLocaleState(readStoredLocale(storageKey, defaultLocale))
+  }, [storageKey, defaultLocale])
+
+  const setLocale = useCallback(
+    (next: Locale) => {
+      setLocaleState(next)
+      try {
+        localStorage.setItem(storageKey, next)
+      } catch {
+        // ignore
+      }
+    },
+    [storageKey],
   )
 
-  const setLocale = (next: Locale) => {
-    setLocaleState(next)
-    try {
-      localStorage.setItem(storageKey, next)
-    } catch {
-      // ignore
-    }
-  }
+  const t = useCallback(
+    (key: string): string => translations[locale][key] ?? key,
+    [locale],
+  )
 
-  const t = (key: string): string => {
-    return translations[locale][key] || key
-  }
+  const value = useMemo(
+    () => ({ locale, setLocale, t }),
+    [locale, setLocale, t],
+  )
 
   return (
-    <I18nContext.Provider value={{ locale, setLocale, t }}>
+    <I18nContext.Provider value={value}>
       {children}
     </I18nContext.Provider>
   )
@@ -856,14 +879,3 @@ export function useI18n() {
   return context
 }
 
-/** Admin panel uses Russian by default; preference is cached separately from the public site. */
-export function AdminI18nProvider({ children }: { children: ReactNode }) {
-  return (
-    <I18nProvider
-      defaultLocale="ru"
-      storageKey={ADMIN_LOCALE_STORAGE_KEY}
-    >
-      {children}
-    </I18nProvider>
-  )
-}

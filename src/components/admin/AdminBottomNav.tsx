@@ -61,33 +61,50 @@ export function AdminBottomNav({ activeTab }: AdminBottomNavProps) {
     {
       tab: 'analytics',
       icon: 'dashboard',
-      label: locale === 'ka' ? 'მთავარი' : 'Home',
+      label:
+        locale === 'ka' ? 'მთავარი' : locale === 'ru' ? 'Главная' : 'Home',
       matches: (t) => t === 'analytics',
     },
     {
       tab: 'reservations',
       icon: 'event_available',
-      label: locale === 'ka' ? 'ჯავშნები' : 'Bookings',
+      label:
+        locale === 'ka'
+          ? 'ჯავშნები'
+          : locale === 'ru'
+            ? 'Брони'
+            : 'Bookings',
       badge: pendingReservations,
       matches: (t) => t === 'reservations',
     },
     {
       tab: 'rooms',
       icon: 'bed',
-      label: locale === 'ka' ? 'ნომრები' : 'Rooms',
+      label:
+        locale === 'ka' ? 'ნომრები' : locale === 'ru' ? 'Номера' : 'Rooms',
       matches: (t) => t === 'rooms',
     },
     {
       tab: 'messages',
       icon: 'mail',
-      label: locale === 'ka' ? 'შეტყობ.' : 'Messages',
+      label:
+        locale === 'ka'
+          ? 'შეტყობ.'
+          : locale === 'ru'
+            ? 'Почта'
+            : 'Messages',
       badge: unreadCount,
       matches: (t) => t === 'messages',
     },
     {
       tab: 'settings',
       icon: 'settings',
-      label: locale === 'ka' ? 'პარამეტრები' : 'Settings',
+      label:
+        locale === 'ka'
+          ? 'პარამეტრები'
+          : locale === 'ru'
+            ? 'Настройки'
+            : 'Settings',
       matches: (t) => settingsActiveTabs.has(t),
     },
   ]
